@@ -117,16 +117,13 @@
 |'\<int:lodging_pk\>/'|PUT|숙소 정보 수정|||✅|
 |'\<int:lodging_pk\>/'|DELETE|숙소 삭제|||✅|
 |'review/'|POST|리뷰 생성|✅|||
+|'review/'|GET|리뷰 목록||||
 |'review/\<int:review_pk\>/'|PUT|리뷰 수정|✅|✅||
 |'review/\<int:review_pk\>/'|DELETE|리뷰 삭제|✅|✅||
 |'reply/'|POST|답글 생성|✅|✅||
-|'\<int:lodging_pk\>/review/\<int:review_pk\>/reply/\<int:reply_pk\>/'|PUT|리뷰 답글 수정|✅|✅||
-|'\<int:lodging_pk\>/review/\<int:review_pk\>/reply/\<int:reply_pk\>/'|DELETE|리뷰 답글 삭제|✅|✅||
-|'\<int:lodging_pk\>/reservation/'|POST|숙소 예약 생성|✅|||
-|'\<int:lodging_pk\>/reservation/\<int:reservation_pk\>/'|PUT|숙소 예약 수정|✅|✅||
-|'\<int:lodging_pk\>/reservation/\<int:reservation_pk\>/'|DELETE|숙소 예약 삭제|✅|✅||
-|'\<int:lodging_pk\>/like/'|POST|숙소 찜 생성|✅|||
-|'\<int:lodging_pk\>/like/'|DELETE|숙소 찜 삭제|✅|✅||
+|'reply/'|GET|답글 목록||||
+|'reply/\<int:reply_pk\>/'|PUT|리뷰 답글 수정|✅|✅||
+|'reply/\<int:reply_pk\>/'|DELETE|리뷰 답글 삭제|✅|✅||
 <br>
 
 |app: traffic|HTTP Method|설명|로그인 권한|작성자 권한|Admin 권한|
@@ -136,14 +133,34 @@
 |''|GET|교통 목록||||
 |'\<int:traffic_pk\>/'|PUT|교통 정보 수정|||✅|
 |'\<int:traffic_pk\>/'|DELETE|교통 삭제|||✅|
-|'\<int:traffic_pk\>/review/'|POST|리뷰 생성|✅|||
-|'\<int:traffic_pk\>/review/\<int:review_pk\>/'|PUT|리뷰 수정|✅|✅||
-|'\<int:traffic_pk\>/review/\<int:review_pk\>/'|DELETE|리뷰 삭제|✅|✅||
-|'\<int:traffic_pk\>/review/\<int:review_pk\>/reply/'|POST|답글 생성|✅|✅||
-|'\<int:traffic_pk\>/review/\<int:review_pk\>/reply/\<int:reply_pk\>/'|PUT|리뷰 답글 수정|✅|✅||
-|'\<int:traffic_pk\>/review/\<int:review_pk\>/reply/\<int:reply_pk\>/'|DELETE|리뷰 답글 삭제|✅|✅||
-|'\<int:traffic_pk\>/reservation/'|POST|교통 예약 생성|✅|||
-|'\<int:traffic_pk\>/reservation/\<int:reservation_pk\>/'|PUT|교통 예약 수정|✅|✅||
-|'\<int:traffic_pk\>/reservation/\<int:reservation_pk\>/'|DELETE|교통 예약 삭제|✅|✅||
-|'\<int:traffic_pk\>/like/'|POST|교통 찜 생성|✅|||
-|'\<int:traffic_pk\>/like/'|DELETE|교통 찜 삭제|✅|✅||
+|'review/'|POST|리뷰 생성|✅|||
+|'review/'|GET|리뷰 목록||||
+|'review/\<int:review_pk\>/'|PUT|리뷰 수정|✅|✅||
+|'review/\<int:review_pk\>/'|DELETE|리뷰 삭제|✅|✅||
+|'reply/'|POST|답글 생성|✅|✅||
+|'reply/'|GET|답글 목록||||
+|'reply/\<int:reply_pk\>/'|PUT|리뷰 답글 수정|✅|✅||
+|'reply/\<int:reply_pk\>/'|DELETE|리뷰 답글 삭제|✅|✅||
+<br>
+
+# 찜 앱
+|app: pick|HTTP Method|설명|로그인 권한|작성자 권한|Admin 권한|
+|:-|:-|:-|:-:|:-:|:-:|
+|'loadging/'|POST|숙소 찜 생성|✅|||
+|'loadging/'|GET|숙소 찜 목록|✅|✅||
+|'loadging/\<int:pick_pk\>/'|DELETE|숙소 찜 삭제|✅|✅||
+|'traffic/'|POST|교통 찜 생성|✅|||
+|'traffic/'|GET|교통 찜 목록|✅|✅||
+|'traffic/\<int:pick_pk\>/'|DELETE|교통 찜 삭제|✅|✅||
+
+# 예약 앱
+|app: reservation|HTTP Method|설명|로그인 권한|작성자 권한|Admin 권한|
+|:-|:-|:-|:-:|:-:|:-:|
+|'loadging/'|POST|숙소 예약 생성|✅|||
+|'loadging/'|GET|숙소 예약 목록|✅|✅||
+|'loadging/\<int:reservation_pk\>/'|PUT|숙소 예약 수정|✅|✅||
+|'loadging/\<int:reservation_pk\>/'|DELETE|숙소 예약 삭제|✅|✅||
+|'traffic/'|POST|교통 예약 생성|✅|||
+|'traffic/'|GET|교통 예약 목록|✅|✅||
+|'traffic/\<int:reservation_pk\>/'|PUT|교통 예약 수정|✅|✅||
+|'traffic/\<int:reservation_pk\>/'|DELETE|교통 예약 삭제|✅|✅||
