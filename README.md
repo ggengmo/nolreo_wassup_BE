@@ -98,7 +98,7 @@
 <img src="./static/assets/images/erd.png" width="100%">  
 
 ## 7. API 명세서
-|app: accounts|HTTP Method|설명|로그인 권한 필요|작성자 권한 필요|Admin 권한|
+|app: account|HTTP Method|설명|로그인 권한 필요|작성자 권한 필요|Admin 권한|
 |:-|:-|:-|:-:|:-:|:-:|
 |'signup/'|POST|회원가입|||
 |'login/'|POST|로그인(토큰 발급)|||
