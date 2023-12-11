@@ -26,7 +26,7 @@
 - 여행지 리뷰를 통한 여행객 정보 공유 기능
 
 #### [Flow Chart]
-작성 필요
+<img src="./static/assets/images/flowchart.png" width="100%">
 
 <div align="right">
 
@@ -46,7 +46,7 @@
 
 #### [기술 - BE]
 <div>
-    <img src="https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=whiteMarkdown Preview Enhanced'">
+    <img src="https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white">
     <img src="https://img.shields.io/badge/django-092E20?style=for-the-badge&logo=django&logoColor=white">
 </div>
 
@@ -95,6 +95,7 @@
 오븐 작성 필요
 
 ## 6. 데이터베이스 모델링(ER Diagram)
+<img src="./static/assets/images/erd.png" width="100%">  
 
 ## 7. API 명세서
 |app: accounts|HTTP Method|설명|로그인 권한 필요|작성자 권한 필요|Admin 권한|
@@ -142,7 +143,6 @@
 |'reply/\<int:reply_pk\>/'|DELETE|리뷰 답글 삭제|✅|✅||
 <br>
 
-# 찜 앱
 |app: pick|HTTP Method|설명|로그인 권한|작성자 권한|Admin 권한|
 |:-|:-|:-|:-:|:-:|:-:|
 |'loadging/'|POST|숙소 찜 생성|✅|||
@@ -151,8 +151,8 @@
 |'traffic/'|POST|교통 찜 생성|✅|||
 |'traffic/'|GET|교통 찜 목록|✅|✅||
 |'traffic/\<int:pick_pk\>/'|DELETE|교통 찜 삭제|✅|✅||
+<br>
 
-# 예약 앱
 |app: reservation|HTTP Method|설명|로그인 권한|작성자 권한|Admin 권한|
 |:-|:-|:-|:-:|:-:|:-:|
 |'loadging/'|POST|숙소 예약 생성|✅|||
