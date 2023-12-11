@@ -10,7 +10,7 @@ class CustomUser(AbstractBaseUser):
     username = models.CharField(max_length=100)
     email = models.CharField(max_length=100)
     nickname = models.CharField(max_length=100)
-    image = models.ImageField(upload_to='profile_image', blank=True)
+    image = models.ImageField(upload_to='profile_image/%Y/%m/%d/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
