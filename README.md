@@ -95,6 +95,7 @@
 오븐 작성 필요
 
 ## 6. 데이터베이스 모델링(ER Diagram)
+<img src="./static/assets/images/erd.png" width="100%">  
 
 ## 7. API 명세서
 |app: accounts|HTTP Method|설명|로그인 권한 필요|작성자 권한 필요|Admin 권한|
