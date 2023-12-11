@@ -92,7 +92,25 @@
 <img src="./static/assets/images/요구사항분석및기능명세.png" width="100%">
 
 ## 5. 화면 설계(Wireframe)
-오븐 작성 필요
+<a href="https://ovenapp.io/project/A2aAFGcE1yeBkiGoZkLPzmfXP2IdoMQF#yRAOo">화면설계 테스트 페이지 바로가기</a> <br/>
+
+<img src="./static/assets/images/화면설계/QR.png" width="20%"><br/>
+
+<img src="./static/assets/images/화면설계/main01.png" width="40%" height="400">
+<img src="./static/assets/images/화면설계/main02.png" width="40%" height="400">
+<img src="./static/assets/images/화면설계/main03.png" width="40%" height="400">
+<img src="./static/assets/images/화면설계/profile.png" width="40%" height="400">
+<img src="./static/assets/images/화면설계/profile_set.png" width="40%" height="200">
+<img src="./static/assets/images/화면설계/login.png" width="40%" height="200">
+<img src="./static/assets/images/화면설계/signup.png" width="40%" height="200">
+<img src="./static/assets/images/화면설계/lodging02.png" width="40%" height="200">
+<img src="./static/assets/images/화면설계/lodging01.png" width="40%" height="600">
+<img src="./static/assets/images/화면설계/rent01.png" width="40%" height="600">
+<img src="./static/assets/images/화면설계/rent02.png" width="40%" height="200">
+<img src="./static/assets/images/화면설계/reservation.png" width="40%" height="200">
+<img src="./static/assets/images/화면설계/traffic.png" width="40%" height="200">
+<img src="./static/assets/images/화면설계/reservation_list.png" width="40%" height="200">
+
 
 ## 6. 데이터베이스 모델링(ER Diagram)
 <img src="./static/assets/images/erd.png" width="100%">  
