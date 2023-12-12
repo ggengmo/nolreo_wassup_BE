@@ -92,7 +92,25 @@
 <img src="./static/assets/images/요구사항분석및기능명세.png" width="100%">
 
 ## 5. 화면 설계(Wireframe)
-오븐 작성 필요
+<a href="https://ovenapp.io/project/A2aAFGcE1yeBkiGoZkLPzmfXP2IdoMQF#yRAOo">화면설계 테스트 페이지 바로가기</a> <br/>
+
+<img src="./static/assets/images/wireframe/QR.png" width="20%"><br/>
+
+|||
+|-|-|
+|<img src="./static/assets/images/wireframe/login.png" width="100%">로그인 화면|<img src="./static/assets/images/wireframe/signup.png" width="100%">회원 가입 화면|
+|<img src="./static/assets/images/wireframe/profile.png" width="100%">프로필 화면|<img src="./static/assets/images/wireframe/profile_edit.png" width="100%">프로필 수정 화면|
+|<img src="./static/assets/images/wireframe/lodging_detail1.png" width="100%">숙소 상세1 화면|<img src="./static/assets/images/wireframe/lodging_detail2.png" width="100%">숙소 상세2 화면|
+|<img src="./static/assets/images/wireframe/lodging_detail3.png" width="100%">숙소 상세3 화면|<img src="./static/assets/images/wireframe/lodging_list1.png" width="100%">숙소 목록1 화면|
+|<img src="./static/assets/images/wireframe/lodging_list2.png" width="100%">숙소 목록2 화면|<img src="./static/assets/images/wireframe/lodging_reservation.png" width="100%">숙소 예약 화면|
+|<img src="./static/assets/images/wireframe/rental_detail1.png" width="100%">렌트카 상세1 화면|<img src="./static/assets/images/wireframe/rental_detail2.png" width="100%">렌트카 상세2 화면|
+|<img src="./static/assets/images/wireframe/rental_detail3.png" width="100%">렌트카 상세3 화면|<img src="./static/assets/images/wireframe/rental_list1.png" width="100%">렌트카 목록1 화면|
+|<img src="./static/assets/images/wireframe/rental_list2.png" width="100%">렌트카 목록2 화면|<img src="./static/assets/images/wireframe/rental_reservation.png" width="100%">렌트카 예약 화면|
+|<img src="./static/assets/images/wireframe/traffic_detail1.png" width="100%">교통 상세1 화면|<img src="./static/assets/images/wireframe/traffic_detail2.png" width="100%">교통 상세2 화면|
+|<img src="./static/assets/images/wireframe/traffic_list1.png" width="100%">교통 목록1 화면|<img src="./static/assets/images/wireframe/traffic_list2.png" width="100%">교통 목록2 화면|
+|<img src="./static/assets/images/wireframe/reservation_detail.png" width="100%">예약 상세 화면|<img src="./static/assets/images/wireframe/reservation_edit.png" width="100%">예약 수정 화면|
+|<img src="./static/assets/images/wireframe/reservation_list.png" width="100%">예약 목록 화면|<img src="./static/assets/images/wireframe/pick_list1.png" width="100%">찜 목록1 화면|
+|<img src="./static/assets/images/wireframe/pick_list2.png" width="100%">찜 목록2 화면||
 
 ## 6. 데이터베이스 모델링(ER Diagram)
 <img src="./static/assets/images/erd.png" width="100%">  
