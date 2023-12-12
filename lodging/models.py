@@ -52,8 +52,8 @@ class RoomImage(models.Model):
     객실 이미지 모델
     '''
     image = models.CharField(max_length=200)
-    room_type = models.ForeignKey('RoomType', on_delete=models.CASCADE)
     is_main = models.BooleanField(default=False)
+    room_type = models.ForeignKey('RoomType', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.image_url
@@ -70,3 +70,52 @@ class Amenity(models.Model):
         return self.name
     
 
+class LodgingImage(models.Model):
+    '''
+    숙소 이미지 모델
+    '''
+    image = models.CharField(max_length=100)
+    is_main = models.BooleanField(default=False)
+    lodging = models.ForeignKey('Lodging', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.image_url
+    
+
+class LodgingReview(models.Model):
+    '''
+    숙소 리뷰 모델
+    '''
+    title = models.CharField(max_length=100)
+    content = models.TextField()
+    star = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey('account.CustomUser', on_delete=models.CASCADE)
+    lodging = models.ForeignKey('Lodging', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.title}:{self.content}'
+    
+
+class LodgingReviewImage(models.Model):
+    '''
+    숙소 리뷰 이미지 모델
+    '''
+    image = models.CharField(max_length=100)
+    lodging_review = models.ForeignKey('LodgingReview', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.image_url
+    
+
+class LodgingReviewComment(models.Model):
+    '''
+    숙소 리뷰 댓글 모델
+    '''
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey('account.CustomUser', on_delete=models.CASCADE)
+    lodging_review = models.ForeignKey('LodgingReview', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.content
