@@ -88,7 +88,7 @@ class LodgingReview(models.Model):
     '''
     title = models.CharField(max_length=100)
     content = models.TextField()
-    star = models.IntegerField()
+    star_score = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey('account.CustomUser', on_delete=models.CASCADE, related_name='lodging_reviews')
     lodging = models.ForeignKey('Lodging', on_delete=models.CASCADE, related_name='lodging_reviews')
