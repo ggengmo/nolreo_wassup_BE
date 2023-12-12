@@ -23,6 +23,9 @@ class SignupSerializer(ModelSerializer):
         }
 
     def create(self, validated_data):
+        '''
+        사용자 생성 메서드
+        '''
         user = User.objects.create_user(
             email=validated_data['email'],
             username=validated_data['username'],
@@ -34,6 +37,9 @@ class SignupSerializer(ModelSerializer):
         return user
     
     def validate_password(self, value):
+        '''
+        비밀번호 유효성 검사 메서드
+        '''
         if not any(char.isdigit() for char in value):
             raise serializers.ValidationError("비밀번호는 숫자를 포함해야 합니다.")
         
