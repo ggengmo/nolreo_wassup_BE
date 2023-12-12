@@ -7,8 +7,8 @@ class CustomUser(AbstractBaseUser):
     사용자 모델
     '''
     username = models.CharField(max_length=100)
-    email = models.EmailField(max_length=100, unique=True)
-    nickname = models.CharField(max_length=100)
+    email = models.EmailField(max_length=100, unique=True, error_messages={'unique': '이미 사용중인 이메일입니다.'})
+    nickname = models.CharField(max_length=100, unique=True, error_messages={'unique': '이미 사용중인 별명입니다.'})
     image = models.ImageField(upload_to='profile_image/%Y/%m/%d/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     is_staff = models.BooleanField(default=False)
