@@ -2,7 +2,6 @@ from django.db import models
 from .managers import CustomUserManager
 from django.contrib.auth.models import AbstractBaseUser
 
-
 class CustomUser(AbstractBaseUser):
     '''
     사용자 모델
