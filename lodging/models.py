@@ -29,6 +29,7 @@ class Lodging(models.Model):
     intro = models.TextField()
     notice = models.TextField()
     info = models.TextField()
+    price = models.IntegerField()
     sub_location = models.ForeignKey('SubLocation', on_delete=models.CASCADE, related_name='lodgings')
     
     def __str__(self):
