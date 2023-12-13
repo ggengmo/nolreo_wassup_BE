@@ -1,8 +1,6 @@
 # Rest Framework
-from rest_framework import viewsets, status
-from rest_framework.decorators import action
+from rest_framework import viewsets
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
-from rest_framework.response import Response
 
 # Models
 from .models import (
@@ -20,9 +18,7 @@ class LodgingViewSet(viewsets.ModelViewSet):
     serializer_class = LodgingSerializer
 
     def get_permissions(self):
-        if self.action == 'create':
-            permission_classes = [IsAdminUser]
-        elif self.action in ['update', 'destroy']:
+        if self.action in ['create', 'update', 'destroy']:
             permission_classes = [IsAdminUser]
         else:
             permission_classes = [AllowAny]
