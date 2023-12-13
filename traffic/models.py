@@ -9,7 +9,8 @@ class Train(models.Model):
     depart_time = models.DateTimeField()
     arrival_time = models.DateTimeField()
     num = models.CharField(max_length=100)
-    
+    price = models.IntegerField()
+
     def __str__(self):
         return f'{self.depart_point} 출발 {self.dest_point}행 {self.num}번 기차'
     
@@ -23,7 +24,8 @@ class Bus(models.Model):
     depart_time = models.DateTimeField()
     arrival_time = models.DateTimeField()
     num = models.CharField(max_length=100)
-    
+    price = models.IntegerField()
+
     def __str__(self):
         return f'{self.depart_point} 출발 {self.dest_point}행 {self.num}번 고속버스'
     
@@ -35,7 +37,8 @@ class RentalCar(models.Model):
     model = models.CharField(max_length=100)
     area = models.CharField(max_length=100)
     num = models.CharField(max_length=100)
-    
+    price = models.IntegerField()
+
     def __str__(self):
         return f'{self.model} 모델 {self.num}번 차량'
     
