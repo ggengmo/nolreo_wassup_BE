@@ -41,6 +41,7 @@ class RoomType(models.Model):
     '''
     name = models.CharField(max_length=100)
     capacity = models.IntegerField()
+    price = models.IntegerField()
     lodging = models.ForeignKey('Lodging', on_delete=models.CASCADE, related_name='room_types')
 
     def __str__(self):
