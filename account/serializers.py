@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.core.validators import MinLengthValidator, MaxLengthValidator
 
 from .models import CustomUser as User
@@ -34,6 +35,7 @@ class SignupSerializer(ModelSerializer):
         if validated_data.get('image'):
             user.image = validated_data['image']
         user.set_password(validated_data['password'])
+        user.save()
         return user
     
     def validate_password(self, value):
@@ -50,3 +52,17 @@ class SignupSerializer(ModelSerializer):
         if value != password2:
             raise serializers.ValidationError("비밀번호가 일치하지 않습니다.")
         return value
+    
+class LoginSerializer(TokenObtainPairSerializer):
+    '''
+    로그인 serializer
+    '''
+    username_field = 'email'
+
+    default_error_messages = {
+        'no_active_account': '이메일 또는 비밀번호가 일치하지 않습니다.',
+    }
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields[self.username_field].error_messages['required'] = '이메일을 입력해주세요.'
+        self.fields['password'].error_messages['required'] = '비밀번호를 입력해주세요.'
