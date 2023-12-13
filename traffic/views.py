@@ -1,3 +1,10 @@
-from django.shortcuts import render
+from rest_framework.generics import CreateAPIView
+from .serializers import BusSerializer
 
-# Create your views here.
+class BusView(CreateAPIView):
+    '''
+    버스 생성 API
+    '''
+    serializer_class = BusSerializer
+
+bus = BusView.as_view()
