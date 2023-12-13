@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from django.test import TestCase
 from django.core.files.uploadedfile import SimpleUploadedFile
 from rest_framework.test import APIClient
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 
 from .models import CustomUser as User
 
@@ -266,8 +266,8 @@ class TestAccount(TestCase):
         refresh_token = RefreshToken.for_user(user)
         access_token = refresh_token.access_token
 
-        refresh_exp = datetime.now() + timedelta(days=1)
-        access_exp = datetime.now() + timedelta(weeks=1)
+        refresh_exp = datetime.now() + timedelta(weeks=1)
+        access_exp = datetime.now() + timedelta(days=1)
 
         refresh_token = refresh_token.set_exp(refresh_exp)
         access_token = access_token.set_exp(access_exp)
@@ -289,3 +289,45 @@ class TestAccount(TestCase):
             is_valid = False
         self.assertFalse(is_valid)
         print('-- 토큰 만료 테스트 END --')
+
+    def test_token_refresh(self):
+        '''
+        토큰 재발급 테스트
+        1. 정상 토큰 재발급 테스트
+        2. 만료된 토큰 재발급 테스트
+        '''
+        print('-- 토큰 재발급 테스트 BEGIN --')
+        user = User.objects.create_user(email='test@test.com', password='testtest1@')
+        refresh_token = RefreshToken.for_user(user)
+        access_token = refresh_token.access_token
+
+        access_exp = datetime.now() + timedelta(days=1)
+
+        access_token = access_token.set_exp(access_exp)
+
+        # 정상 토큰 재발급 테스트
+        response = self.client.post(
+            '/account/refresh/',
+            {'refresh': str(refresh_token)},
+            format='json'
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.data['access'])
+        new_access_token = response.data['access']
+        try:
+            AccessToken(new_access_token)
+            is_valid = True
+        except:
+            is_valid = False
+        self.assertTrue(is_valid)
+
+        # 만료된 토큰 재발급 테스트
+        refresh_exp = datetime.now() + timedelta(weeks=1)
+        refresh_token = refresh_token.set_exp(refresh_exp)
+        response = self.client.post(
+            '/account/refresh/',
+            {'refresh': str(refresh_token)},
+            format='json'
+        )
+        self.assertEqual(response.status_code, 401)
+        print('-- 토큰 재발급 테스트 END --')
