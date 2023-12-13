@@ -29,9 +29,9 @@ class TestBusCase(TestCase):
 
     def test_bus_create_admin(self):
         '''
-        버스 생성 테스트
+        버스 생성 테스트(관리자)
         '''
-        print('-- 버스 생성 테스트 BEGIN --')
+        print('-- 버스 생성 테스트(관리자) BEGIN --')
         # 정상 처리 테스트
         self.client.force_authenticate(user=self.admin)
         bus_data = {
@@ -116,14 +116,14 @@ class TestBusCase(TestCase):
         }
         response = self.client.post('/traffic/bus/', bus_data, format='json')
         self.assertEqual(response.status_code, 400)
-        print('-- 버스 생성 테스트 END --')
+        print('-- 버스 생성 테스트(관리자) END --')
 
     def test_bus_create_user(self):
         '''
-        버스 생성 테스트
+        버스 생성 테스트(일반 사용자)
         '''
-        print('-- 버스 생성 테스트 BEGIN --')
-        # 비정상 처리 테스트(일반 유저가 버스 생성 시도)
+        print('-- 버스 생성 테스트(일반 사용자) BEGIN --')
+        # 비정상 처리 테스트(일반 사용자가 버스 생성 시도)
         self.client.force_login(user=self.user)
         bus_data = {
             'depart_point': '서울',
@@ -136,7 +136,7 @@ class TestBusCase(TestCase):
         response = self.client.post('/traffic/bus/', bus_data, format='json')
         self.assertEqual(response.status_code, 401)
 
-        print('-- 버스 생성 테스트 END --')
+        print('-- 버스 생성 테스트(일반 사용자) END --')
     
     def test_bus_list(self):
         '''
@@ -150,9 +150,9 @@ class TestBusCase(TestCase):
 
     def test_bus_destroy_admin(self):
         '''
-        버스 삭제 테스트
+        버스 삭제 테스트(관리자)
         '''
-        print('-- 버스 삭제 테스트 BEGIN --')
+        print('-- 버스 삭제 테스트(관리자) BEGIN --')
         # 정상 처리 테스트
         self.client.force_authenticate(user=self.admin)
         response = self.client.delete('/traffic/bus/1/', format='json')
@@ -160,18 +160,18 @@ class TestBusCase(TestCase):
         # 비정상 처리 테스트 - 존재하지 않는 버스 삭제 시도
         response = self.client.delete('/traffic/bus/100/', format='json')
         self.assertEqual(response.status_code, 404)
-        print('-- 버스 삭제 테스트 END --')
+        print('-- 버스 삭제 테스트(관리자) END --')
     
     def test_bus_destroy_user(self):
         '''
-        버스 삭제 테스트
+        버스 삭제 테스트(일반 사용자)
         '''
-        print('-- 버스 삭제 테스트 BEGIN --')
-        # 비정상 처리 테스트 - 일반 유저가 버스 삭제 시도
+        print('-- 버스 삭제 테스트(일반 사용자) BEGIN --')
+        # 비정상 처리 테스트 - 일반 사용자가 버스 삭제 시도
         self.client.force_login(user=self.user)
         response = self.client.delete('/traffic/bus/1/', format='json')
         self.assertEqual(response.status_code, 401)
-        print('-- 버스 삭제 테스트 END --')
+        print('-- 버스 삭제 테스트(일반 사용자) END --')
 
     def test_bus_retrieve(self):
         '''
@@ -188,9 +188,9 @@ class TestBusCase(TestCase):
 
     def test_bus_update_admin(self):
         '''
-        버스 수정 테스트
+        버스 수정 테스트(관리자)
         '''
-        print('-- 버스 수정 테스트 BEGIN --')
+        print('-- 버스 수정 테스트(관리자) BEGIN --')
         # 정상 처리 테스트
         self.client.force_authenticate(user=self.admin)
         bus_data = {
@@ -206,14 +206,14 @@ class TestBusCase(TestCase):
         # 비정상 처리 테스트 - 존재하지 않는 버스 수정 시도
         response = self.client.put('/traffic/bus/100/', bus_data, format='json')
         self.assertEqual(response.status_code, 404)
-        print('-- 버스 수정 테스트 END --')
+        print('-- 버스 수정 테스트(관리자) END --')
 
     def test_bus_update_user(self):
         '''
-        버스 수정 테스트
+        버스 수정 테스트(일반 사용자)
         '''
-        print('-- 버스 수정 테스트 BEGIN --')
-        # 비정상 처리 테스트 - 일반 유저가 버스 수정 시도
+        print('-- 버스 수정 테스트(일반 사용자) BEGIN --')
+        # 비정상 처리 테스트 - 일반 사용자가 버스 수정 시도
         self.client.force_login(user=self.user)
         response = self.client.get('/traffic/bus/1/', format='json')
         bus_data = {
@@ -226,4 +226,4 @@ class TestBusCase(TestCase):
         }
         response = self.client.put('/traffic/bus/1/', bus_data, format='json')
         self.assertEqual(response.status_code, 401)
-        print('-- 버스 수정 테스트 END --')
+        print('-- 버스 수정 테스트(일반 사용자) END --')
