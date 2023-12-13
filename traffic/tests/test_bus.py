@@ -123,7 +123,7 @@ class TestBusCase(TestCase):
         버스 생성 테스트
         '''
         print('-- 버스 생성 테스트 BEGIN --')
-        # 비정상 처리 테스트(일반 유저가 렌트카 생성 시도)
+        # 비정상 처리 테스트(일반 유저가 버스 생성 시도)
         self.client.force_login(user=self.user)
         bus_data = {
             'depart_point': '서울',
@@ -134,7 +134,6 @@ class TestBusCase(TestCase):
             'price': '10000',
         }
         response = self.client.post('/traffic/bus/', bus_data, format='json')
-        print(response.data)
         self.assertEqual(response.status_code, 401)
 
         print('-- 버스 생성 테스트 END --')
@@ -146,7 +145,6 @@ class TestBusCase(TestCase):
         print('-- 버스 리스트 테스트 BEGIN --')
         # 정상 처리 테스트
         response = self.client.get('/traffic/bus/', format='json')
-        print(response.data)
         self.assertEqual(response.status_code, 200)
         print('-- 버스 리스트 테스트 END --')
 
@@ -172,7 +170,6 @@ class TestBusCase(TestCase):
         # 비정상 처리 테스트 - 일반 유저가 버스 삭제 시도
         self.client.force_login(user=self.user)
         response = self.client.delete('/traffic/bus/1/', format='json')
-        print(response.data)
         self.assertEqual(response.status_code, 401)
         print('-- 버스 삭제 테스트 END --')
 
@@ -196,8 +193,6 @@ class TestBusCase(TestCase):
         print('-- 버스 수정 테스트 BEGIN --')
         # 정상 처리 테스트
         self.client.force_authenticate(user=self.admin)
-        response = self.client.get('/traffic/bus/1/', format='json')
-        print(response.data)
         bus_data = {
             'depart_point': '서울',
             'dest_point': '부산',
