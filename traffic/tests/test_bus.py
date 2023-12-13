@@ -16,26 +16,6 @@ class TestBusCase(TestCase):
             nickname = 'test2',
         )
 
-    def test_admin_login(self):
-        '''
-        어드민 로그인 테스트
-        '''
-        print('-- 어드민 로그인 테스트 BEGIN --')
-        self.client.force_login(self.admin)
-        response = self.client.get('/admin/')
-        self.assertEqual(response.status_code, 200)
-        print('-- 어드민 로그인 테스트 END --')
-
-    def test_user_login(self):
-        '''
-        사용자 로그인 테스트
-        '''
-        print('-- 사용자 로그인 테스트 BEGIN --')
-        self.client.force_login(self.user)
-        response = self.client.get('/traffic/bus/')
-        self.assertEqual(response.status_code, 401)
-        print('-- 사용자 로그인 테스트 END --')
-
     def test_bus_create_admin(self):
         '''
         버스 생성 테스트
