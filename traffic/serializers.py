@@ -9,7 +9,7 @@ class BusSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bus
         fields = ['depart_point', 'dest_point', 'depart_time', 
-                'arrival_time', 'num']
+                'arrival_time', 'num', 'price']
     
     def validate(self, data):
         '''
@@ -43,7 +43,7 @@ class TrianSerializer(serializers.ModelSerializer):
     class Meta:
         model = Train
         fields = ['depart_point', 'dest_point', 'depart_time', 
-                'arrival_time', 'num']
+                'arrival_time', 'num', 'price']
     
     def validate(self, data):
         '''
