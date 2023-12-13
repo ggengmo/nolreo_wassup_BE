@@ -17,6 +17,7 @@ class TestBusCase(TestCase):
             'depart_time': '2023-12-15 12:00:00',
             'arrival_time': '2023-12-15 15:00:00',
             'num': '1234',
+            'price': '10000',
         }
         response = self.client.post('/traffic/bus/', bus_data, format='json')
         self.assertEqual(response.status_code, 201)
@@ -28,6 +29,7 @@ class TestBusCase(TestCase):
             'depart_time': '2023-12-12 12:00:00',
             'arrival_time': '2023-12-12 15:00:00',
             'num': '1234',
+            'price': '10000',
         }
         response = self.client.post('/traffic/bus/', bus_data, format='json')
         self.assertEqual(response.status_code, 400)
@@ -38,6 +40,7 @@ class TestBusCase(TestCase):
             'depart_time': '2023-12-12 16:00:00',
             'arrival_time': '2023-12-12 15:00:00',
             'num': '1234',
+            'price': '10000',
         }
         response = self.client.post('/traffic/bus/', bus_data, format='json')
         self.assertEqual(response.status_code, 400)
@@ -49,6 +52,7 @@ class TestBusCase(TestCase):
             'depart_time': '2023-12-12 09:00:00',
             'arrival_time': '2023-12-12 15:00:00',
             'num': '1234',
+            'price': '10000',
         }
         response = self.client.post('/traffic/bus/', bus_data, format='json')
         self.assertEqual(response.status_code, 400)
@@ -60,6 +64,7 @@ class TestBusCase(TestCase):
             'depart_time': '2023-12-12 09:00:00',
             'arrival_time': '2023-12-12 09:30:00',
             'num': '1234',
+            'price': '10000',
         }
         response = self.client.post('/traffic/bus/', bus_data, format='json')
         self.assertEqual(response.status_code, 400)
@@ -71,6 +76,7 @@ class TestBusCase(TestCase):
             'depart_time': '2023-12-12 10:00:00',
             'arrival_time': '2023-12-12 10:30:00',
             'num': '1234',
+            'price': '10000',
         }
         response = self.client.post('/traffic/bus/', bus_data, format='json')
         self.assertEqual(response.status_code, 400)
@@ -82,6 +88,7 @@ class TestBusCase(TestCase):
             'depart_time': '2023-12-12 09:00:00',
             'arrival_time': '2023-12-12 10:00:00',
             'num': '1234',
+            'price': '10000',
         }
         response = self.client.post('/traffic/bus/', bus_data, format='json')
         self.assertEqual(response.status_code, 400)
