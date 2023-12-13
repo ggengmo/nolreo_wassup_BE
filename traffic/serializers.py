@@ -38,7 +38,7 @@ class BusSerializer(serializers.ModelSerializer):
 
 class TrianSerializer(serializers.ModelSerializer):
     '''
-    버스 생성 serializer
+    기차 생성 serializer
     '''
     class Meta:
         model = Train
