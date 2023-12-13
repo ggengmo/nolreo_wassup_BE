@@ -43,7 +43,6 @@ class TestTrafficCase(TestCase):
         self.assertEqual(response.status_code, 400)
         # 비정상 처리 테스트 - 출발시간이 현재시간보다 빠를 경우
         current_time = '2023-12-12 10:00:00'
-        print(current_time)
         bus_data = {
             'depart_point': '서울',
             'dest_point': '서울',
@@ -55,7 +54,6 @@ class TestTrafficCase(TestCase):
         self.assertEqual(response.status_code, 400)
         # 비정상 처리 테스트 - 도착시간이 현재시간보다 빠를 경우
         current_time = '2023-12-12 10:00:00'
-        print(current_time)
         bus_data = {
             'depart_point': '서울',
             'dest_point': '부산',
@@ -67,7 +65,6 @@ class TestTrafficCase(TestCase):
         self.assertEqual(response.status_code, 400)
         # 비정상 처리 테스트 - 출발시간이 현재시간과 같을 경우
         current_time = '2023-12-12 10:00:00'
-        print(current_time)
         bus_data = {
             'depart_point': '서울',
             'dest_point': '부산',
@@ -79,7 +76,6 @@ class TestTrafficCase(TestCase):
         self.assertEqual(response.status_code, 400)
         # 비정상 처리 테스트 - 도착시간이 현재시간과 같을 경우
         current_time = '2023-12-12 10:00:00'
-        print(current_time)
         bus_data = {
             'depart_point': '서울',
             'dest_point': '부산',
