@@ -1,5 +1,5 @@
 from rest_framework.generics import CreateAPIView
-from .serializers import BusSerializer
+from .serializers import BusSerializer, TrianSerializer
 
 class BusView(CreateAPIView):
     '''
@@ -8,3 +8,12 @@ class BusView(CreateAPIView):
     serializer_class = BusSerializer
 
 bus = BusView.as_view()
+
+
+class TrainView(CreateAPIView):
+    '''
+    기차 생성 API
+    '''
+    serializer_class = TrianSerializer
+
+train = TrainView.as_view()
