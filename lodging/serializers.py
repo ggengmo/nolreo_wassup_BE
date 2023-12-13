@@ -6,4 +6,4 @@ from .models import (
 class LodgingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lodging
-        fields = ['name', 'intro', 'notice', 'info', 'price', 'sub_location']
+        fields = ['name', 'intro', 'notice', 'info', 'sub_location']
