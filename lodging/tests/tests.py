@@ -19,12 +19,7 @@ class LodgingTestCase(TestCase):
 
         self.client = APIClient()
 
-    def test_lodging_create(self):
-        '''
-        숙소 생성 테스트
-        1. 정상적인 숙소 생성
-        '''
-        self.client.force_authenticate(user=self.admin)
+        # test data
         main_location_data = {
             'address': '테스트 숙소 주소',
         }
@@ -32,7 +27,7 @@ class LodgingTestCase(TestCase):
 
         SubLocation.objects.create(main_location=main_location, address='테스트 숙소 상세주소')
 
-        lodging_data = {
+        self.lodging_data = {
             'name': '테스트 숙소',
             'intro': '테스트 숙소 소개',
             'notice': '테스트 숙소 주의사항',
@@ -40,7 +35,29 @@ class LodgingTestCase(TestCase):
             'price': 100000,
             'sub_location': 1,
         }
-        response = self.client.post('/lodging/', lodging_data, format='json')
-        print(response.data)
+
+    def test_lodging_create_admin(self):
+        '''
+        admin 권한 사용자 숙소 생성 테스트
+        
+        '''
+        self.client.force_authenticate(user=self.admin)
+
+        response = self.client.post('/lodging/', self.lodging_data, format='json')
         self.assertEqual(response.status_code, 201)
-        # self.assertTrue(lodging_data.objects.filter(name='테스트 숙소').exists())
+
+    def test_lodging_create_user(self):
+        '''
+        user 권한 사용자 숙소 생성 테스트
+        '''
+        self.client.force_login(user=self.user)
+        response = self.client.post('/lodging/', self.lodging_data, format='json')
+        self.assertEqual(response.status_code, 401)
+
+    def test_lodging_create_no_auth(self):
+        '''
+        권한 없는 사용자 숙소 생성 테스트
+        '''
+        response = self.client.post('/lodging/', self.lodging_data, format='json')
+        self.assertEqual(response.status_code, 401)
+
