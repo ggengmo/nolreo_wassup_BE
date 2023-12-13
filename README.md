@@ -146,11 +146,21 @@
 
 |app: traffic|HTTP Method|설명|로그인 권한|작성자 권한|Admin 권한|
 |:-|:-|:-|:-:|:-:|:-:|
-|''|POST|교통 생성 |||✅|
-|'\<int:traffic_pk\>/'|GET|교통 상세||||
-|''|GET|교통 목록||||
-|'\<int:traffic_pk\>/'|PUT|교통 정보 수정|||✅|
-|'\<int:traffic_pk\>/'|DELETE|교통 삭제|||✅|
+|'bus/'|POST|버스 생성 |||✅|
+|'bus/\<int:bus_pk\>/'|GET|버스 상세||||
+|'bus/'|GET|버스 목록||||
+|'bus/\<int:bus_pk\>/'|PUT|버스 정보 수정|||✅|
+|'bus/\<int:bus_pk\>/'|DELETE|버스 삭제|||✅|
+|'train/'|POST|교통 생성 |||✅|
+|'train/\<int:train_pk\>/'|GET|기차 상세||||
+|'train/'|GET|기차 목록||||
+|'train/\<int:train_pk\>/'|PUT|기차 정보 수정|||✅|
+|'train/\<int:train_pk\>/'|DELETE|기차 삭제|||✅|
+|'rentalcar/'|POST|렌트카 생성 |||✅|
+|'rentalcar/\<int:rentalcar_pk\>/'|GET|렌트카 상세||||
+|'rentalcar/'|GET|렌트카 목록||||
+|'rentalcar/\<int:rentalcar_pk\>/'|PUT|렌트카 정보 수정|||✅|
+|'rentalcar/\<int:rentalcar_pk\>/'|DELETE|렌트카 삭제|||✅|
 |'review/'|POST|리뷰 생성|✅|||
 |'review/'|GET|리뷰 목록||||
 |'review/\<int:review_pk\>/'|PUT|리뷰 수정|✅|✅||

@@ -1,6 +1,7 @@
+from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.generics import CreateAPIView
-from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from .serializers import SignupSerializer, LoginSerializer
 class SignupView(CreateAPIView):
@@ -25,7 +26,16 @@ class LoginView(TokenObtainPairView):
             'refresh': str(refresh),
             'access': str(access),
         })
+    
+
+class RefreshView(TokenRefreshView):
+    '''
+    토큰 갱신 API
+    '''
+    def post(self, request: Request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
 
 
 signup = SignupView.as_view()
 login = LoginView.as_view()
+refresh = RefreshView.as_view()
