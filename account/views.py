@@ -1,3 +1,11 @@
-from django.shortcuts import render
+from rest_framework.generics import CreateAPIView
 
-# Create your views here.
+from .serializers import SignupSerializer
+class SignupView(CreateAPIView):
+    '''
+    회원가입 API
+    '''
+    serializer_class = SignupSerializer
+
+
+signup = SignupView.as_view()
