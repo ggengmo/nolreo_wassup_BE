@@ -83,6 +83,14 @@ class UserSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = ['email', 'username', 'nickname', 'image']
-        read_only_fields = ['email', 'username', 'nickname', 'image']
-
+        read_only_fields = ['email', 'username']
     
+    def validate_nickname(self, value):
+        '''
+        닉네임 유효성 검사 메서드
+        '''
+        if self.instance.nickname == value:
+            raise serializers.ValidationError('이전 별명과 같습니다.')
+        if not value:
+            raise serializers.ValidationError('별명을 입력해주세요.')
+        return value
