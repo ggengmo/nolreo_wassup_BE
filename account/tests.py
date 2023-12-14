@@ -475,12 +475,12 @@ class TestAccount(TestCase):
             data,
             format='json')
         access_token = login_response.data['access']
-        image = SimpleUploadedFile(name='test_image.jpg', 
-                                content=open('static/assets/images/test_image/ormi.jpg', 'rb').read(), 
-                                content_type='image/jpeg')
+        # image = SimpleUploadedFile(name='test_image.jpg', 
+        #                         content=open('static/assets/images/test_image/ormi.jpg', 'rb').read(), 
+        #                         content_type='image/jpeg')
         data = {
             'nickname': 'test2',
-            'image': image,
+            # 'image': image,
         }
         response = self.client.put('/account/1/',
             data,
@@ -551,3 +551,70 @@ class TestAccount(TestCase):
         self.assertEqual(response.data['nickname'][0], '별명을 입력해주세요.')
 
         print('-- 프로필 수정 테스트 END --')
+
+
+    def test_account_secession(self):
+        '''
+        회원탈퇴 테스트
+        1. 미로그인 사용자 회원탈퇴 테스트
+        2. 로그인 & 권한X 사용자 회원탈퇴 테스트
+        3. 로그인 & 권한O 사용자 회원탈퇴 테스트
+        '''
+        print('-- 회원탈퇴 테스트 BEGIN --')
+        data = {
+            'email': 'test@gmail.com',
+            'username': 'test',
+            'nickname': 'test',
+            'password': 'testtest1@',
+            'password2': 'testtest1@',
+        }
+        self.client.post(
+            '/account/signup/', 
+            data,
+            format='json')
+        data = {
+            'email': 'test1@gmail.com',
+            'username': 'test',
+            'nickname': 'test1',
+            'password': 'testtest1@',
+            'password2': 'testtest1@',
+        }
+        self.client.post(
+            '/account/signup/', 
+            data,
+            format='json')
+        
+        # 미로그인 사용자 회원탈퇴 테스트
+        response = self.client.delete(
+            '/account/1/',
+            format='json')
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.data['detail'], '로그인이 필요합니다.')
+
+        # 로그인 & 권한X 사용자 회원탈퇴 테스트
+        response = self.client.post(
+            '/account/login/',
+            {'email': 'test1@gmail.com', 'password': 'testtest1@'},
+            format='json')
+        access_token = response.data['access']
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {access_token}')
+        response = self.client.delete(
+            '/account/1/',
+            format='json')
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.data['detail'], '권한이 없습니다.')
+
+        # 로그인 & 권한O 사용자 회원탈퇴 테스트
+        response = self.client.post(
+            '/account/login/',
+            {'email': 'test@gmail.com', 'password': 'testtest1@'},
+            format='json')
+        access_token = response.data['access']
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {access_token}')
+        response = self.client.delete(
+            '/account/1/',
+            format='json')
+        self.assertEqual(response.status_code, 204)
+        self.assertEqual(User.objects.count(), 1)
+
+        print('-- 회원탈퇴 테스트 END --')
