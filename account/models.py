@@ -24,7 +24,13 @@ class CustomUser(AbstractBaseUser):
         return self.email
     
     def has_module_perms(self, app_label):
+        '''
+        슈퍼유저 확인 메서드
+        '''
         return self.is_superuser
     
     def has_perm(self, obj=None):
+        '''
+        슈퍼유저 확인 메서드
+        '''
         return self.is_superuser

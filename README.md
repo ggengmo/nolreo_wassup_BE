@@ -121,7 +121,6 @@
 |'signup/'|POST|회원가입|||
 |'login/'|POST|로그인(토큰 발급)|||
 |'refresh/'|POST|만료 토큰 재발급|||
-|'status/'|GET|토큰 상태 확인|||
 |'\<int:pk\>/'|GET|프로필 조회|✅|✅||
 |'\<int:pk\>/'|PUT|프로필 수정|✅|✅||
 |'\<int:pk\>/'|DELETE|회원 탈퇴|✅|✅||
