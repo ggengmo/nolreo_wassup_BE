@@ -43,7 +43,7 @@ class TestBusCase(TestCase):
             'price': '10000',
         }
         response = self.client.post('/traffic/bus/', bus_data, format='json')
-        print(response.data)
+
         self.assertEqual(response.status_code, 201)
 
         # 비정상 처리 테스트 - 출발지와 도착지가 같을 경우
