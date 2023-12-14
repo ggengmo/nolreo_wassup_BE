@@ -2,7 +2,9 @@ from django.test import TestCase
 from rest_framework.test import APIClient
 
 from account.models import CustomUser as User
-from traffic.models import RentalCar
+from traffic.models import RentalCar, RentalCarImage
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.contrib.staticfiles import finders
 
 class TestRentalCarCase(TestCase):
     def setUp(self):
@@ -16,14 +18,14 @@ class TestRentalCarCase(TestCase):
             password = 'testtest2@',
             nickname = 'test2',
         )
-        # 렌트카 데이터 생성
-        for i in range(10):
-            RentalCar.objects.create(
-                model = '소나타',
-                area = '서울',
-                num = f'{12341 + i}',
-                price = '10000',
-            )
+        # # 렌트카 데이터 생성
+        # for i in range(10):
+        #     RentalCar.objects.create(
+        #         model = '소나타',
+        #         area = '서울',
+        #         num = f'{12341 + i}',
+        #         price = '10000',
+        #     )
 
     def test_RentalCar_create_admin(self):
         '''
@@ -222,3 +224,52 @@ class TestRentalCarCase(TestCase):
         response = self.client.delete('/traffic/rentalcar/1/')
         self.assertEqual(response.status_code, 401)
         print('-- 렌트카 삭제 테스트(유저) END --')
+
+    def test_RentalCarImage_create_admin(self):
+        '''
+        렌트카 이미지 생성 테스트(관리자)
+        '''
+        print('-- 렌트카 이미지 생성 테스트(관리자) BEGIN --')
+        # 정상 처리 테스트
+        self.client.force_authenticate(user=self.admin)
+        images = []
+        for i in range(3):
+            images.append(SimpleUploadedFile(name=f'test_image{i}.jpg', 
+            content=open('static/assets/images/test_image/ormi.jpg', 'rb').read(), 
+            content_type='image/jpeg'))
+        RentalCar_data = {
+            'model': '소나타',
+            'area': '서울',
+            'num': '99599',
+            'price': '10000',
+            'image': images,
+        }
+        response = self.client.post('/traffic/rentalcar/', RentalCar_data, format='multipart')
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(RentalCarImage.objects.all().count(), 3)
+        self.assertEqual(RentalCarImage.objects.all()[0].rental_car.pk, 1)
+        self.assertEqual(RentalCar.objects.all()[0].rental_car_images.count(), 3)
+        print('-- 렌트카 이미지 생성 테스트(관리자) END --')
+    
+    def test_RentalCarImage_create_user(self):
+        '''
+        렌트카 이미지 생성 테스트(유저)
+        '''
+        print('-- 렌트카 이미지 생성 테스트(유저) BEGIN --')
+        # 비정상 처리 테스트 - 유저가 렌트카 이미지 생성 시도
+        self.client.force_login(user=self.user)
+        images = []
+        for i in range(3):
+            images.append(SimpleUploadedFile(name=f'test_image{i}.jpg', 
+            content=open('static/assets/images/test_image/ormi.jpg', 'rb').read(), 
+            content_type='image/jpeg'))
+        RentalCar_data = {
+            'model': '소나타',
+            'area': '서울',
+            'num': '99599',
+            'price': '10000',
+            'image': images,
+        }
+        response = self.client.post('/traffic/rentalcar/', RentalCar_data, format='multipart')
+        self.assertEqual(response.status_code, 401)
+        print('-- 렌트카 이미지 생성 테스트(관리자) END --')

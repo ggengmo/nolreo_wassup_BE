@@ -8,7 +8,7 @@ class Train(models.Model):
     dest_point = models.CharField(max_length=100)
     depart_time = models.DateTimeField()
     arrival_time = models.DateTimeField()
-    num = models.CharField(max_length=100, unique=True, error_messages={'unique': '이미 존재하는 기차 번호입니다. 다른 버스 번호를 입력해 주세요.'})
+    num = models.CharField(max_length=100, unique=True)
     price = models.IntegerField()
 
     def __str__(self):
@@ -23,7 +23,7 @@ class Bus(models.Model):
     dest_point = models.CharField(max_length=100)
     depart_time = models.DateTimeField()
     arrival_time = models.DateTimeField()
-    num = models.CharField(max_length=100, unique=True, error_messages={'unique': '이미 존재하는 버스 번호입니다. 다른 버스 번호를 입력해 주세요.'})
+    num = models.CharField(max_length=100, unique=True)
     price = models.IntegerField()
 
     def __str__(self):
@@ -36,7 +36,7 @@ class RentalCar(models.Model):
     '''
     model = models.CharField(max_length=100)
     area = models.CharField(max_length=100)
-    num = models.CharField(max_length=100, unique=True, error_messages={'unique': '이미 존재하는 차량 번호입니다. 다른 차량 번호를 입력해 주세요.'})
+    num = models.CharField(max_length=100, unique=True)
     price = models.IntegerField()
 
     def __str__(self):

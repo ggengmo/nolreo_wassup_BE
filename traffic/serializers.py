@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Bus, Train, RentalCar
+from rest_framework.fields import empty
+from .models import Bus, Train, RentalCar, RentalCarImage
 from datetime import datetime
 
 class BusSerializer(serializers.ModelSerializer):
@@ -56,6 +57,23 @@ class TrainSerializer(serializers.ModelSerializer):
         return data
     
 
+class RentalCarImageSerializer(serializers.ModelSerializer):
+    '''
+    렌트카 이미지 생성 serializer
+    '''
+    class Meta:
+        model = RentalCarImage
+        fields = ['image']
+
+    def validate(self, data):
+        '''
+        렌트카 이미지 유효성 검사 메서드
+        '''
+        if data['image'] == '':
+            raise serializers.ValidationError("이미지가 없습니다. 이미지를 입력해 주세요.")
+        return data
+    
+
 class RentalCarSerializer(serializers.ModelSerializer):
     '''
     렌트카 생성 serializer
@@ -63,7 +81,7 @@ class RentalCarSerializer(serializers.ModelSerializer):
     class Meta:
         model = RentalCar
         fields = ['model', 'area', 'num', 'price']
-        
+
     def validate(self, data):
         '''
         렌트카 유효성 검사 메서드

@@ -1,7 +1,10 @@
-from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
-from rest_framework import viewsets
-from .serializers import BusSerializer, TrainSerializer, RentalCarSerializer
+from rest_framework import viewsets, status
+from rest_framework.response import Response
+from rest_framework.permissions import IsAdminUser, AllowAny
+
 from .models import Bus, Train, RentalCar
+from .serializers import (BusSerializer, TrainSerializer, 
+                        RentalCarSerializer, RentalCarImageSerializer)
 
 
 class BusViewSet(viewsets.ModelViewSet):
@@ -47,3 +50,15 @@ class RentalCarViewSet(viewsets.ModelViewSet):
         else:
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]
+
+    def create(self, request):
+        serializer = RentalCarSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        rental_car = serializer.save()
+        images = request.FILES.getlist('image')
+        for image in images:
+            rental_car_image = {'image': image}
+            image_serializer = RentalCarImageSerializer(data=rental_car_image)
+            image_serializer.is_valid(raise_exception=True)
+            image_serializer.save(rental_car=rental_car)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
