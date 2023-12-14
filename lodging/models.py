@@ -52,12 +52,12 @@ class RoomImage(models.Model):
     '''
     객실 이미지 모델
     '''
-    image = models.CharField(max_length=200)
+    image = models.ImageField(upload_to='room_images/%Y/%m/%d/', null=True, blank=True)
     is_main = models.BooleanField(default=False)
     room_type = models.ForeignKey('RoomType', on_delete=models.CASCADE, related_name='room_images')
 
     def __str__(self):
-        return self.image_url
+        return self.image.url
 
 
 class Amenity(models.Model):
@@ -75,12 +75,12 @@ class LodgingImage(models.Model):
     '''
     숙소 이미지 모델
     '''
-    image = models.CharField(max_length=100)
+    image = models.ImageField(upload_to='lodging_images/%Y/%m/%d/', null=True, blank=True)
     is_main = models.BooleanField(default=False)
     lodging = models.ForeignKey('Lodging', on_delete=models.CASCADE, related_name='lodging_images')
 
     def __str__(self):
-        return self.image_url
+        return self.image.url
     
 
 class LodgingReview(models.Model):
@@ -102,11 +102,11 @@ class LodgingReviewImage(models.Model):
     '''
     숙소 리뷰 이미지 모델
     '''
-    image = models.CharField(max_length=100)
+    image = models.ImageField(upload_to='lodging_review_images/%Y/%m/%d/', null=True, blank=True)
     lodging_review = models.ForeignKey('LodgingReview', on_delete=models.CASCADE, related_name='lodging_review_images')
 
     def __str__(self):
-        return self.image_url
+        return self.image.url
     
 
 class LodgingReviewComment(models.Model):
