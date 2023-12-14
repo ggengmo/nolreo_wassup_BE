@@ -1,8 +1,9 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser, AllowAny
+from django.shortcuts import get_object_or_404
 
-from .models import Bus, Train, RentalCar
+from .models import Bus, Train, RentalCar, RentalCarImage
 from .serializers import (BusSerializer, TrainSerializer, 
                         RentalCarSerializer, RentalCarImageSerializer)
 
@@ -62,3 +63,17 @@ class RentalCarViewSet(viewsets.ModelViewSet):
             image_serializer.is_valid(raise_exception=True)
             image_serializer.save(rental_car=rental_car)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+class RentalCarImageViewSet(viewsets.ModelViewSet):
+    '''
+    렌트카 이미지 삭제 API
+    '''
+    queryset = RentalCarImage.objects.all()
+    serializer_class = RentalCarImageSerializer
+    http_method_names = ['delete']
+    permission_classes = [IsAdminUser]
+    
+    def destroy(self, request, image_pk):
+        rental_car_image = get_object_or_404(RentalCarImage, pk=image_pk)
+        rental_car_image.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

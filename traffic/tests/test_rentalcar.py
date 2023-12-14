@@ -92,9 +92,9 @@ class TestRentalCarCase(TestCase):
 
     def test_RentalCar_create_user(self):
         '''
-        렌트카 생성 테스트(유저)
+        렌트카 생성 테스트(일반 사용자)
         '''
-        print('-- 렌트카 생성 테스트(유저) BEGIN --')
+        print('-- 렌트카 생성 테스트(일반 사용자) BEGIN --')
         # 정상 처리 테스트
         self.client.force_login(user=self.user)
         RentalCar_data = {
@@ -105,7 +105,7 @@ class TestRentalCarCase(TestCase):
         }
         response = self.client.post('/traffic/rentalcar/', RentalCar_data, format='json')
         self.assertEqual(response.status_code, 401)
-        print('-- 렌트카 생성 테스트(유저) END --')
+        print('-- 렌트카 생성 테스트(일반 사용자) END --')
 
     def test_RentalCar_list(self):
         '''
@@ -185,9 +185,9 @@ class TestRentalCarCase(TestCase):
 
     def test_RentalCar_update_user(self):
         '''
-        렌트카 수정 테스트(유저)
+        렌트카 수정 테스트(일반 사용자)
         '''
-        print('-- 렌트카 수정 테스트(유저) BEGIN --')
+        print('-- 렌트카 수정 테스트(일반 사용자) BEGIN --')
         # 정상 처리 테스트
         self.client.force_login(user=self.user)
         RentalCar_data = {
@@ -198,7 +198,7 @@ class TestRentalCarCase(TestCase):
         }
         response = self.client.put('/traffic/rentalcar/1/', RentalCar_data, format='json')
         self.assertEqual(response.status_code, 401)
-        print('-- 렌트카 수정 테스트(유저) END --')
+        print('-- 렌트카 수정 테스트(일반 사용자) END --')
 
     def test_RentalCar_destroy_admin(self):
         '''
@@ -216,14 +216,14 @@ class TestRentalCarCase(TestCase):
 
     def test_RentalCar_destroy_user(self):
         '''
-        렌트카 삭제 테스트(유저)
+        렌트카 삭제 테스트(일반 사용자)
         '''
-        print('-- 렌트카 삭제 테스트(유저) BEGIN --')
-        # 비정상 처리 테스트 - 유저가 렌트카 삭제 시도
+        print('-- 렌트카 삭제 테스트(일반 사용자) BEGIN --')
+        # 비정상 처리 테스트 - 일반 사용자가 렌트카 삭제 시도
         self.client.force_login(user=self.user)
         response = self.client.delete('/traffic/rentalcar/1/')
         self.assertEqual(response.status_code, 401)
-        print('-- 렌트카 삭제 테스트(유저) END --')
+        print('-- 렌트카 삭제 테스트(일반 사용자) END --')
 
     def test_RentalCarImage_create_admin(self):
         '''
@@ -253,10 +253,10 @@ class TestRentalCarCase(TestCase):
     
     def test_RentalCarImage_create_user(self):
         '''
-        렌트카 이미지 생성 테스트(유저)
+        렌트카 이미지 생성 테스트(일반 사용자)
         '''
-        print('-- 렌트카 이미지 생성 테스트(유저) BEGIN --')
-        # 비정상 처리 테스트 - 유저가 렌트카 이미지 생성 시도
+        print('-- 렌트카 이미지 생성 테스트(일반 사용자) BEGIN --')
+        # 비정상 처리 테스트 - 일반 사용자가 렌트카 이미지 생성 시도
         self.client.force_login(user=self.user)
         images = []
         for i in range(3):
@@ -272,4 +272,63 @@ class TestRentalCarCase(TestCase):
         }
         response = self.client.post('/traffic/rentalcar/', RentalCar_data, format='multipart')
         self.assertEqual(response.status_code, 401)
-        print('-- 렌트카 이미지 생성 테스트(관리자) END --')
+        print('-- 렌트카 이미지 생성 테스트(일반 사용자) END --')
+
+    def test_RentalCarImage_destroy_admin(self):
+        '''
+        렌트카 이미지 삭제 테스트(관리자)
+        '''
+        print('-- 렌트카 이미지 삭제 테스트(관리자) BEGIN --')
+        # 정상 처리 테스트
+        self.client.force_authenticate(user=self.admin)
+        images = []
+        for i in range(3):
+            images.append(SimpleUploadedFile(name=f'test_image{i}.jpg', 
+            content=open('static/assets/images/test_image/ormi.jpg', 'rb').read(), 
+            content_type='image/jpeg'))
+        RentalCar_data = {
+            'model': '소나타',
+            'area': '서울',
+            'num': '99599',
+            'price': '10000',
+            'image': images,
+        }
+        response = self.client.post('/traffic/rentalcar/', RentalCar_data, format='multipart')
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(RentalCarImage.objects.all().count(), 3)
+        self.assertEqual(RentalCarImage.objects.all()[0].rental_car.pk, 1)
+        self.assertEqual(RentalCar.objects.all()[0].rental_car_images.count(), 3)
+        response = self.client.delete('/traffic/rentalcar/image/1/')
+        self.assertEqual(response.status_code, 204)
+        self.assertEqual(RentalCarImage.objects.all().count(), 2)
+        response = self.client.delete('/traffic/rentalcar/image/2/')
+        self.assertEqual(response.status_code, 204)
+        self.assertEqual(RentalCar.objects.all()[0].rental_car_images.count(), 1)
+        # 비정상 처리 테스트 - 존재하지 않는 렌트카 이미지 삭제 시도
+        response = self.client.delete('/traffic/rentalcar/image/100/')
+        self.assertEqual(response.status_code, 404)
+        print('-- 렌트카 이미지 삭제 테스트(관리자) END --')
+
+    def test_RentalCarImage_destroy_user(self):
+        '''
+        렌트카 이미지 삭제 테스트(일반 사용자)
+        '''
+        print('-- 렌트카 이미지 삭제 테스트(일반 사용자) BEGIN --')
+        # 비정상 처리 테스트 - 일반 사용자가 렌트카 이미지 삭제 시도
+        self.client.force_login(user=self.user)
+        images = []
+        for i in range(3):
+            images.append(SimpleUploadedFile(name=f'test_image{i}.jpg', 
+            content=open('static/assets/images/test_image/ormi.jpg', 'rb').read(), 
+            content_type='image/jpeg'))
+        RentalCar_data = {
+            'model': '소나타',
+            'area': '서울',
+            'num': '99599',
+            'price': '10000',
+            'image': images,
+        }
+        response = self.client.post('/traffic/rentalcar/', RentalCar_data, format='multipart')
+        response = self.client.delete('/traffic/rentalcar/image/1/')
+        self.assertEqual(response.status_code, 401)
+        print('-- 렌트카 이미지 삭제 테스트(일반 사용자) END --')
