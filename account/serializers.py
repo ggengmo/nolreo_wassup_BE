@@ -66,3 +66,23 @@ class LoginSerializer(TokenObtainPairSerializer):
         super().__init__(*args, **kwargs)
         self.fields[self.username_field].error_messages['required'] = '이메일을 입력해주세요.'
         self.fields['password'].error_messages['required'] = '비밀번호를 입력해주세요.'
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        refresh = self.get_token(self.user)
+        data['refresh'] = str(refresh)
+        data['access'] = str(refresh.access_token)
+        data['user'] = self.user
+        return data
+
+
+class UserSerializer(ModelSerializer):
+    '''
+    사용자 정보 serializer
+    '''
+    class Meta:
+        model = User
+        fields = ['email', 'username', 'nickname', 'image']
+        read_only_fields = ['email', 'username', 'nickname', 'image']
+
+    
