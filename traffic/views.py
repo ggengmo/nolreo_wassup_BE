@@ -1,11 +1,12 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from rest_framework.permissions import IsAdminUser, AllowAny
+from rest_framework.permissions import IsAdminUser, AllowAny, IsAuthenticated
 from django.shortcuts import get_object_or_404
 
-from .models import Bus, Train, RentalCar, RentalCarImage
+from .models import Bus, Train, RentalCar, RentalCarImage, RentalCarReview
 from .serializers import (BusSerializer, TrainSerializer, 
-                        RentalCarSerializer, RentalCarImageSerializer)
+                        RentalCarSerializer, RentalCarImageSerializer,
+                        RentalCarReviewSerializer)
 
 
 class BusViewSet(viewsets.ModelViewSet):
@@ -77,3 +78,18 @@ class RentalCarImageViewSet(viewsets.ModelViewSet):
         rental_car_image = get_object_or_404(RentalCarImage, pk=image_pk)
         rental_car_image.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+
+class RentalCarReviewViewSet(viewsets.ModelViewSet):
+    '''
+    렌트카 리뷰 생성 API
+    '''
+    queryset = RentalCarReview.objects.all()
+    serializer_class = RentalCarReviewSerializer
+    
+    def get_permissions(self):
+        if self.action in ['create', 'update', 'destroy']:
+            permission_classes = [IsAuthenticated]
+        else:
+            permission_classes = [AllowAny]
+        return [permission() for permission in permission_classes]
