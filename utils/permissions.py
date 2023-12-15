@@ -34,4 +34,4 @@ class IsOwner(permissions.BasePermission):
     message = '권한이 없습니다.'
 
     def has_object_permission(self, request, view, obj):
-        return obj == request.user
+        return obj == request.user or request.user == obj.user

@@ -39,8 +39,6 @@ class RefreshView(TokenRefreshView):
     '''
     토큰 갱신 API
     '''
-    def post(self, request: Request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
     
 
 class UserView(ModelViewSet):
