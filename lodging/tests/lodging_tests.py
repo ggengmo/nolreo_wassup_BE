@@ -1,11 +1,14 @@
 from django.test import TestCase
 from rest_framework.test import APIClient
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 from account.models import CustomUser as User
 from lodging.models import MainLocation, SubLocation, Lodging
 
 class LodgingTestCase(TestCase):
     def setUp(self):
+        self.client = APIClient()
+
         self.user = User.objects.create_user(
             email='testuser@example.com',
             nickname='testuser',
@@ -17,7 +20,6 @@ class LodgingTestCase(TestCase):
             password='admin1@2#3$4'
             )
 
-        self.client = APIClient()
 
         # test data
         main_location_data = {
@@ -38,7 +40,7 @@ class LodgingTestCase(TestCase):
             info='테스트 숙소 정보',
             sub_location=SubLocation.objects.get(id=1),
         )
-
+        
         self.lodging_data = {  
             'name': '테스트 숙소',
             'intro': '테스트 숙소 소개',
@@ -79,6 +81,23 @@ class LodgingTestCase(TestCase):
         '''
         response = self.client.post('/lodging/', self.lodging_data, format='json')
         self.assertEqual(response.status_code, 401)
+    
+    def test_lodging_no_data_create(self):
+        '''
+        숙소 생성 에러 테스트 - name 필드 누락
+        '''
+        self.client.force_authenticate(user=self.admin)
+
+        lodging_no_data = {
+            'name': '',
+            'intro': '테스트 숙소 소개',
+            'notice': '테스트 숙소 주의사항',
+            'info': '테스트 숙소 정보',
+            'sub_location': 1,
+        }
+
+        response = self.client.post('/lodging/', lodging_no_data, format='json')
+        self.assertEqual(response.status_code, 400)
 
     def test_lodging_update_admin(self):
         '''
@@ -88,6 +107,12 @@ class LodgingTestCase(TestCase):
 
         response = self.client.put('/lodging/1/', self.updated_data, format='json')
         self.assertEqual(response.status_code, 200)
+
+        '''
+        존재하지 않는 숙소 수정 테스트
+        '''
+        response = self.client.put('/lodging/2/', self.updated_data, format='json')
+        self.assertEqual(response.status_code, 404)
 
     def test_lodging_update_user(self): 
         '''
@@ -118,3 +143,24 @@ class LodgingTestCase(TestCase):
         '''
         response = self.client.get('/lodging/1/', format='json')
         self.assertEqual(response.status_code, 200)
+
+        '''
+        존재하지 않는 숙소 조회 테스트
+        '''
+        response = self.client.get('/lodging/2/', format='json')
+        self.assertEqual(response.status_code, 404)
+    
+    def test_lodging_delete_admin(self):
+        '''
+        사용자 숙소 삭제 테스트
+        '''
+        self.client.force_authenticate(user=self.admin)
+
+        response = self.client.delete('/lodging/1/', format='json')
+        self.assertEqual(response.status_code, 204)
+
+        '''
+        존재하지 않는 숙소 삭제 테스트
+        '''
+        response = self.client.delete('/lodging/2/', format='json')
+        self.assertEqual(response.status_code, 404)
