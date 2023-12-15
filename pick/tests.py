@@ -130,3 +130,84 @@ class TestPick(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
         print('-- 숙소 찜 리스트 조회 테스트 END --')
+
+    def test_pick_lodging_delete(self):
+        '''
+        숙소 찜 삭제 테스트
+        1. 미로그인 상태에서 숙소 찜 삭제 요청 테스트
+        2. 존재하지 않는 숙소 찜 삭제 요청 테스트
+        3. 다른 사용자의 숙소 찜 삭제 요청 테스트
+        4. 로그인 상태에서 본인 숙소 찜 삭제 요청 테스트
+        '''
+        print('-- 숙소 찜 삭제 테스트 BEGIN --')
+        data = {
+            'user':1,
+            'pick_type': 'LG',
+        }
+        for i in range(1, 6):
+            self.client.post(
+                '/pick/lodging/',
+                data={
+                    'lodging': i,
+                    'pick_type': 'LG',
+                    'user': 1,},
+                HTTP_AUTHORIZATION=f'Bearer {self.access_token}',
+                format='json')
+            
+        # 미로그인 상태에서 숙소 찜 삭제 요청
+        response = self.client.delete(
+            '/pick/lodging/1/',
+            data=data,
+            format='json')
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.data['detail'], '로그인이 필요합니다.')
+
+        # 존재하지 않는 숙소 찜 삭제 요청
+        response = self.client.delete(
+            '/pick/lodging/10/',
+            HTTP_AUTHORIZATION=f'Bearer {self.access_token}',
+            data=data,
+            format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data['message'], '해당 숙소를 찜한 기록이 없습니다.')
+
+        # 다른 사용자의 숙소 찜 삭제 요청
+        # 사용자 생성 & 로그인
+        data = {
+            'email': 'test1@gmail.com',
+            'username': 'test',
+            'nickname': 'test1',
+            'password': 'testtest1@',
+            'password2': 'testtest1@',
+        }
+        self.client.post(
+            '/account/signup/', 
+            data,
+            format='json')
+        data = {
+            'email': 'test1@gmail.com',
+            'password': 'testtest1@',
+        }
+        response = self.client.post(
+            '/account/login/',
+            data,
+            format='json')
+        access = response.data['access']
+        response = self.client.delete(
+            '/pick/lodging/1/',
+            HTTP_AUTHORIZATION=f'Bearer {access}',
+            data=data,
+            format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data['message'], '해당 숙소를 찜한 기록이 없습니다.')
+
+        # 로그인 상태에서 본인 숙소 찜 삭제 요청
+        response = self.client.delete(
+            '/pick/lodging/1/',
+            HTTP_AUTHORIZATION=f'Bearer {self.access_token}',
+            data=data,
+            format='json')
+        self.assertEqual(response.status_code, 204)
+        self.assertEqual(Pick.objects.all().count(), 4)
+        print('-- 숙소 찜 삭제 테스트 END --')
+
