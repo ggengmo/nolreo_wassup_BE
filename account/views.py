@@ -2,12 +2,12 @@ from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import CreateAPIView, UpdateAPIView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from .models import CustomUser as User
 from utils.permissions import CustomJWTAuthentication, CustomIsAuthenticated, IsOwner
-from .serializers import SignupSerializer, LoginSerializer, UserSerializer
+from .serializers import SignupSerializer, LoginSerializer, UserSerializer, PasswordSerializer
 
 class SignupView(CreateAPIView):
     '''
@@ -54,15 +54,27 @@ class UserView(ModelViewSet):
 
     def get_object(self):
         return super().get_object()
+    
 
+class PasswordView(UpdateAPIView):
+    '''
+    비밀번호 변경 API
+    '''
+    queryset = User.objects.all()
+    serializer_class = PasswordSerializer
+    permission_classes = [CustomIsAuthenticated, IsOwner]
+    authentication_classes = [CustomJWTAuthentication]
+    http_method_names = ['patch']
+
+    def get_object(self):
+        return super().get_object()
 
 signup = SignupView.as_view()
 login = LoginView.as_view()
 refresh = RefreshView.as_view()
-user = UserView.as_view(
-    {
-        'get': 'retrieve',
-        'put': 'update',
-        'delete': 'destroy',
-    }
-)
+user = UserView.as_view({
+    'get': 'retrieve',
+    'patch': 'partial_update',
+    'delete': 'destroy',
+})
+password = PasswordView.as_view()
