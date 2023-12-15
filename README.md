@@ -122,8 +122,9 @@
 |'login/'|POST|로그인(토큰 발급)|||
 |'refresh/'|POST|만료 토큰 재발급|||
 |'\<int:pk\>/'|GET|프로필 조회|✅|✅||
-|'\<int:pk\>/'|PUT|프로필 수정|✅|✅||
+|'\<int:pk\>/'|PATCH|프로필 수정|✅|✅||
 |'\<int:pk\>/'|DELETE|회원 탈퇴|✅|✅||
+|'password/'|PATCH|회원 비밀번호 변경|✅|✅||
 <br>  
 
 |app: lodging|HTTP Method|설명|로그인 권한|작성자 권한|Admin 권한|
