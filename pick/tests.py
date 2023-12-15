@@ -210,4 +210,3 @@ class TestPick(TestCase):
         self.assertEqual(response.status_code, 204)
         self.assertEqual(Pick.objects.all().count(), 4)
         print('-- 숙소 찜 삭제 테스트 END --')
-

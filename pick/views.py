@@ -31,7 +31,7 @@ class LodgingPickViewSet(ModelViewSet):
         except IntegrityError:
             return Response({'message': '이미 찜한 숙소입니다.'}, status=status.HTTP_400_BAD_REQUEST)
         return data
-    
+      
     def get_object(self):
         obj = Pick.objects.all().filter(user=self.request.user, lodging=self.kwargs['pk'])
         if not obj:
