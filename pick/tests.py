@@ -20,13 +20,14 @@ class TestPick(TestCase):
         )
 
         # 숙소 생성
-        Lodging.objects.create(
-            name='테스트 숙소',
-            intro='테스트 숙소 소개',
-            notice='테스트 숙소 주의사항',
-            info='테스트 숙소 정보',
-            sub_location=sub_location,
-        )
+        for _ in range(1, 6):
+            Lodging.objects.create(
+                name='테스트 숙소',
+                intro='테스트 숙소 소개',
+                notice='테스트 숙소 주의사항',
+                info='테스트 숙소 정보',
+                sub_location=sub_location,
+            )
         
         # 사용자 생성 & 로그인
         data = {
@@ -91,3 +92,41 @@ class TestPick(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data['message'], '이미 찜한 숙소입니다.')
         print('-- 숙소 찜 생성 테스트 END --')
+
+    def test_pick_lodging_list(self):
+        '''
+        숙소 찜 리스트 조회 테스트
+        1. 미로그인 상태에서 숙소 찜 리스트 조회 요청 테스트
+        2. 로그인 상태에서 본인 숙소 찜 리스트 조회 요청 테스트
+        '''
+        print('-- 숙소 찜 리스트 조회 테스트 BEGIN --')
+        data = {
+            'user':1,
+            'pick_type': 'LG',
+        }
+        for i in range(1, 6):
+            self.client.post(
+                '/pick/lodging/',
+                data={
+                    'lodging': i,
+                    'pick_type': 'LG',
+                    'user': 1,},
+                HTTP_AUTHORIZATION=f'Bearer {self.access_token}',
+                format='json')
+        # 미로그인 상태에서 숙소 찜 리스트 조회 요청
+        response = self.client.get(
+            '/pick/lodging/',
+            data=data,
+            format='json')
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.data['detail'], '로그인이 필요합니다.')
+
+        # 로그인 상태에서 본인 숙소 찜 리스트 조회 요청
+        response = self.client.get(
+            '/pick/lodging/',
+            HTTP_AUTHORIZATION=f'Bearer {self.access_token}',
+            data=data,
+            format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 5)
+        print('-- 숙소 찜 리스트 조회 테스트 END --')
