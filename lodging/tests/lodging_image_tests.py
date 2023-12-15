@@ -64,15 +64,18 @@ class LodgingTestCase(TestCase):
         '''
         이미지 포함 사용자 숙소 생성 테스트
         '''
+        print('-- 이미지 포함 사용자 숙소 생성 테스트 END --')
         self.client.force_authenticate(user=self.admin)
 
         response = self.client.post('/lodging/', self.lodging_data, format='multipart')
         self.assertEqual(response.status_code, 201)
+        print('-- 이미지 포함 사용자 숙소 생성 테스트 END --')
 
     def test_lodging_image_update(self):
         '''
         숙소 이미지 수정 테스트
         '''
+        print('-- 숙소 이미지 수정 테스트 END --')
         self.client.force_authenticate(user=self.admin)
 
         image = SimpleUploadedFile(name='test_image.jpg', 
@@ -111,11 +114,13 @@ class LodgingTestCase(TestCase):
 
         response = self.client.put('/lodging/images/1/', lodging_image_data)
         self.assertEqual(response.status_code, 400)
+        print('-- 숙소 이미지 수정 테스트 END --')
 
     def test_lodging_image_delete(self):
         '''
         숙소 이미지 삭제 테스트
         '''
+        print('-- 숙소 이미지 삭제 테스트 END --')
         self.client.force_authenticate(user=self.admin)
 
         response = self.client.delete('/lodging/images/1/')
@@ -126,11 +131,13 @@ class LodgingTestCase(TestCase):
         '''
         response = self.client.delete('/lodging/images/2/')
         self.assertEqual(response.status_code, 404)
+        print('-- 숙소 이미지 삭제 테스트 END --')
     
     def test_lodging_image_retrieve(self):
         '''
         숙소 이미지 조회 테스트
         '''
+        print('-- 숙소 이미지 조회 테스트 BEGIN --')
         response = self.client.get('/lodging/images/1/')
         self.assertEqual(response.status_code, 200)
 
@@ -139,3 +146,4 @@ class LodgingTestCase(TestCase):
         '''
         response = self.client.get('/lodging/images/2/')
         self.assertEqual(response.status_code, 404)
+        print('-- 숙소 이미지 조회 테스트 END --')
