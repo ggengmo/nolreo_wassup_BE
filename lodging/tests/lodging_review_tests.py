@@ -223,3 +223,4 @@ class LodgingReviewTest(TestCase):
             format='json',
         )
         self.assertEqual(response.status_code, 200)
+        print('숙소 리뷰 리스트 테스트 - End')

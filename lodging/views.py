@@ -1,5 +1,4 @@
 # Rest Framework
-from typing import Any
 from rest_framework import viewsets, generics, mixins
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
 
