@@ -8,7 +8,7 @@ class Train(models.Model):
     dest_point = models.CharField(max_length=100)
     depart_time = models.DateTimeField()
     arrival_time = models.DateTimeField()
-    num = models.CharField(max_length=100)
+    num = models.CharField(max_length=100, unique=True)
     price = models.IntegerField()
 
     def __str__(self):
@@ -23,7 +23,7 @@ class Bus(models.Model):
     dest_point = models.CharField(max_length=100)
     depart_time = models.DateTimeField()
     arrival_time = models.DateTimeField()
-    num = models.CharField(max_length=100)
+    num = models.CharField(max_length=100, unique=True)
     price = models.IntegerField()
 
     def __str__(self):
@@ -36,7 +36,7 @@ class RentalCar(models.Model):
     '''
     model = models.CharField(max_length=100)
     area = models.CharField(max_length=100)
-    num = models.CharField(max_length=100)
+    num = models.CharField(max_length=100, unique=True)
     price = models.IntegerField()
 
     def __str__(self):
