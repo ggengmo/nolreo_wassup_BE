@@ -10,4 +10,5 @@ urlpatterns = [
     path('bus/', views.bus_pick, name='bus_pick_cl'),
     path('bus/<int:pk>/', views.bus_pick, name='bus_pick_d'),
     path('train/', views.train_pick, name='train_pick_cl'),
+    path('train/<int:pk>/', views.train_pick, name='train_pick_d'),
 ]
