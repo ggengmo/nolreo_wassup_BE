@@ -10,3 +10,12 @@ class LodgingPickSerializer(ModelSerializer):
     class Meta:
         model = Pick
         fields = ['id', 'user', 'lodging', 'pick_type']
+
+
+class BusPickSerializer(ModelSerializer):
+    '''
+    버스 찜 serializer
+    '''
+    class Meta:
+        model = Pick
+        fields = ['id', 'user', 'bus', 'pick_type']

@@ -173,20 +173,26 @@
 
 |app: pick|HTTP Method|설명|로그인 권한|작성자 권한|Admin 권한|
 |:-|:-|:-|:-:|:-:|:-:|
-|'loadging/'|POST|숙소 찜 생성|✅|||
-|'loadging/'|GET|숙소 찜 목록|✅|✅||
-|'loadging/\<int:pick_pk\>/'|DELETE|숙소 찜 삭제|✅|✅||
-|'traffic/'|POST|교통 찜 생성|✅|||
-|'traffic/'|GET|교통 찜 목록|✅|✅||
-|'traffic/\<int:pick_pk\>/'|DELETE|교통 찜 삭제|✅|✅||
+|'lodging/'|POST|숙소 찜 생성|✅|||
+|'lodging/'|GET|숙소 찜 목록|✅|✅||
+|'lodging/\<int:pick_pk\>/'|DELETE|숙소 찜 삭제|✅|✅||
+|'bus/'|POST|버스 찜 생성|✅|||
+|'bus/'|GET|버스 찜 목록|✅|✅||
+|'bus/\<int:pick_pk\>/'|DELETE|버스 찜 삭제|✅|✅||
+|'train/'|POST|기차 찜 생성|✅|||
+|'train/'|GET|기차 찜 목록|✅|✅||
+|'train/\<int:pick_pk\>/'|DELETE|기차 찜 삭제|✅|✅||
+|'rentalcar/'|POST|렌트카 찜 생성|✅|||
+|'rentalcar/'|GET|렌트카 찜 목록|✅|✅||
+|'rentalcar/\<int:pick_pk\>/'|DELETE|렌트카 찜 삭제|✅|✅||
 <br>
 
 |app: reservation|HTTP Method|설명|로그인 권한|작성자 권한|Admin 권한|
 |:-|:-|:-|:-:|:-:|:-:|
-|'loadging/'|POST|숙소 예약 생성|✅|||
-|'loadging/'|GET|숙소 예약 목록|✅|✅||
-|'loadging/\<int:reservation_pk\>/'|PUT|숙소 예약 수정|✅|✅||
-|'loadging/\<int:reservation_pk\>/'|DELETE|숙소 예약 삭제|✅|✅||
+|'lodging/'|POST|숙소 예약 생성|✅|||
+|'lodging/'|GET|숙소 예약 목록|✅|✅||
+|'lodging/\<int:reservation_pk\>/'|PUT|숙소 예약 수정|✅|✅||
+|'lodging/\<int:reservation_pk\>/'|DELETE|숙소 예약 삭제|✅|✅||
 |'traffic/'|POST|교통 예약 생성|✅|||
 |'traffic/'|GET|교통 예약 목록|✅|✅||
 |'traffic/\<int:reservation_pk\>/'|PUT|교통 예약 수정|✅|✅||
