@@ -2,7 +2,7 @@ from django.test import TestCase
 from rest_framework.test import APIClient
 
 from lodging.models import Lodging, SubLocation, MainLocation
-from traffic.models import Bus
+from traffic.models import Bus, Train
 from .models import Pick
 
 class TestPickLodging(TestCase):
@@ -438,3 +438,83 @@ class TestPickBus(TestCase):
         self.assertEqual(response.status_code, 204)
         self.assertEqual(Pick.objects.all().count(), 4)
         print('-- 버스 찜 삭제 테스트 END --')
+
+class TestPickTrain(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+
+        # 기차 생성
+        for i in range(1, 6):
+            Train.objects.create(
+                depart_point = '서울',
+                dest_point = '부산',
+                depart_time = f'2023-12-15 12:{i + 20}:00',
+                arrival_time = f'2023-12-15 15:{i + 20}:00',
+                num = f'{1234 + i}',
+                price = '10000',
+            )
+        
+        # 사용자 생성 & 로그인
+        data = {
+            'email': 'test@gmail.com',
+            'username': 'test',
+            'nickname': 'test',
+            'password': 'testtest1@',
+            'password2': 'testtest1@',
+        }
+        self.client.post(
+            '/account/signup/', 
+            data,
+            format='multipart')
+        data = {
+            'email': 'test@gmail.com',
+            'password': 'testtest1@',
+        }
+        response = self.client.post(
+            '/account/login/',
+            data,
+            format='json')
+        self.access_token = response.data['access']
+
+    def test_pick_train_create(self):
+        '''
+        기차 찜 생성 테스트
+        1. 미로그인 상태에서 기차 찜 생성 요청 테스트
+        2. 로그인 상태에서 기차 찜 생성 요청 테스트
+        3. 중복 생성 요청 테스트
+        '''
+        print('-- 기차 찜 생성 테스트 BEGIN --')
+        # 미로그인 상태에서 기차 찜 생성 요청
+        data = {
+            'train': 1,
+            'pick_type': 'TR',
+            'user': 1,
+        }
+        response = self.client.post(
+            '/pick/train/',
+            data=data,
+            format='json')
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.data['detail'], '로그인이 필요합니다.')
+
+        # 로그인 상태에서 기차 찜 생성 요청
+        response = self.client.post(
+            '/pick/train/',
+            data=data,
+            HTTP_AUTHORIZATION=f'Bearer {self.access_token}',
+            format='json')
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data['train'], 1)
+        self.assertEqual(response.data['pick_type'], 'TR')
+        self.assertEqual(Pick.objects.all().count(), 1)
+
+        # 중복 생성 요청
+        response = self.client.post(
+            '/pick/train/',
+            data=data,
+            HTTP_AUTHORIZATION=f'Bearer {self.access_token}',
+            format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data['message'], '이미 찜한 기차입니다.')
+        print('-- 기차 찜 생성 테스트 END --')
+    
