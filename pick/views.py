@@ -80,6 +80,18 @@ class BusPickViewSet(ModelViewSet):
         except IntegrityError:
             return Response({'message': '이미 찜한 버스입니다.'}, status=status.HTTP_400_BAD_REQUEST)
         return data
+    
+    def get_object(self):
+        obj = Pick.objects.all().filter(user=self.request.user, bus=self.kwargs['pk'])
+        if not obj:
+            raise ObjectDoesNotExist()
+        return obj
+    
+    def destroy(self, request, *args, **kwargs):
+        try:
+            return super().destroy(request, *args, **kwargs)
+        except ObjectDoesNotExist:
+            return Response({'message': '해당 버스를 찜한 기록이 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
 lodging_pick = LodgingPickViewSet.as_view({
     'post': 'create',
