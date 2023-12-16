@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import (
     Lodging,
     LodgingImage,
+    LodgingReview,
     # RoomType,
     # Amenity,
     # SubLocation,
@@ -27,3 +28,10 @@ class LodgingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lodging
         fields = ['name', 'intro', 'notice', 'info', 'sub_location']
+
+class LodgingReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LodgingReview
+        fields = ['title', 'content', 'star_score', 'lodging', 'user']
+    
+    star_score = serializers.IntegerField(min_value=1, max_value=5)
