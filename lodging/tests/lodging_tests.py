@@ -1,6 +1,5 @@
 from django.test import TestCase
 from rest_framework.test import APIClient
-from django.core.files.uploadedfile import SimpleUploadedFile
 
 from account.models import CustomUser as User
 from lodging.models import MainLocation, SubLocation, Lodging
