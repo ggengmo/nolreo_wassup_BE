@@ -16,6 +16,7 @@ class CustomIsAuthenticated(IsAuthenticated):
             raise AuthenticationFailed('로그인이 필요합니다.')
         return is_authenticated
 
+
 class CustomJWTAuthentication(JWTAuthentication):
     
     def authenticate(self, request: Request):
