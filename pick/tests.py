@@ -743,3 +743,71 @@ class TestPickRentalCar(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data['message'], '이미 찜한 렌트카입니다.')
         print('-- 렌트카 찜 생성 테스트 END --')
+
+    def test_pick_rental_car_list(self):
+        '''
+        렌트카 찜 리스트 조회 테스트
+        1. 미로그인 상태에서 렌트카 찜 리스트 조회 요청 테스트
+        2. 로그인 상태에서 본인 렌트카 찜 리스트(찜 목록이 있는 경우) 조회 요청 테스트
+        3. 로그인 상태에서 본인 렌트카 찜 리스트(찜 목록이 없는 경우) 조회 요청 테스트
+        '''
+        print('-- 렌트카 찜 리스트 조회 테스트 BEGIN --')
+        data = {
+            'user':1,
+            'pick_type': 'RC',
+        }
+        for i in range(1, 6):
+            self.client.post(
+                '/pick/rental_car/',
+                data={
+                    'rental_car': i,
+                    'pick_type': 'RC',
+                    'user': 1,},
+                HTTP_AUTHORIZATION=f'Bearer {self.access_token}',
+                format='json')
+        # 미로그인 상태에서 렌트카 찜 리스트 조회 요청
+        response = self.client.get(
+            '/pick/rental_car/',
+            data=data,
+            format='json')
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.data['detail'], '로그인이 필요합니다.')
+
+        # 로그인 상태에서 본인 렌트카 찜 리스트(찜 목록이 있는 경우) 조회 요청
+        response = self.client.get(
+            '/pick/rental_car/',
+            HTTP_AUTHORIZATION=f'Bearer {self.access_token}',
+            data=data,
+            format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 5)
+
+        # 로그인 상태에서 본인 렌트카 찜 리스트(찜 목록이 없는 경우) 조회 요청
+        data = {
+            'email': 'test1@gmail.com',
+            'username': 'test',
+            'nickname': 'test1',
+            'password': 'testtest1@',
+            'password2': 'testtest1@',
+        }
+        self.client.post(
+            '/account/signup/', 
+            data,
+            format='json')
+        data = {
+            'email': 'test1@gmail.com',
+            'password': 'testtest1@',
+        }
+        response = self.client.post(
+            '/account/login/',
+            data,
+            format='json')
+        access = response.data['access']
+        response = self.client.get(
+            '/pick/rental_car/',
+            HTTP_AUTHORIZATION=f'Bearer {access}',
+            data=data,
+            format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 0)
+        print('-- 렌트카 찜 리스트 조회 테스트 END --')

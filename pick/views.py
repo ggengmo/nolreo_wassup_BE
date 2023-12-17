@@ -160,6 +160,13 @@ class RentalCarPickViewSet(ModelViewSet):
             return Response({'message': '이미 찜한 렌트카입니다.'}, status=status.HTTP_400_BAD_REQUEST)
         return data
         
+    def get_queryset(self):
+        '''
+        유저가 찜한 렌트카 목록 조회 메서드
+        '''
+        queryset = super().get_queryset()
+        queryset = queryset.filter(user=self.request.user)
+        return queryset
 
 lodging_pick = LodgingPickViewSet.as_view({
     'post': 'create',
