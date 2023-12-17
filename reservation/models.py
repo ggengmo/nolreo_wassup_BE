@@ -1,12 +1,21 @@
 from django.db import models
+from django.core.exceptions import ValidationError
+
+from lodging.models import RoomType
 
 class Reservation(models.Model):
     '''
     예약 모델
     '''
+    RESERVATION_TYPES = [
+        ('RO', 'Room'),
+        ('TR', 'Train'),
+        ('BU', 'Bus'),
+        ('RC', 'Rental Car'),
+    ]
     start_at = models.DateTimeField(null=True, blank=True)
     end_at = models.DateTimeField(null=True, blank=True)
-    reservation_type = models.CharField(max_length=100)
+    reservation_type = models.CharField(max_length=100, choices=RESERVATION_TYPES)
     user = models.ForeignKey('account.CustomUser', on_delete=models.CASCADE, related_name='reservations')
     room = models.ForeignKey('lodging.RoomType', on_delete=models.CASCADE, null=True, blank=True, related_name='reservations')
     bus = models.ForeignKey('traffic.Bus', on_delete=models.CASCADE, null=True, blank=True, related_name='reservations')

@@ -10,6 +10,9 @@ from .serializers import (LodgingPickSerializer, BusPickSerializer,
 from utils.permissions import CustomJWTAuthentication, CustomIsAuthenticated, IsOwner
 
 class LodgingPickViewSet(ModelViewSet):
+    '''
+    숙소 찜 ViewSet
+    '''
     serializer_class = LodgingPickSerializer
     authentication_classes = [CustomJWTAuthentication]
     queryset = Pick.objects.all().filter(pick_type='LG')
@@ -53,6 +56,9 @@ class LodgingPickViewSet(ModelViewSet):
         
     
 class BusPickViewSet(ModelViewSet):
+    '''
+    버스 찜 ViewSet
+    '''
     serializer_class = BusPickSerializer
     authentication_classes = [CustomJWTAuthentication]
     queryset = Pick.objects.all().filter(pick_type='BU')
@@ -96,6 +102,9 @@ class BusPickViewSet(ModelViewSet):
         
 
 class TrainPickViewSet(ModelViewSet):
+    '''
+    기차 찜 ViewSet
+    '''
     serializer_class = TrainPickSerializer
     authentication_classes = [CustomJWTAuthentication]
     queryset = Pick.objects.all().filter(pick_type='TR')
@@ -139,6 +148,9 @@ class TrainPickViewSet(ModelViewSet):
         
 
 class RentalCarPickViewSet(ModelViewSet):
+    '''
+    렌트카 찜 ViewSet
+    '''
     serializer_class = RentalcarSerializer
     authentication_classes = [CustomJWTAuthentication]
     queryset = Pick.objects.all().filter(pick_type='RC')

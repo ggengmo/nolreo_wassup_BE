@@ -5,7 +5,7 @@ class Pick(models.Model):
     '''
     사용자 찜 모델
     '''
-    RESERVATION_TYPES = [
+    PICK_TYPES = [
         ('LG', 'Lodging'),
         ('TR', 'Train'),
         ('BU', 'Bus'),
@@ -16,7 +16,7 @@ class Pick(models.Model):
     train = models.ForeignKey('traffic.Train', on_delete=models.CASCADE, null=True, blank=True, related_name='train_pick')
     rental_car = models.ForeignKey('traffic.RentalCar', on_delete=models.CASCADE, null=True, blank=True, related_name='rental_car_pick')
     user = models.ForeignKey('account.CustomUser', on_delete=models.CASCADE, related_name='picks')
-    pick_type = models.CharField(max_length=100, choices=RESERVATION_TYPES)
+    pick_type = models.CharField(max_length=100, choices=PICK_TYPES)
 
     def __str__(self):
         return f'{self.type}'
