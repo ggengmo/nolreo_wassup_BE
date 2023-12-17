@@ -11,4 +11,5 @@ urlpatterns = [
     path('bus/<int:pk>/', views.bus_pick, name='bus_pick_d'),
     path('train/', views.train_pick, name='train_pick_cl'),
     path('train/<int:pk>/', views.train_pick, name='train_pick_d'),
+    path('rental_car/', views.rental_car_pick, name='rental_car_pick_cl'),
 ]

@@ -5,7 +5,8 @@ from django.db import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
 
 from .models import Pick
-from .serializers import LodgingPickSerializer, BusPickSerializer, TrainPickSerializer
+from .serializers import (LodgingPickSerializer, BusPickSerializer, 
+                        TrainPickSerializer, RentalcarSerializer)
 from utils.permissions import CustomJWTAuthentication, CustomIsAuthenticated, IsOwner
 
 class LodgingPickViewSet(ModelViewSet):
@@ -137,6 +138,29 @@ class TrainPickViewSet(ModelViewSet):
             return Response({'message': '해당 기차를 찜한 기록이 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
 
+class RentalCarPickViewSet(ModelViewSet):
+    serializer_class = RentalcarSerializer
+    authentication_classes = [CustomJWTAuthentication]
+    queryset = Pick.objects.all().filter(pick_type='RC')
+
+    def get_permissions(self):
+        if self.action == 'create':
+            permission_classes = [CustomIsAuthenticated]
+        else:
+            permission_classes = [CustomIsAuthenticated, IsOwner]
+        return [permission() for permission in permission_classes]
+    
+    def create(self, request, *args, **kwargs):
+        '''
+        렌트카 찜 생성 API
+        '''
+        try:
+            data = super().create(request, *args, **kwargs)
+        except IntegrityError:
+            return Response({'message': '이미 찜한 렌트카입니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        return data
+        
+
 lodging_pick = LodgingPickViewSet.as_view({
     'post': 'create',
     'get': 'list',
@@ -150,6 +174,12 @@ bus_pick = BusPickViewSet.as_view({
 })
 
 train_pick = TrainPickViewSet.as_view({
+    'post': 'create',
+    'get': 'list',
+    'delete': 'destroy',
+})
+
+rental_car_pick = RentalCarPickViewSet.as_view({
     'post': 'create',
     'get': 'list',
     'delete': 'destroy',

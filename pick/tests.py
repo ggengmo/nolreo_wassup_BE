@@ -2,7 +2,7 @@ from django.test import TestCase
 from rest_framework.test import APIClient
 
 from lodging.models import Lodging, SubLocation, MainLocation
-from traffic.models import Bus, Train
+from traffic.models import Bus, Train, RentalCar
 from .models import Pick
 
 class TestPickLodging(TestCase):
@@ -665,3 +665,81 @@ class TestPickTrain(TestCase):
         self.assertEqual(response.status_code, 204)
         self.assertEqual(Pick.objects.all().count(), 4)
         print('-- 기차 찜 삭제 테스트 END --')
+
+
+class TestPickRentalCar(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+
+        # 렌터카 생성
+        for i in range(1, 6):
+            RentalCar.objects.create(
+                model = '소나타',
+                area = '서울',
+                num = f'{12341 + i}',
+                price = '10000',
+            )
+        
+        # 사용자 생성 & 로그인
+        data = {
+            'email': 'test@gmail.com',
+            'username': 'test',
+            'nickname': 'test',
+            'password': 'testtest1@',
+            'password2': 'testtest1@',
+        }
+        self.client.post(
+            '/account/signup/', 
+            data,
+            format='multipart')
+        data = {
+            'email': 'test@gmail.com',
+            'password': 'testtest1@',
+        }
+        response = self.client.post(
+            '/account/login/',
+            data,
+            format='json')
+        self.access_token = response.data['access']
+
+    def test_pick_rental_car_create(self):
+        '''
+        렌트카 찜 생성 테스트
+        1. 미로그인 상태에서 렌트카 찜 생성 요청 테스트
+        2. 로그인 상태에서 렌트카 찜 생성 요청 테스트
+        3. 중복 생성 요청 테스트
+        '''
+        print('-- 렌트카 찜 생성 테스트 BEGIN --')
+        # 미로그인 상태에서 렌트카 찜 생성 요청
+        data = {
+            'rental_car': 1,
+            'pick_type': 'RC',
+            'user': 1,
+        }
+        response = self.client.post(
+            '/pick/rental_car/',
+            data=data,
+            format='json')
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.data['detail'], '로그인이 필요합니다.')
+
+        # 로그인 상태에서 렌트카 찜 생성 요청
+        response = self.client.post(
+            '/pick/rental_car/',
+            data=data,
+            HTTP_AUTHORIZATION=f'Bearer {self.access_token}',
+            format='json')
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data['rental_car'], 1)
+        self.assertEqual(response.data['pick_type'], 'RC')
+        self.assertEqual(Pick.objects.all().count(), 1)
+
+        # 중복 생성 요청
+        response = self.client.post(
+            '/pick/rental_car/',
+            data=data,
+            HTTP_AUTHORIZATION=f'Bearer {self.access_token}',
+            format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data['message'], '이미 찜한 렌트카입니다.')
+        print('-- 렌트카 찜 생성 테스트 END --')
