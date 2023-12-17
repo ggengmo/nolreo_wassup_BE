@@ -182,9 +182,9 @@
 |'train/'|POST|기차 찜 생성|✅|||
 |'train/'|GET|기차 찜 목록|✅|✅||
 |'train/\<int:pick_pk\>/'|DELETE|기차 찜 삭제|✅|✅||
-|'rentalcar/'|POST|렌트카 찜 생성|✅|||
-|'rentalcar/'|GET|렌트카 찜 목록|✅|✅||
-|'rentalcar/\<int:pick_pk\>/'|DELETE|렌트카 찜 삭제|✅|✅||
+|'rental_car/'|POST|렌트카 찜 생성|✅|||
+|'rental_car/'|GET|렌트카 찜 목록|✅|✅||
+|'rental_car/\<int:pick_pk\>/'|DELETE|렌트카 찜 삭제|✅|✅||
 <br>
 
 |app: reservation|HTTP Method|설명|로그인 권한|작성자 권한|Admin 권한|

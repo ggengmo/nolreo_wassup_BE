@@ -19,3 +19,21 @@ class BusPickSerializer(ModelSerializer):
     class Meta:
         model = Pick
         fields = ['id', 'user', 'bus', 'pick_type']
+
+
+class TrainPickSerializer(ModelSerializer):
+    '''
+    기차 찜 serializer
+    '''
+    class Meta:
+        model = Pick
+        fields = ['id', 'user', 'train', 'pick_type']
+
+
+class RentalcarSerializer(ModelSerializer):
+    '''
+    렌트카 찜 serializer
+    '''
+    class Meta:
+        model = Pick
+        fields = ['id', 'user', 'rental_car', 'pick_type']
