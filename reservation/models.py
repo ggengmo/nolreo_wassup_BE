@@ -8,7 +8,7 @@ class Reservation(models.Model):
     end_at = models.DateTimeField(null=True, blank=True)
     reservation_type = models.CharField(max_length=100)
     user = models.ForeignKey('account.CustomUser', on_delete=models.CASCADE, related_name='reservations')
-    lodging = models.ForeignKey('lodging.Lodging', on_delete=models.CASCADE, null=True, blank=True, related_name='reservations')
+    room = models.ForeignKey('lodging.RoomType', on_delete=models.CASCADE, null=True, blank=True, related_name='reservations')
     bus = models.ForeignKey('traffic.Bus', on_delete=models.CASCADE, null=True, blank=True, related_name='reservations')
     train = models.ForeignKey('traffic.Train', on_delete=models.CASCADE, null=True, blank=True, related_name='reservations')
     rental_car = models.ForeignKey('traffic.RentalCar', on_delete=models.CASCADE, null=True, blank=True, related_name='reservations')
