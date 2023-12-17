@@ -7,25 +7,58 @@ from traffic.models import Train
 class TestTrainCase(TestCase):
     def setUp(self):
         self.client = APIClient()
-        self.admin = User.objects.create_superuser(
-            email = 'test1@gmail.com',
-            password = 'testtest1@',
-        )
-        self.user = User.objects.create_user(
-            email = 'test2@gmail.com',
-            password = 'testtest2@',
-            nickname = 'test2',
-        )
         # 기차 데이터 생성
         for i in range(10):
             Train.objects.create(
                 depart_point = '서울',
                 dest_point = '부산',
-                depart_time = f'2023-12-15 12:{i + 20}:00',
-                arrival_time = f'2023-12-15 15:{i + 20}:00',
+                depart_time = f'2024-12-15 12:{i + 20}:00',
+                arrival_time = f'2024-12-15 15:{i + 20}:00',
                 num = f'{1234 + i}',
                 price = '10000',
             )
+
+    def admin(self):
+        '''
+        관리자 생성
+        '''
+        user = User.objects.create_superuser(
+            email='test@gmail.com',
+            username='test',
+            nickname='test',
+            password='testtest1@',
+        )
+        # 로그인
+        response = self.client.post(
+            '/account/login/',
+            {'email': 'test@gmail.com',
+            'password': 'testtest1@'},
+            format='json')
+        access_token = response.data['access']
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {access_token}')
+        user.save()
+        return user
+    
+    def user(self):
+        '''
+        사용자 생성
+        '''
+        user = User.objects.create_user(
+            email='test1@gmail.com',
+            username='test1',
+            nickname='test2',
+            password='testtest1@',
+        )
+        # 로그인
+        response = self.client.post(
+            '/account/login/',
+            {'email': 'test1@gmail.com',
+            'password': 'testtest1@'},
+            format='json')
+        access_token = response.data['access']
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {access_token}')
+        user.save()
+        return user
 
     def test_Train_create_admin(self):
         '''
@@ -33,13 +66,13 @@ class TestTrainCase(TestCase):
         '''
         print('-- 기차 생성 테스트(관리자) BEGIN --')
         # 정상 처리 테스트
-        self.client.force_authenticate(user=self.admin)
+        self.admin()
         Train_data = {
             'depart_point': '서울',
             'dest_point': '부산',
-            'depart_time': '2023-12-15 12:00:00',
-            'arrival_time': '2023-12-15 15:00:00',
-            'num': '1234',
+            'depart_time': '2024-12-15 12:00:00',
+            'arrival_time': '2024-12-15 15:00:00',
+            'num': '2234',
             'price': '10000',
         }
         response = self.client.post('/traffic/train/', Train_data, format='json')
@@ -123,7 +156,7 @@ class TestTrainCase(TestCase):
         '''
         print('-- 기차 생성 테스트(일반 사용자) BEGIN --')
         # 비정상 처리 테스트(일반 사용자가 기차 생성 시도)
-        self.client.force_login(user=self.user)
+        self.user()
         Train_data = {
             'depart_point': '서울',
             'dest_point': '부산',
@@ -133,7 +166,7 @@ class TestTrainCase(TestCase):
             'price': '10000',
         }
         response = self.client.post('/traffic/train/', Train_data, format='json')
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 403)
 
         print('-- 기차 생성 테스트(일반 사용자) END --')
     
@@ -153,7 +186,7 @@ class TestTrainCase(TestCase):
         '''
         print('-- 기차 삭제 테스트(관리자) BEGIN --')
         # 정상 처리 테스트
-        self.client.force_authenticate(user=self.admin)
+        self.admin()
         response = self.client.delete('/traffic/train/1/', format='json')
         self.assertEqual(response.status_code, 204)
         # 비정상 처리 테스트 - 존재하지 않는 기차 삭제 시도
@@ -167,9 +200,9 @@ class TestTrainCase(TestCase):
         '''
         print('-- 기차 삭제 테스트(일반 사용자) BEGIN --')
         # 비정상 처리 테스트 - 일반 사용자가 기차 삭제 시도
-        self.client.force_login(user=self.user)
+        self.user()
         response = self.client.delete('/traffic/train/1/', format='json')
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 403)
         print('-- 기차 삭제 테스트(일반 사용자) END --')
 
     def test_Train_retrieve(self):
@@ -191,12 +224,12 @@ class TestTrainCase(TestCase):
         '''
         print('-- 기차 수정 테스트(관리자) BEGIN --')
         # 정상 처리 테스트
-        self.client.force_authenticate(user=self.admin)
+        self.admin()
         Train_data = {
             'depart_point': '서울',
             'dest_point': '부산',
-            'depart_time': '2023-12-15 12:00:00',
-            'arrival_time': '2023-12-15 15:00:00',
+            'depart_time': '2024-12-15 12:00:00',
+            'arrival_time': '2024-12-15 15:00:00',
             'num': '1234',
             'price': '10000',
         }
@@ -213,16 +246,16 @@ class TestTrainCase(TestCase):
         '''
         print('-- 기차 수정 테스트(일반 사용자) BEGIN --')
         # 비정상 처리 테스트 - 일반 사용자가 기차 수정 시도
-        self.client.force_login(user=self.user)
+        self.user()
         response = self.client.get('/traffic/train/1/', format='json')
         Train_data = {
             'depart_point': '서울',
-            'dest_point': '부산',
-            'depart_time': '2023-12-15 12:00:00',
-            'arrival_time': '2023-12-15 15:00:00',
+            'dest_point': '대전',
+            'depart_time': '2024-12-15 12:00:00',
+            'arrival_time': '2024-12-15 15:00:00',
             'num': '1234',
             'price': '10000',
         }
         response = self.client.put('/traffic/train/1/', Train_data, format='json')
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 403)
         print('-- 기차 수정 테스트(일반 사용자) END --')

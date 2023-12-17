@@ -28,7 +28,6 @@ class Bus(models.Model):
 
     def __str__(self):
         return f'{self.depart_point} 출발 {self.dest_point}행 {self.num}번 고속버스'
-    
 
 class RentalCar(models.Model):
     '''

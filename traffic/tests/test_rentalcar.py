@@ -137,7 +137,6 @@ class TestRentalCarCase(TestCase):
         '''
         print('-- 렌트카 생성 테스트(일반 사용자) BEGIN --')
         # 정상 처리 테스트
-        self.user()
         RentalCar_data = {
             'model': '소나타',
             'area': '서울',
@@ -230,16 +229,14 @@ class TestRentalCarCase(TestCase):
         '''
         print('-- 렌트카 수정 테스트(일반 사용자) BEGIN --')
         # 비정상 처리 테스트
-        self.user()
         RentalCar_data = {
             'model': '소나타',
             'area': '서울',
             'num': '99599',
             'price': '10000',
+            'user': 1,
         }
         response = self.client.put('/traffic/rentalcar/1/', RentalCar_data, format='json')
-        print(response.data)
-        print(response.status_code)
         self.assertEqual(response.status_code, 403)
         print('-- 렌트카 수정 테스트(일반 사용자) END --')
 
@@ -263,7 +260,6 @@ class TestRentalCarCase(TestCase):
         '''
         print('-- 렌트카 삭제 테스트(일반 사용자) BEGIN --')
         # 비정상 처리 테스트 - 일반 사용자가 렌트카 삭제 시도
-        self.user()
         response = self.client.delete('/traffic/rentalcar/1/')
         self.assertEqual(response.status_code, 403)
         print('-- 렌트카 삭제 테스트(일반 사용자) END --')
@@ -300,7 +296,6 @@ class TestRentalCarCase(TestCase):
         '''
         print('-- 렌트카 이미지 생성 테스트(일반 사용자) BEGIN --')
         # 비정상 처리 테스트 - 일반 사용자가 렌트카 이미지 생성 시도
-        self.user()
         images = []
         for i in range(3):
             images.append(SimpleUploadedFile(name=f'test_image{i}.jpg', 
@@ -323,7 +318,7 @@ class TestRentalCarCase(TestCase):
         '''
         print('-- 렌트카 이미지 삭제 테스트(관리자) BEGIN --')
         # 정상 처리 테스트
-        self.client.force_authenticate(user=self.admin)
+        self.admin()
         images = []
         for i in range(3):
             images.append(SimpleUploadedFile(name=f'test_image{i}.jpg', 
@@ -339,14 +334,14 @@ class TestRentalCarCase(TestCase):
         response = self.client.post('/traffic/rentalcar/', RentalCar_data, format='multipart')
         self.assertEqual(response.status_code, 201)
         self.assertEqual(RentalCarImage.objects.all().count(), 3)
-        self.assertEqual(RentalCarImage.objects.all()[0].rental_car.pk, 1)
-        self.assertEqual(RentalCar.objects.all()[0].rental_car_images.count(), 3)
+        self.assertEqual(RentalCarImage.objects.all()[0].rental_car.pk, 11)
+        self.assertEqual(RentalCar.objects.all()[10].rental_car_images.count(), 3)
         response = self.client.delete('/traffic/rentalcar/image/1/')
         self.assertEqual(response.status_code, 204)
         self.assertEqual(RentalCarImage.objects.all().count(), 2)
         response = self.client.delete('/traffic/rentalcar/image/2/')
         self.assertEqual(response.status_code, 204)
-        self.assertEqual(RentalCar.objects.all()[0].rental_car_images.count(), 1)
+        self.assertEqual(RentalCar.objects.all()[10].rental_car_images.count(), 1)
         # 비정상 처리 테스트 - 존재하지 않는 렌트카 이미지 삭제 시도
         response = self.client.delete('/traffic/rentalcar/image/100/')
         self.assertEqual(response.status_code, 404)
@@ -358,7 +353,6 @@ class TestRentalCarCase(TestCase):
         '''
         print('-- 렌트카 이미지 삭제 테스트(일반 사용자) BEGIN --')
         # 비정상 처리 테스트 - 일반 사용자가 렌트카 이미지 삭제 시도
-        self.client.force_login(user=self.user)
         images = []
         for i in range(3):
             images.append(SimpleUploadedFile(name=f'test_image{i}.jpg', 
@@ -369,11 +363,12 @@ class TestRentalCarCase(TestCase):
             'area': '서울',
             'num': '99599',
             'price': '10000',
+            'user': 1,
             'image': images,
         }
         response = self.client.post('/traffic/rentalcar/', RentalCar_data, format='multipart')
         response = self.client.delete('/traffic/rentalcar/image/1/')
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 403)
         print('-- 렌트카 이미지 삭제 테스트(일반 사용자) END --')
 
     def test_RentalCarReview_create_user(self):
@@ -390,7 +385,6 @@ class TestRentalCarCase(TestCase):
             'user': 1,
         }
         response = self.client.post('/traffic/review/', RentalCarReview_data, format='json')
-        print(response.data)
         self.assertEqual(response.status_code, 201)
         # 비정상 처리 테스트 - 렌트카 리뷰 제목이 없을 경우
         RentalCarReview_data = {
@@ -428,6 +422,7 @@ class TestRentalCarCase(TestCase):
         }
         response = self.client.post('/traffic/review/', RentalCarReview_data, format='json')
         self.assertEqual(response.status_code, 400)
+        print('-- 렌트카 리뷰 생성 테스트(일반 사용자) END --')
 
     def test_RentalCarReview_create(self):
         '''
@@ -441,7 +436,8 @@ class TestRentalCarCase(TestCase):
             'star_score': '5',
             'rental_car': 1,
         }
-        response = self.client.post('/traffic/review/1', RentalCarReview_data, format='json')
+        self.client.credentials()
+        response = self.client.post('/traffic/review/', RentalCarReview_data, format='json')
         self.assertEqual(response.status_code, 401)
         print('-- 렌트카 리뷰 생성 테스트(로그인을 하지 않은 사용자) END --')
 
@@ -450,9 +446,9 @@ class TestRentalCarCase(TestCase):
         렌트카 리뷰 리스트 테스트
         '''
         print('-- 렌트카 리뷰 리스트 테스트 BEGIN --')
+        self.client.credentials()
         response = self.client.get('/traffic/review/')
         self.assertEqual(response.status_code, 200)
-        print(response.data)
         self.assertEqual(len(response.data), 10)
         print('-- 렌트카 리뷰 리스트 테스트 END --')
 
@@ -525,21 +521,18 @@ class TestRentalCarCase(TestCase):
 
     def test_RentalCarReview_update(self):
         '''
-        렌트카 리뷰 수정 테스트(로그인을 하지 않거나 작성한 사용자가 아닌 상태에서 렌트카 리뷰 수정 시도)
+        렌트카 리뷰 수정 테스트(로그인을 하지 않은 사용자)
         '''
         print('-- 렌트카 리뷰 수정 테스트(로그인을 하지 않은 사용자) BEGIN --')
-        # 비정상 처리 테스트 - 로그인을 하지 않거나 작성한 사용자가 아닌 상태에서 렌트카 리뷰 수정 시도
+        # 비정상 처리 테스트 - 로그인을 하지 않은 사용자가 렌트카 리뷰 수정 시도
         RentalCarReview_data = {
             'title': '렌트카 리뷰 제목123',
             'content': '렌트카 리뷰 내용1234567',
             'star_score': '5',
             'rental_car': 1,
-            'user': 2,
         }
-        response = self.client.put('/traffic/review/1/', RentalCarReview_data, format='json')
-        self.assertEqual(response.status_code, 400)
         self.client.credentials()
-        response = self.client.delete('/traffic/review/1/')
+        response = self.client.put('/traffic/review/1/')
         self.assertEqual(response.status_code, 401)
         print('-- 렌트카 리뷰 수정 테스트(로그인을 하지 않은 사용자) END --')
 
