@@ -183,3 +183,4 @@ class LodgingTestCase(TestCase):
         response = self.client.delete('/lodging/2/', format='json')
         self.assertEqual(response.status_code, 404)
         print('-- 숙소 삭제 테스트 END --')
+        
