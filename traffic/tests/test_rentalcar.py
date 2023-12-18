@@ -2,7 +2,7 @@ from django.test import TestCase
 from rest_framework.test import APIClient
 
 from account.models import CustomUser as User
-from traffic.models import RentalCar, RentalCarImage, RentalCarReview
+from traffic.models import RentalCar, RentalCarImage, RentalCarReview, RentalCarReviewComment
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 
@@ -26,6 +26,13 @@ class TestRentalCarCase(TestCase):
                 rental_car = RentalCar.objects.get(pk=1),
                 user = user,
             )
+        for i in range(10):
+            RentalCarReviewComment.objects.create(
+                content = f'렌트카 리뷰 댓글 내용 {i}',
+                rental_car_review = RentalCarReview.objects.get(pk=1),
+                user = user,
+            )
+
     def admin(self):
         '''
         관리자 생성
@@ -556,3 +563,130 @@ class TestRentalCarCase(TestCase):
         response = self.client.delete('/traffic/review/1/')
         self.assertEqual(response.status_code, 401)
         print('-- 렌트카 리뷰 삭제 테스트(로그인을 하지 않은 사용자) END --')
+
+    def test_RentalCarReviewComment_create_user(self):
+        '''
+        렌트카 리뷰 댓글 생성 테스트(일반 사용자)
+        '''
+        print('-- 렌트카 리뷰 댓글 생성 테스트(일반 사용자) BEGIN --')
+        # 정상 처리 테스트
+        RentalCarReviewComment_data = {
+            'content': '렌트카 리뷰 댓글 내용',
+            'rental_car_review': 1,
+            'user': 1,
+        }
+        response = self.client.post('/traffic/review/1/reply/', RentalCarReviewComment_data, format='json')
+        self.assertEqual(response.status_code, 201)
+        # 비정상 처리 테스트 - 렌트카 리뷰 댓글 내용이 없을 경우
+        RentalCarReviewComment_data = {
+            'content': '',
+            'rental_car_review': 1,
+            'user': 1,
+        }
+        response = self.client.post('/traffic/review/1/reply/', RentalCarReviewComment_data, format='json')
+        self.assertEqual(response.status_code, 400)
+        # 비정상 처리 테스트 - 존재하지 않는 렌트카 리뷰에 댓글 생성 시도
+        RentalCarReviewComment_data = {
+            'content': '렌트카 리뷰 댓글 내용',
+            'rental_car_review': 100,
+            'user': 1,
+        }
+        response = self.client.post('/traffic/review/100/reply/', RentalCarReviewComment_data, format='json')
+        self.assertEqual(response.status_code, 400)
+        print('-- 렌트카 리뷰 댓글 생성 테스트(일반 사용자) END --')
+
+    def test_RentalCarReviewComment_create(self):
+        '''
+        렌트카 리뷰 댓글 생성 테스트(로그인을 하지 않은 사용자)
+        '''
+        print('-- 렌트카 리뷰 댓글 생성 테스트(로그인을 하지 않은 사용자) BEGIN --')
+        # 정상 처리 테스트
+        RentalCarReviewComment_data = {
+            'content': '렌트카 리뷰 댓글 내용',
+            'rental_car_review': 1,
+        }
+        self.client.credentials()
+        response = self.client.post('/traffic/review/1/reply/', RentalCarReviewComment_data, format='json')
+        self.assertEqual(response.status_code, 401)
+        print('-- 렌트카 리뷰 댓글 생성 테스트(로그인을 하지 않은 사용자) END --')
+
+    def test_RentalCarReviewComment_list(self):
+        '''
+        렌트카 리뷰 댓글 리스트 테스트
+        '''
+        print('-- 렌트카 리뷰 댓글 리스트 테스트 BEGIN --')
+        self.client.credentials()
+        response = self.client.get('/traffic/review/1/reply/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 10)
+        print('-- 렌트카 리뷰 댓글 리스트 테스트 END --')
+
+    def test_RentalCarReviewComment_update_user(self):
+        '''
+        렌트카 리뷰 댓글 수정 테스트(일반 사용자)
+        '''
+        print('-- 렌트카 리뷰 댓글 수정 테스트(일반 사용자) BEGIN --')
+        # 정상 처리 테스트
+        RentalCarReviewComment_data = {
+            'content': '렌트카 리뷰 댓글 내용1234567',
+            'rental_car_review': 1,
+            'user': 1,
+        }
+        response = self.client.put('/traffic/review/1/reply/1/', RentalCarReviewComment_data, format='json')
+        self.assertEqual(response.status_code, 200)
+        # 비정상 처리 테스트 - 존재하지 않는 렌트카 리뷰 댓글 수정 시도
+        RentalCarReviewComment_data = {
+            'content': '렌트카 리뷰 댓글 내용1234567',
+            'rental_car_review': 1,
+            'user': 1,
+        }
+        response = self.client.put('/traffic/review/1/reply/100/', RentalCarReviewComment_data, format='json')
+        self.assertEqual(response.status_code, 404)
+        # 비정상 처리 테스트 - 렌트카 리뷰 댓글 내용이 없을 경우
+        RentalCarReviewComment_data = {
+            'content': '',
+            'rental_car_review': 1,
+            'user': 1,
+        }
+        response = self.client.put('/traffic/review/1/reply/1/', RentalCarReviewComment_data, format='json')
+        self.assertEqual(response.status_code, 400)
+        print('-- 렌트카 리뷰 댓글 수정 테스트(일반 사용자) END --')
+
+    def test_RentalCarReviewComment_update(self):
+        '''
+        렌트카 리뷰 댓글 수정 테스트(로그인을 하지 않은 사용자)
+        '''
+        print('-- 렌트카 리뷰 댓글 수정 테스트(로그인을 하지 않은 사용자) BEGIN --')
+        # 비정상 처리 테스트 - 로그인을 하지 않은 사용자가 렌트카 리뷰 댓글 수정 시도
+        RentalCarReviewComment_data = {
+            'content': '렌트카 리뷰 댓글 내용1234567',
+            'rental_car_review': 1,
+        }
+        self.client.credentials()
+        response = self.client.put('/traffic/review/1/reply/1/', RentalCarReviewComment_data, format='json')
+        self.assertEqual(response.status_code, 401)
+        print('-- 렌트카 리뷰 댓글 수정 테스트(로그인을 하지 않은 사용자) END --')
+
+    def test_RentalCarReviewComment_destroy_user(self):
+        '''
+        렌트카 리뷰 댓글 삭제 테스트(일반 사용자)
+        '''
+        print('-- 렌트카 리뷰 댓글 삭제 테스트(일반 사용자) BEGIN --')
+        # 정상 처리 테스트
+        response = self.client.delete('/traffic/review/1/reply/1/')
+        self.assertEqual(response.status_code, 204)
+        # 비정상 처리 테스트 - 존재하지 않는 렌트카 리뷰 댓글 삭제 시도
+        response = self.client.delete('/traffic/review/1/reply/100/')
+        self.assertEqual(response.status_code, 404)
+        print('-- 렌트카 리뷰 댓글 삭제 테스트(일반 사용자) END --')
+
+    def test_RentalCarReviewComment_destroy(self):
+        '''
+        렌트카 리뷰 댓글 삭제 테스트(로그인을 하지 않은 사용자)
+        '''
+        print('-- 렌트카 리뷰 댓글 삭제 테스트(로그인을 하지 않은 사용자) BEGIN --')
+        # 비정상 처리 테스트 - 로그인을 하지 않은 사용자가 렌트카 리뷰 댓글 삭제 시도
+        self.client.credentials()
+        response = self.client.delete('/traffic/review/1/reply/1/')
+        self.assertEqual(response.status_code, 401)
+        print('-- 렌트카 리뷰 댓글 삭제 테스트(로그인을 하지 않은 사용자) END --')
