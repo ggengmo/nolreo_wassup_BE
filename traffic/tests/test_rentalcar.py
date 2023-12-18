@@ -4,6 +4,7 @@ from rest_framework.test import APIClient
 from account.models import CustomUser as User
 from traffic.models import RentalCar, RentalCarImage, RentalCarReview, RentalCarReviewComment
 from django.core.files.uploadedfile import SimpleUploadedFile
+from utils.tools import remove_media_folder
 
 
 class TestRentalCarCase(TestCase):
@@ -295,6 +296,7 @@ class TestRentalCarCase(TestCase):
         self.assertEqual(RentalCarImage.objects.all().count(), 3)
         self.assertEqual(RentalCarImage.objects.all()[0].rental_car.pk, 11)
         self.assertEqual(RentalCar.objects.all()[10].rental_car_images.count(), 3)
+        remove_media_folder()
         print('-- 렌트카 이미지 생성 테스트(관리자) END --')
     
     def test_RentalCarImage_create_user(self):
@@ -352,6 +354,7 @@ class TestRentalCarCase(TestCase):
         # 비정상 처리 테스트 - 존재하지 않는 렌트카 이미지 삭제 시도
         response = self.client.delete('/traffic/rentalcar/image/100/')
         self.assertEqual(response.status_code, 404)
+        remove_media_folder()
         print('-- 렌트카 이미지 삭제 테스트(관리자) END --')
 
     def test_RentalCarImage_destroy_user(self):
