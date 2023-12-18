@@ -113,13 +113,13 @@ class LodgingTestCase(TestCase):
         print('-- admin 권한 사용자 숙소 수정 테스트 BEGIN --')
         self.client.force_authenticate(user=self.admin)
 
-        response = self.client.put('/lodging/1/', self.updated_data, format='json')
+        response = self.client.patch('/lodging/1/', self.updated_data, format='json')
         self.assertEqual(response.status_code, 200)
 
         '''
         존재하지 않는 숙소 수정 테스트 - admin 권한 사용자
         '''
-        response = self.client.put('/lodging/2/', self.updated_data, format='json')
+        response = self.client.patch('/lodging/2/', self.updated_data, format='json')
         self.assertEqual(response.status_code, 404)
         print('-- admin 권한 사용자 숙소 수정 테스트 END --')
 
@@ -130,7 +130,7 @@ class LodgingTestCase(TestCase):
         print('-- user 권한 사용자 숙소 수정 테스트 BEGIN --')
         self.client.force_login(user=self.user)
 
-        response = self.client.put('/lodging/1/', self.updated_data, format='json')
+        response = self.client.patch('/lodging/1/', self.updated_data, format='json')
         self.assertEqual(response.status_code, 401)
         print('-- user 권한 사용자 숙소 수정 테스트 END --')
 

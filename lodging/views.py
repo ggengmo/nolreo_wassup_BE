@@ -35,7 +35,7 @@ class LodgingImageViewSet(viewsets.ModelViewSet):
     }
 
     def get_permissions(self):
-        if self.action in ['create', 'update', 'destroy']:
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
             permission_classes = [IsAdminUser]
         else:
             permission_classes = [AllowAny]
@@ -52,7 +52,7 @@ class LodgingViewSet(viewsets.ModelViewSet):
     }
 
     def get_permissions(self):
-        if self.action in ['create', 'update', 'destroy']:
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
             permission_classes = [IsAdminUser]
         else:
             permission_classes = [AllowAny]
@@ -70,7 +70,7 @@ class LodgingReviewViewSet(viewsets.ModelViewSet):
     }
 
     def get_permissions(self):
-        if self.action in ['create', 'update', 'destroy']:
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
             permission_classes = [IsAuthenticated]
         else:
             permission_classes = [AllowAny]
@@ -109,7 +109,7 @@ class LodgingReviewImageViewSet(viewsets.ModelViewSet):
     }
 
     def get_permissions(self):
-        if self.action in ['create', 'update', 'destroy']:
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
             permission_classes = [IsAuthenticated]
         else:
             permission_classes = [AllowAny]
@@ -139,7 +139,7 @@ class LodgingReviewCommentViewSet(viewsets.ModelViewSet):
     }
 
     def get_permissions(self):
-        if self.action in ['create', 'update', 'destroy']:
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
             permission_classes = [IsAuthenticated]
         else:
             permission_classes = [AllowAny]

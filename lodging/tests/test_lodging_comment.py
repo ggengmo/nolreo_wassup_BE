@@ -145,7 +145,7 @@ class LodgingReviewTest(TestCase):
             'lodging_review': 1,
             'user': 1,
         }
-        response = self.client.put(
+        response = self.client.patch(
             '/lodging/review/1/comment/1/', 
             data,
             format='json',
@@ -158,7 +158,7 @@ class LodgingReviewTest(TestCase):
             'lodging_review': 100,
             'user': 1,
         }
-        response = self.client.put(
+        response = self.client.patch(
             '/lodging/review/100/comment/1/', 
             data,
             format='json',
@@ -171,7 +171,7 @@ class LodgingReviewTest(TestCase):
             'lodging_review': 1,
             'user': 100,
         }
-        response = self.client.put(
+        response = self.client.patch(
             '/lodging/review/1/comment/1/', 
             data,
             format='json',
@@ -184,7 +184,7 @@ class LodgingReviewTest(TestCase):
             'lodging_review': 1,
             'user': 1,
         }
-        response = self.client.put(
+        response = self.client.patch(
             '/lodging/review/1/comment/100/', 
             data,
             format='json',

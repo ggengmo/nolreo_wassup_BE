@@ -170,7 +170,7 @@ class LodgingReviewTest(TestCase):
             'user': 1,
         }
 
-        response = self.client.put(
+        response = self.client.patch(
             '/lodging/review/1/', 
             data=data,
             HTTP_AUTHORIZATION=f'Bearer {self.access_token}',
@@ -243,7 +243,7 @@ class LodgingReviewTest(TestCase):
             'image': image,
             'lodging_review': 1,
         }
-        response = self.client.put(
+        response = self.client.patch(
             '/lodging/review/image/1/',
             data=data,
             HTTP_AUTHORIZATION=f'Bearer {self.access_token}',
@@ -256,7 +256,7 @@ class LodgingReviewTest(TestCase):
             'image': image,
             'lodging_review': 100,
         }
-        response = self.client.put(
+        response = self.client.patch(
             '/lodging/review/image/1/',
             data=data,
             HTTP_AUTHORIZATION=f'Bearer {self.access_token}',
