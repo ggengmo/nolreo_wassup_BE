@@ -1,6 +1,7 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.exceptions import MethodNotAllowed
 from django.core.exceptions import ObjectDoesNotExist
 
 from .models import Reservation
@@ -15,6 +16,9 @@ class LodgingReservationViewSet(ModelViewSet):
     authentication_classes = [CustomJWTAuthentication]
     permission_classes = [CustomIsAuthenticated, IsOwner]
     queryset = Reservation.objects.all().filter(reservation_type='RO')
+    action_map = {
+        'patch': 'partial_update',
+    }
 
     def get_queryset(self):
         '''
@@ -35,3 +39,12 @@ class LodgingReservationViewSet(ModelViewSet):
             return super().partial_update(request, *args, **kwargs)
         except ObjectDoesNotExist:
             return Response({'message': '해당 숙소를 예약한 기록이 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+    def destroy(self, request, *args, **kwargs):
+        try:
+            return super().destroy(request, *args, **kwargs)
+        except ObjectDoesNotExist:
+            return Response({'message': '해당 숙소를 예약한 기록이 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    def retrieve(self, instance):
+        raise MethodNotAllowed('Detail GET', detail="Detail GET method is not allowed")

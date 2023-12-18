@@ -1,6 +1,5 @@
 from datetime import datetime
 from rest_framework import serializers
-from rest_framework.fields import empty
 from rest_framework.serializers import ModelSerializer
 
 from .models import Reservation
@@ -26,7 +25,7 @@ class LodgingReservationSerializer(ModelSerializer):
         reservations = Reservation.objects.filter(room=data['room'])
         for reservation in reservations:
             if (data['start_at'] <= reservation.end_at) and (data['end_at'] >= reservation.start_at):
-                if self.context['request'].method == 'CREATE':
+                if self.context['request'].method == 'POST':
                     raise serializers.ValidationError({"message":"이미 예약된 날짜입니다."})
                 elif self.context['request'].method == 'PATCH':
                     if self.instance.start_at != data['start_at'] and self.instance.end_at != data['end_at']:
