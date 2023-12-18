@@ -3,7 +3,6 @@ from rest_framework.test import APIClient
 
 from account.models import CustomUser as User
 from lodging.models import MainLocation, SubLocation, Lodging, LodgingReview, LodgingReviewImage
-from django.core.files.uploadedfile import SimpleUploadedFile
 
 class LodgingReviewTest(TestCase):
     def setUp(self):

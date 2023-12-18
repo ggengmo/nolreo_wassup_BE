@@ -15,6 +15,7 @@ from .models import (
     LodgingReview,
     LodgingReviewImage,
     LodgingReviewComment,
+    RoomType,
     )
 from .serializers import (
     LodgingSerializer,
@@ -22,24 +23,8 @@ from .serializers import (
     LodgingReviewSerializer,
     LodgingReviewImageSerializer,
     LodgingReviewCommentSerializer,
+    RoomTypeSerializer,
     )
-
-class LodgingImageViewSet(viewsets.ModelViewSet):
-    '''
-    숙소 이미지 ViewSet
-    '''
-    queryset = LodgingImage.objects.all()
-    serializer_class = LodgingImageSerializer
-    action_map = {
-        'put': 'partial_update',
-    }
-
-    def get_permissions(self):
-        if self.action in ['create', 'update', 'partial_update', 'destroy']:
-            permission_classes = [IsAdminUser]
-        else:
-            permission_classes = [AllowAny]
-        return [permission() for permission in permission_classes]
     
 class LodgingViewSet(viewsets.ModelViewSet):
     '''
@@ -58,6 +43,34 @@ class LodgingViewSet(viewsets.ModelViewSet):
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]
 
+class LodgingImageViewSet(viewsets.ModelViewSet):
+    '''
+    숙소 이미지 ViewSet
+    '''
+    queryset = LodgingImage.objects.all()
+    serializer_class = LodgingImageSerializer
+
+    def get_permissions(self):
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            permission_classes = [IsAdminUser]
+        else:
+            permission_classes = [AllowAny]
+        return [permission() for permission in permission_classes]
+
+class RoomTypeViewSet(viewsets.ModelViewSet):
+    '''
+    숙소 방 종류 ViewSet
+    '''
+    queryset = RoomType.objects.all()
+    serializer_class = RoomTypeSerializer
+
+    def get_permissions(self):
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            permission_classes = [IsAdminUser]
+        else:
+            permission_classes = [AllowAny]
+        return [permission() for permission in permission_classes]
+
 class LodgingReviewViewSet(viewsets.ModelViewSet):
     '''
     숙소 리뷰 ViewSet
@@ -65,9 +78,6 @@ class LodgingReviewViewSet(viewsets.ModelViewSet):
     queryset = LodgingReview.objects.all()
     serializer_class = LodgingReviewSerializer
     authentication_classes = [CustomJWTAuthentication]
-    action_map = {
-        'put': 'partial_update',
-    }
 
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
@@ -104,9 +114,6 @@ class LodgingReviewImageViewSet(viewsets.ModelViewSet):
     queryset = LodgingReviewImage.objects.all()
     serializer_class = LodgingReviewImageSerializer
     authentication_classes = [CustomJWTAuthentication]
-    action_map = {
-        'put': 'partial_update',
-    }
 
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
@@ -134,9 +141,6 @@ class LodgingReviewCommentViewSet(viewsets.ModelViewSet):
     queryset = LodgingReviewComment.objects.all()
     serializer_class = LodgingReviewCommentSerializer
     authentication_classes = [CustomJWTAuthentication]
-    action_map = {
-        'put': 'partial_update',
-    }
 
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
@@ -159,4 +163,3 @@ class LodgingReviewCommentViewSet(viewsets.ModelViewSet):
         if comment.user != request.user:
             raise PermissionDenied('해당 댓글의 작성자가 아닙니다.')
         return super().partial_update(request, *args, **kwargs)
-    
