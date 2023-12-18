@@ -96,9 +96,6 @@ class BusReservationViewSet(ModelViewSet):
             raise ObjectDoesNotExist()
         return obj
     
-    def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
-    
     def partial_update(self, request, *args, **kwargs):
         '''
         버스 예약 수정 메서드

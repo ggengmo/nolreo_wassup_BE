@@ -681,3 +681,69 @@ class TestReservationBus(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 0)
         print('-- 버스 예약 리스트 조회 테스트 END --')
+
+    def test_reservation_bus_delete(self):
+        '''
+        버스 예약 삭제 테스트
+        1. 미로그인 상태에서 버스 예약 삭제 요청 테스트
+        2. 로그인 상태(권한 X)에서 버스 예약 삭제 요청 테스트
+        3. 로그인 상태(권한 O)에서 버스 예약 삭제 요청 테스트
+        4. 존재하지 않는 버스 예약 삭제 요청 테스트
+        '''
+        print('-- 버스 예약 삭제 테스트 BEGIN --')
+        data = {
+            'bus': 1,
+            'reservation_type': 'BU',
+            'user': 1,
+            'seat': 1,
+        }
+        self.client.post(
+            '/reservation/bus/', 
+            data, 
+            format='json',
+            HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
+        # 미로그인 상태에서 버스 예약 삭제 요청 테스트
+        response = self.client.delete('/reservation/bus/1/')
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.data['detail'], '로그인이 필요합니다.')
+
+        # 로그인 상태(권한 X)에서 버스 예약 삭제 요청 테스트
+        signup_data = {
+            'email': 'test1@gmail.com',
+            'username': 'test',
+            'nickname': 'test1',
+            'password': 'testtest1@',
+            'password2': 'testtest1@',
+        }
+        self.client.post(
+            '/account/signup/', 
+            signup_data,
+            format='json')
+        login_data = {
+            'email': 'test1@gmail.com',
+            'password': 'testtest1@',
+        }
+        response = self.client.post(
+            '/account/login/',
+            login_data,
+            format='json')
+        access = response.data['access']
+        response = self.client.delete(
+            '/reservation/bus/1/', 
+            HTTP_AUTHORIZATION=f'Bearer {access}')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data['message'], '해당 버스를 예약한 기록이 없습니다.')
+
+        # 로그인 상태(권한 O)에서 버스 예약 삭제 요청 테스트
+        response = self.client.delete(
+            '/reservation/bus/1/', 
+            HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
+        self.assertEqual(response.status_code, 204)
+
+        # 존재하지 않는 버스 예약 삭제 요청 테스트
+        response = self.client.delete(
+            '/reservation/bus/1/', 
+            HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data['message'], '해당 버스를 예약한 기록이 없습니다.')
+        print('-- 버스 예약 삭제 테스트 END --')
