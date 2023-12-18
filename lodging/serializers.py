@@ -4,10 +4,10 @@ from .models import (
     LodgingImage,
     LodgingReview,
     LodgingReviewImage,
+    LodgingReviewComment,
 )
 
 class LodgingSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Lodging
         fields = ['name', 'intro', 'notice', 'info', 'sub_location']
@@ -34,8 +34,12 @@ class LodgingReviewSerializer(serializers.ModelSerializer):
     star_score = serializers.IntegerField(min_value=1, max_value=5)
 
     def validate(self, data):
-        if data['user'] != self.context['request'].user:
-            raise serializers.ValidationError('유저 정보가 일치하지 않습니다.')
+        if data['title'] == '':
+            raise serializers.ValidationError('제목을 입력해주세요.')
+        if data['content'] == '':
+            raise serializers.ValidationError('내용을 입력해주세요.')
+        if data['star_score'] <= 0:
+            raise serializers.ValidationError('별점을 입력해주세요.')
         return data
     
 class LodgingReviewImageSerializer(serializers.ModelSerializer):
@@ -47,3 +51,14 @@ class LodgingReviewImageSerializer(serializers.ModelSerializer):
         if data['image'] == None:
             raise serializers.ValidationError('숙소 리뷰 이미지를 업로드해주세요.')
         return data
+    
+class LodgingReviewCommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LodgingReviewComment
+        fields = ['content', 'lodging_review', 'user']
+
+    def validate(self, data):
+        if data['content'] == '':
+            raise serializers.ValidationError('내용을 입력해주세요.')
+        return data
+    

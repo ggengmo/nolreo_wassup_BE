@@ -151,6 +151,6 @@ class LodgingTestCase(TestCase):
         self.assertEqual(response.status_code, 404)
         print('-- 숙소 이미지 조회 테스트 END --')
 
-    def tearDown(self):
+    # 테스트 종료 후 media 폴더 삭제
         remove_media_folder()
         return super().tearDown()
