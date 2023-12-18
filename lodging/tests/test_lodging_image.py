@@ -1,10 +1,13 @@
+import os
+
+from pathlib import Path
 from django.test import TestCase
 from rest_framework.test import APIClient
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 from account.models import CustomUser as User
 from lodging.models import MainLocation, SubLocation, Lodging, LodgingImage
-
+from utils.tools import remove_media_folder
 class LodgingTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(
@@ -147,3 +150,7 @@ class LodgingTestCase(TestCase):
         response = self.client.get('/lodging/images/2/')
         self.assertEqual(response.status_code, 404)
         print('-- 숙소 이미지 조회 테스트 END --')
+
+    def tearDown(self):
+        remove_media_folder()
+        return super().tearDown()
