@@ -399,3 +399,69 @@ class TestReservationLodging(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data['message'][0], '이미 예약된 날짜입니다.')
         print('-- 숙소 예약 수정 테스트 END --')
+
+    def test_reservation_lodging_delete(self):
+        '''
+        숙소 예약 삭제 테스트
+        1. 미로그인 상태에서 숙소 예약 삭제 요청 테스트
+        2. 로그인 상태(권한 X)에서 숙소 예약 삭제 요청 테스트
+        3. 로그인 상태(권한 O)에서 숙소 예약 삭제 요청 테스트
+        4. 존재하지 않는 숙소 예약 삭제 요청 테스트
+        '''
+        print('-- 숙소 예약 삭제 테스트 BEGIN --')
+        data = {
+            'start_at': '2024-12-25',
+            'end_at': '2024-12-26',
+            'room': 1,
+            'reservation_type': 'RO',
+            'user': 1,
+        }
+        self.client.post(
+            '/reservation/lodging/', 
+            data, 
+            format='json',
+            HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
+        # 미로그인 상태에서 숙소 예약 삭제 요청 테스트
+        response = self.client.delete('/reservation/lodging/1/')
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.data['detail'], '로그인이 필요합니다.')
+
+        # 로그인 상태(권한 X)에서 숙소 예약 삭제 요청 테스트
+        signup_data = {
+            'email': 'test1@gmail.com',
+            'username': 'test',
+            'nickname': 'test1',
+            'password': 'testtest1@',
+            'password2': 'testtest1@',
+        }
+        self.client.post(
+            '/account/signup/', 
+            signup_data,
+            format='json')
+        login_data = {
+            'email': 'test1@gmail.com',
+            'password': 'testtest1@',
+        }
+        response = self.client.post(
+            '/account/login/',
+            login_data,
+            format='json')
+        access = response.data['access']
+        response = self.client.delete(
+            '/reservation/lodging/1/', 
+            HTTP_AUTHORIZATION=f'Bearer {access}')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data['message'], '해당 숙소를 예약한 기록이 없습니다.')
+
+        # 로그인 상태(권한 O)에서 숙소 예약 삭제 요청 테스트
+        response = self.client.delete(
+            '/reservation/lodging/1/', 
+            HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
+        self.assertEqual(response.status_code, 204)
+
+        # 존재하지 않는 숙소 예약 삭제 요청 테스트
+        response = self.client.delete(
+            '/reservation/lodging/1/', 
+            HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data['message'], '해당 숙소를 예약한 기록이 없습니다.')
