@@ -4,6 +4,7 @@ from rest_framework.test import APIClient
 from account.models import CustomUser as User
 from lodging.models import MainLocation, SubLocation, Lodging, LodgingReview, LodgingReviewImage
 from django.core.files.uploadedfile import SimpleUploadedFile
+from utils.tools import remove_media_folder
 
 class LodgingReviewTest(TestCase):
     def setUp(self):
@@ -297,3 +298,7 @@ class LodgingReviewTest(TestCase):
         )
         self.assertEqual(response.status_code, 401)
         print('숙소 리뷰 삭제 테스트 - End')
+
+    def tearDown(self):
+        remove_media_folder()
+        return super().tearDown()
