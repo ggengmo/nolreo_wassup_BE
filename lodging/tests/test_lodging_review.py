@@ -1,49 +1,15 @@
-from django.test import TestCase
-from rest_framework.test import APIClient
+from .test_setup import LogingTestCase
 
-from account.models import CustomUser as User
-from lodging.models import MainLocation, SubLocation, Lodging, LodgingReview, LodgingReviewImage
 from django.core.files.uploadedfile import SimpleUploadedFile
 from utils.tools import remove_media_folder
 
-class LodgingReviewTest(TestCase):
+class LodgingReviewTest(LogingTestCase):
     def setUp(self):
-        self.client = APIClient()
+        super().setUp()
 
-        # user 생성
-        signup_data = {
-            'email': 'test@test.com',
-            'username': 'test',
-            'nickname': 'test',
-            'password': 'testtest1@2#',
-            'password2': 'testtest1@2#',
-        }
-        login_data = {
-            'email': 'test@test.com',
-            'password': 'testtest1@2#',
-        }
-
-        self.client.post('/account/signup/', signup_data, format='json')
-        response = self.client.post('/account/login/', login_data, format='json')
-        self.access_token = response.data['access']
-
-        # lodging 생성
-        self.lodging = Lodging.objects.create(
-            name='test lodging',
-            intro='test intro',
-            notice='test notice',
-            info='test info',
-            sub_location=SubLocation.objects.create(
-                address='test sub location',
-                main_location=MainLocation.objects.create(
-                    address='test main location',
-                ),
-            ),
-        )
-
-    def test_create_lodging_review(self):
+    def test_lodging_review(self):
         '''
-        숙소 리뷰 생성 테스트
+        숙소 리뷰 CRUD 테스트
         '''
         print('숙소 리뷰 생성 테스트 - Begin')
         
