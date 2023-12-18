@@ -191,7 +191,7 @@
 |:-|:-|:-|:-:|:-:|:-:|
 |'lodging/'|POST|숙소 예약 생성|✅|||
 |'lodging/'|GET|숙소 예약 목록|✅|✅||
-|'lodging/\<int:reservation_pk\>/'|PUT|숙소 예약 수정|✅|✅||
+|'lodging/\<int:reservation_pk\>/'|PATCH|숙소 예약 수정|✅|✅||
 |'lodging/\<int:reservation_pk\>/'|DELETE|숙소 예약 삭제|✅|✅||
 |'traffic/'|POST|교통 예약 생성|✅|||
 |'traffic/'|GET|교통 예약 목록|✅|✅||

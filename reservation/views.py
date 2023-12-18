@@ -1,10 +1,9 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ObjectDoesNotExist
 
 from .models import Reservation
-from lodging.models import RoomType
 from .serializers import LodgingReservationSerializer
 from utils.permissions import CustomJWTAuthentication, CustomIsAuthenticated, IsOwner
 
@@ -24,3 +23,15 @@ class LodgingReservationViewSet(ModelViewSet):
         queryset = super().get_queryset()
         queryset = queryset.filter(user=self.request.user)
         return queryset
+    
+    def get_object(self):
+        obj = Reservation.objects.all().filter(user=self.request.user, room=self.kwargs['pk']).first()
+        if not obj:
+            raise ObjectDoesNotExist()
+        return obj
+    
+    def partial_update(self, request, *args, **kwargs):
+        try:
+            return super().partial_update(request, *args, **kwargs)
+        except ObjectDoesNotExist:
+            return Response({'message': '해당 숙소를 예약한 기록이 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
