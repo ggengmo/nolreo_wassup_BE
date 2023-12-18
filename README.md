@@ -165,10 +165,10 @@
 |'review/'|GET|리뷰 목록||||
 |'review/\<int:review_pk\>/'|PUT|리뷰 수정|✅|✅||
 |'review/\<int:review_pk\>/'|DELETE|리뷰 삭제|✅|✅||
-|'reply/'|POST|답글 생성|✅|✅||
+|'reply/'|POST|답글 생성||✅|✅|
 |'reply/'|GET|답글 목록||||
-|'reply/\<int:reply_pk\>/'|PUT|리뷰 답글 수정|✅|✅||
-|'reply/\<int:reply_pk\>/'|DELETE|리뷰 답글 삭제|✅|✅||
+|'reply/\<int:reply_pk\>/'|PUT|답글 수정||✅|✅|
+|'reply/\<int:reply_pk\>/'|DELETE|답글 삭제||✅|✅|
 <br>
 
 |app: pick|HTTP Method|설명|로그인 권한|작성자 권한|Admin 권한|
