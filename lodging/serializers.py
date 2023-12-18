@@ -6,6 +6,7 @@ from .models import (
     LodgingReviewImage,
     LodgingReviewComment,
     RoomType,
+    RoomImage,
 )
 
 class LodgingSerializer(serializers.ModelSerializer):
@@ -39,6 +40,18 @@ class RoomTypeSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('가격을 입력해주세요.')
         if data['capacity'] <= 0:
             raise serializers.ValidationError('수용 인원을 입력해주세요.')
+        return data
+    
+class RoomImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RoomImage
+        fields = ['image', 'is_main', 'room_type']
+
+    def validate(self, data):
+        if data['is_main']:
+            room_type = data['room_type']
+            if RoomImage.objects.filter(room_type=room_type, is_main=True).exists():
+                raise serializers.ValidationError('메인 이미지는 하나만 등록 가능합니다.')
         return data
 
 class LodgingReviewSerializer(serializers.ModelSerializer):
