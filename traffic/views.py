@@ -3,10 +3,10 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser, AllowAny, IsAuthenticated
 from django.shortcuts import get_object_or_404
 
-from .models import Bus, Train, RentalCar, RentalCarImage, RentalCarReview
+from .models import Bus, Train, RentalCar, RentalCarImage, RentalCarReview, RentalCarReviewComment
 from .serializers import (BusSerializer, TrainSerializer, 
                         RentalCarSerializer, RentalCarImageSerializer,
-                        RentalCarReviewSerializer)
+                        RentalCarReviewSerializer, RentalCarReviewCommentSerializer)
 
 
 class BusViewSet(viewsets.ModelViewSet):
@@ -86,6 +86,21 @@ class RentalCarReviewViewSet(viewsets.ModelViewSet):
     '''
     queryset = RentalCarReview.objects.all()
     serializer_class = RentalCarReviewSerializer
+    
+    def get_permissions(self):
+        if self.action in ['create', 'update', 'destroy']:
+            permission_classes = [IsAuthenticated]
+        else:
+            permission_classes = [AllowAny]
+        return [permission() for permission in permission_classes]
+    
+
+class RentalCarReviewCommentViewSet(viewsets.ModelViewSet):
+    '''
+    렌트카 리뷰 댓글 생성 API
+    '''
+    queryset = RentalCarReviewComment.objects.all()
+    serializer_class = RentalCarReviewCommentSerializer
     
     def get_permissions(self):
         if self.action in ['create', 'update', 'destroy']:

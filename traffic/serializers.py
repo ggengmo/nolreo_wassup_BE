@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.fields import empty
-from .models import Bus, Train, RentalCar, RentalCarImage, RentalCarReview
+from .models import Bus, Train, RentalCar, RentalCarImage, RentalCarReview, RentalCarReviewComment
 from datetime import datetime
 
 class BusSerializer(serializers.ModelSerializer):
@@ -115,4 +115,28 @@ class RentalCarReviewSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("내용이 없습니다. 내용을 입력해 주세요.")
         if data['star_score'] <= 0:
             raise serializers.ValidationError("점수가 0점 이하입니다. 1점 이상의 점수를 입력해 주세요.")
+        return data
+
+
+class RentalCarReviewCommentSerializer(serializers.ModelSerializer):
+    '''
+    렌트카 리뷰 댓글 생성 serializer
+    '''
+    class Meta:
+        model = RentalCarReviewComment
+        fields = ['content', 'rental_car_review', 'user']
+
+    def validate(self, data):
+        '''
+        렌트카 리뷰 댓글 유효성 검사 메서드
+        '''
+        if data['content'] == '':
+            raise serializers.ValidationError("내용이 없습니다. 내용을 입력해 주세요.")
+        if data['rental_car_review'] == '':
+            raise serializers.ValidationError("리뷰가 없습니다. 리뷰를 입력해 주세요.")
+        if data['user'] == '':
+            raise serializers.ValidationError("로그인이 필요합니다. 로그인을 해주세요.")
+        if data['rental_car_review'].rental_car not in RentalCar.objects.all():
+            raise serializers.ValidationError("존재하지 않는 리뷰에는 댓글을 달 수 없습니다.")
+        
         return data
