@@ -188,12 +188,6 @@ class TestReservationLodging(TestCase):
         3. 로그인 상태에서 숙소 예약이 없는 경우 리스트 조회 요청 테스트
         '''
         print('-- 숙소 예약 리스트 조회 테스트 BEGIN --')
-        # 미로그인 상태에서 숙소 예약 리스트 조회 요청 테스트
-        response = self.client.get('/reservation/lodging/')
-        self.assertEqual(response.status_code, 401)
-        self.assertEqual(response.data['detail'], '로그인이 필요합니다.')
-
-        # 로그인 상태에서 숙소 예약이 있는 경우 리스트 조회 요청 테스트
         data = {
             'start_at': '2024-12-25',
             'end_at': '2024-12-26',
@@ -206,6 +200,12 @@ class TestReservationLodging(TestCase):
             data, 
             format='json',
             HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
+        # 미로그인 상태에서 숙소 예약 리스트 조회 요청 테스트
+        response = self.client.get('/reservation/lodging/')
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.data['detail'], '로그인이 필요합니다.')
+
+        # 로그인 상태에서 숙소 예약이 있는 경우 리스트 조회 요청 테스트
         response = self.client.get(
             '/reservation/lodging/',
             HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
@@ -622,3 +622,62 @@ class TestReservationBus(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertIn('예약이 불가능합니다.', response.data['message'][0])
         print('-- 버스 예약 생성 테스트 END --')
+
+    def test_reservation_bus_list(self):
+        '''
+        버스 예약 리스트 조회 테스트
+        1. 미로그인 상태에서 버스 예약 리스트 조회 요청 테스트
+        2. 로그인 상태에서 버스 예약이 있는 경우 리스트 조회 요청 테스트
+        3. 로그인 상태에서 버스 예약이 없는 경우 리스트 조회 요청 테스트
+        '''
+        print('-- 버스 예약 리스트 조회 테스트 BEGIN --')
+        data = {
+            'bus': 1,
+            'reservation_type': 'BU',
+            'user': 1,
+            'seat': 1,
+        }
+        self.client.post(
+            '/reservation/bus/', 
+            data, 
+            format='json',
+            HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
+        # 미로그인 상태에서 버스 예약 리스트 조회 요청 테스트
+        response = self.client.get('/reservation/bus/')
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.data['detail'], '로그인이 필요합니다.')
+
+        # 로그인 상태에서 버스 예약이 있는 경우 리스트 조회 요청 테스트
+        response = self.client.get(
+            '/reservation/bus/',
+            HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+
+        # 로그인 상태에서 버스 예약이 없는 경우 리스트 조회 요청 테스트
+        data = {
+            'email': 'test1@gmail.com',
+            'username': 'test',
+            'nickname': 'test1',
+            'password': 'testtest1@',
+            'password2': 'testtest1@',
+        }
+        self.client.post(
+            '/account/signup/', 
+            data,
+            format='json')
+        data = {
+            'email': 'test1@gmail.com',
+            'password': 'testtest1@',
+        }
+        response = self.client.post(
+            '/account/login/',
+            data,
+            format='json')
+        access = response.data['access']
+        response = self.client.get(
+            '/reservation/bus/',
+            HTTP_AUTHORIZATION=f'Bearer {access}')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 0)
+        print('-- 버스 예약 리스트 조회 테스트 END --')
