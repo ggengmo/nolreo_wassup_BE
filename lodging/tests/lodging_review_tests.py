@@ -41,15 +41,6 @@ class LodgingReviewTest(TestCase):
             ),
         )
 
-        # lodging review 생성
-        # self.lodging_review = LodgingReview.objects.create(
-        #     title='test title',
-        #     content='test content',
-        #     star_score='5',
-        #     lodging_id=1,
-        #     user_id=1,
-        # )
-
     def test_create_lodging_review(self):
         '''
         숙소 리뷰 생성 테스트
