@@ -1,5 +1,3 @@
-import os
-
 from pathlib import Path
 from django.test import TestCase
 from rest_framework.test import APIClient
