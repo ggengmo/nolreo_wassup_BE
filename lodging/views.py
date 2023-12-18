@@ -17,6 +17,7 @@ from .models import (
     LodgingReviewComment,
     RoomType,
     RoomImage,
+    Amenity,
     )
 from .serializers import (
     LodgingSerializer,
@@ -26,6 +27,7 @@ from .serializers import (
     LodgingReviewCommentSerializer,
     RoomTypeSerializer,
     RoomImageSerializer,
+    AmenitySerializer,
     )
     
 class LodgingViewSet(viewsets.ModelViewSet):
@@ -79,6 +81,20 @@ class RoomImageViewSet(viewsets.ModelViewSet):
     '''
     queryset = RoomImage.objects.all()
     serializer_class = RoomImageSerializer
+    def get_permissions(self):
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            permission_classes = [IsAdminUser]
+        else:
+            permission_classes = [AllowAny]
+        return [permission() for permission in permission_classes]
+    
+class AmenityViewSet(viewsets.ModelViewSet):
+    '''
+    숙소 편의시설 ViewSet
+    '''
+    queryset = Amenity.objects.all()
+    serializer_class = AmenitySerializer
+
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
             permission_classes = [IsAdminUser]
