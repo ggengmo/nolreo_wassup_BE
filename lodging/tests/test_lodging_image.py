@@ -91,7 +91,7 @@ class LodgingTestCase(TestCase):
             'lodging': 1,
         }
 
-        response = self.client.put('/lodging/images/1/', lodging_image_data)
+        response = self.client.patch('/lodging/images/1/', lodging_image_data)
         self.assertEqual(response.status_code, 200)
 
         '''
@@ -103,7 +103,7 @@ class LodgingTestCase(TestCase):
             'lodging': 1,
         }
 
-        response = self.client.put('/lodging/images/1/', lodging_image_data)
+        response = self.client.patch('/lodging/images/1/', lodging_image_data)
         self.assertEqual(response.status_code, 400)
 
         '''
@@ -115,7 +115,7 @@ class LodgingTestCase(TestCase):
             'lodging': 2,
         }
 
-        response = self.client.put('/lodging/images/1/', lodging_image_data)
+        response = self.client.patch('/lodging/images/1/', lodging_image_data)
         self.assertEqual(response.status_code, 400)
         print('-- 숙소 이미지 수정 테스트 END --')
 
@@ -151,6 +151,6 @@ class LodgingTestCase(TestCase):
         self.assertEqual(response.status_code, 404)
         print('-- 숙소 이미지 조회 테스트 END --')
 
-    def tearDown(self):
+    # 테스트 종료 후 media 폴더 삭제
         remove_media_folder()
         return super().tearDown()

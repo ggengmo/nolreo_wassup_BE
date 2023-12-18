@@ -170,7 +170,7 @@ class LodgingReviewTest(TestCase):
             'user': 1,
         }
 
-        response = self.client.put(
+        response = self.client.patch(
             '/lodging/review/1/', 
             data=data,
             HTTP_AUTHORIZATION=f'Bearer {self.access_token}',
@@ -243,7 +243,7 @@ class LodgingReviewTest(TestCase):
             'image': image,
             'lodging_review': 1,
         }
-        response = self.client.put(
+        response = self.client.patch(
             '/lodging/review/image/1/',
             data=data,
             HTTP_AUTHORIZATION=f'Bearer {self.access_token}',
@@ -256,7 +256,7 @@ class LodgingReviewTest(TestCase):
             'image': image,
             'lodging_review': 100,
         }
-        response = self.client.put(
+        response = self.client.patch(
             '/lodging/review/image/1/',
             data=data,
             HTTP_AUTHORIZATION=f'Bearer {self.access_token}',
@@ -290,6 +290,6 @@ class LodgingReviewTest(TestCase):
         self.assertEqual(response.status_code, 401)
         print('숙소 리뷰 삭제 테스트 - End')
 
-    def tearDown(self):
+        # 테스트 종료 후 media 폴더 삭제
         remove_media_folder()
         return super().tearDown()
