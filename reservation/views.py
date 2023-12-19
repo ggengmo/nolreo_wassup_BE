@@ -196,3 +196,23 @@ class RentalCarReservationViewSet(ModelViewSet):
         queryset = super().get_queryset()
         queryset = queryset.filter(user=self.request.user)
         return queryset
+    
+    def get_object(self):
+        '''
+        유저가 예약한 렌트카 조회 메서드
+        '''
+        obj = Reservation.objects.all().filter(
+            user=self.request.user, rental_car=self.kwargs['pk']).first()
+        if not obj:
+            raise ObjectDoesNotExist()
+        return obj
+    
+    def partial_update(self, request, *args, **kwargs):
+        '''
+        렌트카 예약 수정 메서드
+        '''
+        try:
+            return super().partial_update(request, *args, **kwargs)
+        except ObjectDoesNotExist:
+            return Response({'message': '해당 렌트카를 예약한 기록이 없습니다.'}, 
+                            status=status.HTTP_400_BAD_REQUEST)
