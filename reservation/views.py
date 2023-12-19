@@ -189,4 +189,10 @@ class RentalCarReservationViewSet(ModelViewSet):
         'patch': 'partial_update',
     }
 
-    
+    def get_queryset(self):
+        '''
+        유저가 예약한 렌터카 목록 조회 메서드
+        '''
+        queryset = super().get_queryset()
+        queryset = queryset.filter(user=self.request.user)
+        return queryset
