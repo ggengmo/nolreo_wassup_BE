@@ -5,7 +5,7 @@ from rest_framework.exceptions import MethodNotAllowed
 from django.core.exceptions import ObjectDoesNotExist
 
 from .models import Reservation
-from .serializers import LodgingReservationSerializer, BusReservationSerializer
+from .serializers import LodgingReservationSerializer, BusReservationSerializer, TrainReservationSerializer
 from utils.permissions import CustomJWTAuthentication, CustomIsAuthenticated, IsOwner
 
 class LodgingReservationViewSet(ModelViewSet):
@@ -122,3 +122,16 @@ class BusReservationViewSet(ModelViewSet):
             - 해당 메서드는 사용하지 않음
         '''
         raise MethodNotAllowed('Detail GET', detail="Detail GET method is not allowed")
+    
+
+class TrainReservationViewSet(ModelViewSet):
+    '''
+    기차 예약 ViewSet
+    '''
+    serializer_class = TrainReservationSerializer
+    authentication_classes = [CustomJWTAuthentication]
+    permission_classes = [CustomIsAuthenticated, IsOwner]
+    queryset = Reservation.objects.all().filter(reservation_type='TR')
+    action_map = {
+        'patch': 'partial_update',
+    }

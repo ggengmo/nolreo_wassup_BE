@@ -1,9 +1,8 @@
 from datetime import datetime
 from rest_framework import serializers
-from rest_framework.fields import empty
 from rest_framework.serializers import ModelSerializer
 
-from traffic.models import Bus
+from traffic.models import Bus, Train
 from .models import Reservation
 from lodging.models import RoomType
 
@@ -57,8 +56,6 @@ class BusReservationSerializer(ModelSerializer):
         fields = ['id', 'user', 'bus', 'reservation_type', 'start_at', 'end_at', 'seat']
 
 
-    
-
     def validate(self, data):
         '''
         버스 예약 생성&수정 시 유효성 검사
@@ -91,4 +88,43 @@ class BusReservationSerializer(ModelSerializer):
         '''
         if not Bus.objects.filter(id=data['bus']).exists():
             raise serializers.ValidationError({"message":"존재하지 않는 버스입니다."})
+        return super().run_validation(data)
+
+class TrainReservationSerializer(ModelSerializer):
+    seat = serializers.IntegerField(min_value=1, max_value=400, write_only=True)
+    class Meta:
+        model = Reservation
+        fields = ['id', 'user', 'train', 'reservation_type', 'start_at', 'end_at', 'seat']
+
+    def validate(self, data):
+        '''
+        기차 예약 생성&수정 시 유효성 검사
+            - 예약 대상 기차가 과거 기차인지 확인
+        '''
+        if self.context['request'].method == 'POST' or self.context['request'].method == 'PATCH':
+            pre_passengers_cnt = Reservation.objects.filter(train=data['train']).count()
+            passengers_cnt = pre_passengers_cnt + data['seat']
+            if passengers_cnt > 400:
+                raise serializers.ValidationError({"message":f"현재 탑승 가능 승객은 {40-pre_passengers_cnt}명으로 예약이 불가능합니다."})
+        train = Train.objects.get(id=data['train'].id)
+        if train.depart_time < datetime.today():
+            raise serializers.ValidationError({"message":"과거 기차는 예약할 수 없습니다."})
+        return data
+    
+    def create(self, validated_data):
+        '''
+        기차 예약 생성 메서드
+        '''
+        seat = validated_data.pop('seat')
+        reservation = Reservation.objects.create(**validated_data)
+        reservation.save()
+        return reservation
+    
+    def run_validation(self, data=...):
+        '''
+        기차 예약 유효성 실행 메서드
+            기차 존재 여부 확인 에러 메시지 커스텀을 위한 오버라이딩
+        '''
+        if not Train.objects.filter(id=data['train']).exists():
+            raise serializers.ValidationError({"message":"존재하지 않는 기차입니다."})
         return super().run_validation(data)

@@ -2,7 +2,7 @@ from django.test import TestCase
 from rest_framework.test import APIClient
 
 from lodging.models import Lodging, MainLocation, SubLocation, RoomType
-from traffic.models import Bus
+from traffic.models import Bus, Train
 
 class TestReservationLodging(TestCase):
     def setUp(self):
@@ -747,3 +747,158 @@ class TestReservationBus(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data['message'], '해당 버스를 예약한 기록이 없습니다.')
         print('-- 버스 예약 삭제 테스트 END --')
+
+
+class TestReservationTrain(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+
+        # 기차 생성
+        for i in range(1, 6):
+            Train.objects.create(
+                depart_point = '서울',
+                dest_point = '부산',
+                depart_time = f'2024-12-15 12:{i + 20}:00',
+                arrival_time = f'2024-12-15 15:{i + 20}:00',
+                num = f'{1234 + i}',
+                price = '10000',
+            )
+        
+        # 사용자 생성 & 로그인
+        data = {
+            'email': 'test@gmail.com',
+            'username': 'test',
+            'nickname': 'test',
+            'password': 'testtest1@',
+            'password2': 'testtest1@',
+        }
+        self.client.post(
+            '/account/signup/', 
+            data,
+            format='multipart')
+        data = {
+            'email': 'test@gmail.com',
+            'password': 'testtest1@',
+        }
+        response = self.client.post(
+            '/account/login/',
+            data,
+            format='json')
+        self.access_token = response.data['access']
+
+    def test_reservation_train_create(self):
+        '''
+        기차 예약 생성 테스트
+        1. 미로그인 상태에서 기차 예약 생성 요청 테스트
+        2. 로그인 상태에서 기차 예약 생성 요청 테스트
+        3. 이미 만원인 버스 기차 생성 요청 테스트
+        4. 과거 날짜에 버스 기차 생성 요청 테스트
+        5. 존재하지 않는 기차에 버스 예약 생성 요청 테스트
+        6. 여러 좌석을 예약했을 때 예약 가능한 경우 테스트
+        7. 여러 좌석을 예약했을 때 좌석이 부족한 경우 테스트
+        '''
+        print('-- 기차 예약 생성 테스트 BEGIN --')
+        # 미로그인 상태에서 기차 예약 생성 요청 테스트
+        data = {
+            'train': 1,
+            'reservation_type': 'TR',
+            'user': 1,
+            'seat': 1,
+        }
+        response = self.client.post(
+            '/reservation/train/', 
+            data, 
+            format='json')
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.data['detail'], '로그인이 필요합니다.')
+
+        # 로그인 상태에서 기차 예약 생성 요청 테스트
+        response = self.client.post(
+            '/reservation/train/', 
+            data, 
+            format='json',
+            HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
+        self.assertEqual(response.status_code, 201)
+
+        # 이미 만원인 기차 예약 생성 요청 테스트
+        for _ in range(399):
+            self.client.post(
+                '/reservation/train/', 
+                data, 
+                format='json',
+                HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
+        response = self.client.post(
+            '/reservation/train/', 
+            data, 
+            format='json',
+            HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('예약이 불가능합니다.', response.data['message'][0])
+        
+        # 과거 날짜에 기차 예약 생성 요청 테스트
+        Train.objects.create(
+            depart_point = '서울',
+            dest_point = '부산',
+            depart_time = '2022-12-15 12:20:00',
+            arrival_time = f'2022-12-15 15:20:00',
+            num = '1234',
+            price = '10000',
+        )
+        data = {
+            'train': 6,
+            'reservation_type': 'TR',
+            'user': 1,
+            'seat': 1,
+        }
+        response = self.client.post(
+            '/reservation/train/', 
+            data, 
+            format='json',
+            HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data['message'][0], '과거 기차는 예약할 수 없습니다.')
+
+        # 존재하지 않는 기차에 기차 예약 생성 요청 테스트
+        data = {
+            'train': 100,
+            'reservation_type': 'TR',
+            'user': 1,
+            'seat': 1,
+        }
+        response = self.client.post(
+            '/reservation/train/', 
+            data, 
+            format='json',
+            HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data['message'], '존재하지 않는 기차입니다.')
+
+        # 여러 좌석을 예약했을 때 예약 가능한 경우 테스트
+        data = {
+            'train': 2,
+            'reservation_type': 'TR',
+            'user': 1,
+            'seat': 2,
+        }
+        response = self.client.post(
+            '/reservation/train/', 
+            data, 
+            format='json',
+            HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
+        self.assertEqual(response.status_code, 201)
+
+        # 여러 좌석을 예약했을 때 좌석이 부족한 경우 테스트
+        data = {
+            'train': 2,
+            'reservation_type': 'TR',
+            'user': 1,
+            'seat': 400,
+        }
+        response = self.client.post(
+            '/reservation/train/', 
+            data, 
+            format='json',
+            HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('예약이 불가능합니다.', response.data['message'][0])
+        print('-- 기차 예약 생성 테스트 END --')
