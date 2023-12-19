@@ -121,10 +121,10 @@
 |'signup/'|POST|회원가입|||
 |'login/'|POST|로그인(토큰 발급)|||
 |'refresh/'|POST|만료 토큰 재발급|||
-|'status/'|GET|토큰 상태 확인|||
 |'\<int:pk\>/'|GET|프로필 조회|✅|✅||
-|'\<int:pk\>/'|PUT|프로필 수정|✅|✅||
+|'\<int:pk\>/'|PATCH|프로필 수정|✅|✅||
 |'\<int:pk\>/'|DELETE|회원 탈퇴|✅|✅||
+|'password/'|PATCH|회원 비밀번호 변경|✅|✅||
 <br>  
 
 |app: lodging|HTTP Method|설명|로그인 권한|작성자 권한|Admin 권한|
@@ -165,29 +165,41 @@
 |'review/'|GET|리뷰 목록||||
 |'review/\<int:review_pk\>/'|PUT|리뷰 수정|✅|✅||
 |'review/\<int:review_pk\>/'|DELETE|리뷰 삭제|✅|✅||
-|'reply/'|POST|답글 생성|✅|✅||
+|'reply/'|POST|답글 생성||✅|✅|
 |'reply/'|GET|답글 목록||||
-|'reply/\<int:reply_pk\>/'|PUT|리뷰 답글 수정|✅|✅||
-|'reply/\<int:reply_pk\>/'|DELETE|리뷰 답글 삭제|✅|✅||
+|'reply/\<int:reply_pk\>/'|PUT|답글 수정||✅|✅|
+|'reply/\<int:reply_pk\>/'|DELETE|답글 삭제||✅|✅|
 <br>
 
 |app: pick|HTTP Method|설명|로그인 권한|작성자 권한|Admin 권한|
 |:-|:-|:-|:-:|:-:|:-:|
-|'loadging/'|POST|숙소 찜 생성|✅|||
-|'loadging/'|GET|숙소 찜 목록|✅|✅||
-|'loadging/\<int:pick_pk\>/'|DELETE|숙소 찜 삭제|✅|✅||
-|'traffic/'|POST|교통 찜 생성|✅|||
-|'traffic/'|GET|교통 찜 목록|✅|✅||
-|'traffic/\<int:pick_pk\>/'|DELETE|교통 찜 삭제|✅|✅||
+|'lodging/'|POST|숙소 찜 생성|✅|||
+|'lodging/'|GET|숙소 찜 목록|✅|✅||
+|'lodging/\<int:pick_pk\>/'|DELETE|숙소 찜 삭제|✅|✅||
+|'bus/'|POST|버스 찜 생성|✅|||
+|'bus/'|GET|버스 찜 목록|✅|✅||
+|'bus/\<int:pick_pk\>/'|DELETE|버스 찜 삭제|✅|✅||
+|'train/'|POST|기차 찜 생성|✅|||
+|'train/'|GET|기차 찜 목록|✅|✅||
+|'train/\<int:pick_pk\>/'|DELETE|기차 찜 삭제|✅|✅||
+|'rental_car/'|POST|렌트카 찜 생성|✅|||
+|'rental_car/'|GET|렌트카 찜 목록|✅|✅||
+|'rental_car/\<int:pick_pk\>/'|DELETE|렌트카 찜 삭제|✅|✅||
 <br>
 
 |app: reservation|HTTP Method|설명|로그인 권한|작성자 권한|Admin 권한|
 |:-|:-|:-|:-:|:-:|:-:|
-|'loadging/'|POST|숙소 예약 생성|✅|||
-|'loadging/'|GET|숙소 예약 목록|✅|✅||
-|'loadging/\<int:reservation_pk\>/'|PUT|숙소 예약 수정|✅|✅||
-|'loadging/\<int:reservation_pk\>/'|DELETE|숙소 예약 삭제|✅|✅||
-|'traffic/'|POST|교통 예약 생성|✅|||
-|'traffic/'|GET|교통 예약 목록|✅|✅||
-|'traffic/\<int:reservation_pk\>/'|PUT|교통 예약 수정|✅|✅||
-|'traffic/\<int:reservation_pk\>/'|DELETE|교통 예약 삭제|✅|✅||
+|'lodging/'|POST|숙소 예약 생성|✅|||
+|'lodging/'|GET|숙소 예약 목록|✅|✅||
+|'lodging/\<int:reservation_pk\>/'|PATCH|숙소 예약 수정|✅|✅||
+|'lodging/\<int:reservation_pk\>/'|DELETE|숙소 예약 삭제|✅|✅||
+|'bus/'|POST|버스 예약 생성|✅|||
+|'bus/'|GET|버스 예약 목록|✅|✅||
+|'bus/\<int:reservation_pk\>/'|DELETE|버스 예약 삭제|✅|✅||
+|'train/'|POST|기차 예약 생성|✅|||
+|'train/'|GET|기차 예약 목록|✅|✅||
+|'train/\<int:reservation_pk\>/'|DELETE|기차 예약 삭제|✅|✅||
+|'rental_car/'|POST|렌트카 예약 생성|✅|||
+|'rental_car/'|GET|렌트카 예약 목록|✅|✅||
+|'rental_car/\<int:reservation_pk\>/'|PATCH|렌트카 예약 수정|✅|✅||
+|'rental_car/\<int:reservation_pk\>/'|DELETE|렌트카 예약 삭제|✅|✅||
