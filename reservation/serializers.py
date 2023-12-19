@@ -2,7 +2,7 @@ from datetime import datetime
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
-from traffic.models import Bus, Train
+from traffic.models import Bus, Train, RentalCar
 from .models import Reservation
 from lodging.models import RoomType
 
@@ -127,4 +127,52 @@ class TrainReservationSerializer(ModelSerializer):
         '''
         if not Train.objects.filter(id=data['train']).exists():
             raise serializers.ValidationError({"message":"존재하지 않는 기차입니다."})
+        return super().run_validation(data)
+    
+
+class RentalCarReservationSerializer(ModelSerializer):
+    class Meta:
+        model = Reservation
+        fields = ['id', 'user', 'rental_car', 'reservation_type', 'start_at', 'end_at']
+    
+    def validate(self, data):
+        '''
+        렌터카 예약 생성&수정 시 유효성 검사
+            - 예약 시작일이 예약 종료일보다 늦은 경우
+            - 렌트카 예약 시간이 09:00 ~ 18:00 사이인지 확인
+            - 이미 예약된 날짜인지 확인
+            - 과거 날짜인지 확인
+        '''
+        # 예약 시작일이 예약 종료일보다 늦은 경우
+        if data['start_at'] >= data['end_at']:
+            raise serializers.ValidationError(
+                {"message":"예약 시작일이 예약 종료일보다 빨라야 합니다."})
+        # 렌트카 예약 시간이 09:00 ~ 18:00 사이인지 확인
+        if data['start_at'].hour < 9 or data['start_at'].hour > 18:
+            raise serializers.ValidationError(
+                {"message":"렌트카 예약 시간은 09:00 ~ 18:00 사이여야 합니다."})
+        # 이미 예약된 날짜인지 확인
+        reservations = Reservation.objects.filter(rental_car=data['rental_car'])
+        for reservation in reservations:
+            if (data['start_at'] <= reservation.end_at) and (data['end_at'] >= reservation.start_at):
+                if self.context['request'].method == 'POST':
+                    raise serializers.ValidationError({"message":"이미 예약된 날짜입니다."})
+                elif self.context['request'].method == 'PATCH':
+                    if self.instance.start_at != data['start_at'] and self.instance.end_at != data['end_at']:
+                        raise serializers.ValidationError({"message":"이미 예약된 날짜입니다."})
+                    else:
+                        raise serializers.ValidationError(
+                            {"message":"이전 예약 날짜와 같은 예약 날짜입니다."})
+        # 과거 날짜인지 확인
+        if data['start_at'] < datetime.today():
+            raise serializers.ValidationError({"message":"과거 날짜는 선택할 수 없습니다."})
+        return data
+    
+    def run_validation(self, data=...):
+        '''
+        렌터카 예약 유효성 실행 메서드
+            렌터카 존재 여부 확인 에러 메시지 커스텀을 위한 오버라이딩
+        '''
+        if not RentalCar.objects.filter(id=data['rental_car']).exists():
+            raise serializers.ValidationError({"message":"존재하지 않는 렌트카입니다."})
         return super().run_validation(data)

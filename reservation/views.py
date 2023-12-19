@@ -5,7 +5,8 @@ from rest_framework.exceptions import MethodNotAllowed
 from django.core.exceptions import ObjectDoesNotExist
 
 from .models import Reservation
-from .serializers import LodgingReservationSerializer, BusReservationSerializer, TrainReservationSerializer
+from .serializers import (LodgingReservationSerializer, BusReservationSerializer, 
+                            TrainReservationSerializer, RentalCarReservationSerializer)
 from utils.permissions import CustomJWTAuthentication, CustomIsAuthenticated, IsOwner
 
 class LodgingReservationViewSet(ModelViewSet):
@@ -174,3 +175,55 @@ class TrainReservationViewSet(ModelViewSet):
         except ObjectDoesNotExist:
             return Response({'message': '해당 기차를 예약한 기록이 없습니다.'}, 
                             status=status.HTTP_400_BAD_REQUEST)
+        
+
+class RentalCarReservationViewSet(ModelViewSet):
+    '''
+    렌터카 예약 ViewSet
+    '''
+    serializer_class = RentalCarReservationSerializer
+    authentication_classes = [CustomJWTAuthentication]
+    permission_classes = [CustomIsAuthenticated, IsOwner]
+    queryset = Reservation.objects.all().filter(reservation_type='RC')
+    action_map = {
+        'patch': 'partial_update',
+    }
+
+    def get_queryset(self):
+        '''
+        유저가 예약한 렌터카 목록 조회 메서드
+        '''
+        queryset = super().get_queryset()
+        queryset = queryset.filter(user=self.request.user)
+        return queryset
+    
+    def get_object(self):
+        '''
+        유저가 예약한 렌트카 조회 메서드
+        '''
+        obj = Reservation.objects.all().filter(
+            user=self.request.user, rental_car=self.kwargs['pk']).first()
+        if not obj:
+            raise ObjectDoesNotExist()
+        return obj
+    
+    def partial_update(self, request, *args, **kwargs):
+        '''
+        렌트카 예약 수정 메서드
+        '''
+        try:
+            return super().partial_update(request, *args, **kwargs)
+        except ObjectDoesNotExist:
+            return Response({'message': '해당 렌트카를 예약한 기록이 없습니다.'}, 
+                            status=status.HTTP_400_BAD_REQUEST)
+        
+    def destroy(self, request, *args, **kwargs):
+        '''
+        렌트카 예약 삭제 메서드
+        '''
+        try:
+            return super().destroy(request, *args, **kwargs)
+        except ObjectDoesNotExist:
+            return Response({'message': '해당 렌트카를 예약한 기록이 없습니다.'}, 
+                            status=status.HTTP_400_BAD_REQUEST)
+    
