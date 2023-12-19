@@ -10,6 +10,8 @@ router.register('roomtype', views.RoomTypeViewSet)
 router.register('review', views.LodgingReviewViewSet)
 router.register('amenity', views.AmenityViewSet)
 router.register('images', views.LodgingImageViewSet)
+router.register('sublocation', views.SubLocationViewSet)
+router.register('mainlocation', views.MainLocationViewSet)
 router.register('', views.LodgingViewSet)
 
 urlpatterns = [
