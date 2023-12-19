@@ -193,7 +193,13 @@
 |'lodging/'|GET|숙소 예약 목록|✅|✅||
 |'lodging/\<int:reservation_pk\>/'|PATCH|숙소 예약 수정|✅|✅||
 |'lodging/\<int:reservation_pk\>/'|DELETE|숙소 예약 삭제|✅|✅||
-|'traffic/'|POST|교통 예약 생성|✅|||
-|'traffic/'|GET|교통 예약 목록|✅|✅||
-|'traffic/\<int:reservation_pk\>/'|PUT|교통 예약 수정|✅|✅||
-|'traffic/\<int:reservation_pk\>/'|DELETE|교통 예약 삭제|✅|✅||
+|'bus/'|POST|버스 예약 생성|✅|||
+|'bus/'|GET|버스 예약 목록|✅|✅||
+|'bus/\<int:reservation_pk\>/'|DELETE|버스 예약 삭제|✅|✅||
+|'train/'|POST|기차 예약 생성|✅|||
+|'train/'|GET|기차 예약 목록|✅|✅||
+|'train/\<int:reservation_pk\>/'|DELETE|기차 예약 삭제|✅|✅||
+|'rental_car/'|POST|렌트카 예약 생성|✅|||
+|'rental_car/'|GET|렌트카 예약 목록|✅|✅||
+|'rental_car/\<int:reservation_pk\>/'|PATCH|렌트카 예약 수정|✅|✅||
+|'rental_car/\<int:reservation_pk\>/'|DELETE|렌트카 예약 삭제|✅|✅||
