@@ -5,7 +5,8 @@ from rest_framework.exceptions import MethodNotAllowed
 from django.core.exceptions import ObjectDoesNotExist
 
 from .models import Reservation
-from .serializers import LodgingReservationSerializer, BusReservationSerializer, TrainReservationSerializer
+from .serializers import (LodgingReservationSerializer, BusReservationSerializer, 
+                            TrainReservationSerializer, RentalCarReservationSerializer)
 from utils.permissions import CustomJWTAuthentication, CustomIsAuthenticated, IsOwner
 
 class LodgingReservationViewSet(ModelViewSet):
@@ -174,3 +175,18 @@ class TrainReservationViewSet(ModelViewSet):
         except ObjectDoesNotExist:
             return Response({'message': '해당 기차를 예약한 기록이 없습니다.'}, 
                             status=status.HTTP_400_BAD_REQUEST)
+        
+
+class RentalCarReservationViewSet(ModelViewSet):
+    '''
+    렌터카 예약 ViewSet
+    '''
+    serializer_class = RentalCarReservationSerializer
+    authentication_classes = [CustomJWTAuthentication]
+    permission_classes = [CustomIsAuthenticated, IsOwner]
+    queryset = Reservation.objects.all().filter(reservation_type='RC')
+    action_map = {
+        'patch': 'partial_update',
+    }
+
+    
