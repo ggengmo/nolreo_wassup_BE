@@ -99,12 +99,9 @@ class BusReservationViewSet(ModelViewSet):
     def partial_update(self, request, *args, **kwargs):
         '''
         버스 예약 수정 메서드
+            - 해당 메서드는 사용하지 않음
         '''
-        try:
-            return super().partial_update(request, *args, **kwargs)
-        except ObjectDoesNotExist:
-            return Response({'message': '해당 버스를 예약한 기록이 없습니다.'}, 
-                            status=status.HTTP_400_BAD_REQUEST)
+        raise MethodNotAllowed('PATCH', detail="PATCH method is not allowed")
         
     def destroy(self, request, *args, **kwargs):
         '''
@@ -135,3 +132,25 @@ class TrainReservationViewSet(ModelViewSet):
     action_map = {
         'patch': 'partial_update',
     }
+
+    def get_queryset(self):
+        '''
+        유저가 예약한 버스 목록 조회 메서드
+        '''
+        queryset = super().get_queryset()
+        queryset = queryset.filter(user=self.request.user)
+        return queryset
+    
+    def partial_update(self, request, *args, **kwargs):
+        '''
+        기차 예약 수정 메서드
+            - 해당 메서드는 사용하지 않음
+        '''
+        raise MethodNotAllowed('PATCH', detail="PATCH method is not allowed")
+    
+    def retrieve(self, instance):
+        '''
+        기차 예약 조회 메서드
+            - 해당 메서드는 사용하지 않음
+        '''
+        raise MethodNotAllowed('Detail GET', detail="Detail GET method is not allowed")

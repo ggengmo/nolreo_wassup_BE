@@ -902,3 +902,62 @@ class TestReservationTrain(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertIn('예약이 불가능합니다.', response.data['message'][0])
         print('-- 기차 예약 생성 테스트 END --')
+
+    def test_reservation_train_list(self):
+        '''
+        기차 예약 리스트 조회 테스트
+        1. 미로그인 상태에서 기차 예약 리스트 조회 요청 테스트
+        2. 로그인 상태에서 기차 예약이 있는 경우 리스트 조회 요청 테스트
+        3. 로그인 상태에서 기차 예약이 없는 경우 리스트 조회 요청 테스트
+        '''
+        print('-- 기차 예약 리스트 조회 테스트 BEGIN --')
+        data = {
+            'train': 1,
+            'reservation_type': 'TR',
+            'user': 1,
+            'seat': 1,
+        }
+        response = self.client.post(
+            '/reservation/train/', 
+            data, 
+            format='json',
+            HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
+        # 미로그인 상태에서 기차 예약 리스트 조회 요청 테스트
+        response = self.client.get('/reservation/train/')
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.data['detail'], '로그인이 필요합니다.')
+
+        # 로그인 상태에서 기차 예약이 있는 경우 리스트 조회 요청 테스트
+        response = self.client.get(
+            '/reservation/train/',
+            HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+
+        # 로그인 상태에서 기차 예약이 없는 경우 리스트 조회 요청 테스트
+        data = {
+            'email': 'test1@gmail.com',
+            'username': 'test',
+            'nickname': 'test1',
+            'password': 'testtest1@',
+            'password2': 'testtest1@',
+        }
+        self.client.post(
+            '/account/signup/', 
+            data,
+            format='json')
+        data = {
+            'email': 'test1@gmail.com',
+            'password': 'testtest1@',
+        }
+        response = self.client.post(
+            '/account/login/',
+            data,
+            format='json')
+        access = response.data['access']
+        response = self.client.get(
+            '/reservation/train/',
+            HTTP_AUTHORIZATION=f'Bearer {access}')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 0)
+        print('-- 기차 예약 리스트 조회 테스트 END --')
