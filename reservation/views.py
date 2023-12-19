@@ -216,3 +216,14 @@ class RentalCarReservationViewSet(ModelViewSet):
         except ObjectDoesNotExist:
             return Response({'message': '해당 렌트카를 예약한 기록이 없습니다.'}, 
                             status=status.HTTP_400_BAD_REQUEST)
+        
+    def destroy(self, request, *args, **kwargs):
+        '''
+        렌트카 예약 삭제 메서드
+        '''
+        try:
+            return super().destroy(request, *args, **kwargs)
+        except ObjectDoesNotExist:
+            return Response({'message': '해당 렌트카를 예약한 기록이 없습니다.'}, 
+                            status=status.HTTP_400_BAD_REQUEST)
+    
