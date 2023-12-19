@@ -5,6 +5,8 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import IsAuthenticated
 
+from account.models import CustomUser
+
 class CustomIsAuthenticated(IsAuthenticated):
     '''
     인증 여부 확인 메서드
@@ -35,4 +37,7 @@ class IsOwner(permissions.BasePermission):
     message = '권한이 없습니다.'
 
     def has_object_permission(self, request, view, obj):
-        return obj == request.user or request.user == obj.user
+        if type(obj) == CustomUser:
+            return obj == request.user
+        else:
+            return obj == request.user or request.user == obj.get('user')
