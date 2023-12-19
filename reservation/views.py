@@ -154,3 +154,23 @@ class TrainReservationViewSet(ModelViewSet):
             - 해당 메서드는 사용하지 않음
         '''
         raise MethodNotAllowed('Detail GET', detail="Detail GET method is not allowed")
+    
+    def get_object(self):
+        '''
+        유저가 예약한 기차 조회 메서드
+        '''
+        obj = Reservation.objects.all().filter(
+            user=self.request.user, train=self.kwargs['pk']).first()
+        if not obj:
+            raise ObjectDoesNotExist()
+        return obj
+    
+    def destroy(self, request, *args, **kwargs):
+        '''
+        기차 예약 삭제 메서드
+        '''
+        try:
+            return super().destroy(request, *args, **kwargs)
+        except ObjectDoesNotExist:
+            return Response({'message': '해당 기차를 예약한 기록이 없습니다.'}, 
+                            status=status.HTTP_400_BAD_REQUEST)
