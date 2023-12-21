@@ -57,11 +57,10 @@
 
 ### 2-2. 개발 환경
 <div>
-    배포 기술 추가 필요<br/>
+    <img src="https://img.shields.io/badge/amazonec2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=white">
     <img src="https://img.shields.io/badge/visualstudio-007ACC?style=for-the-badge&logo=visualstudio&logoColor=white">
     <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
     <img src="https://img.shields.io/badge/discord-5865F2?style=for-the-badge&logo=discord&logoColor=white">
-    <br/>if 협업 툴 추가되면 추가 필요
 </div>
 
 ### 2-3. 개발 일정
@@ -76,17 +75,18 @@
 ## 3. 배포 URL 및 아키텍쳐
 ### 3-1. 배포 URL
 #### [Django(API) 서버]  
-작성 필요
+https://api.nolreowassup.shop/
 
 #### [클라이언트(FrontEnd) 서버]  
-작성 필요
+https://www.nolreowassup.shop/
 ```
 배포 테스트 계정
-작성 필요
+ID : test@test.com
+PW : test123!@#
 ```
 
 ### 3-2. 배포 아키텍쳐
-작성 필요
+<img src="./static/assets/images/deploy_architecture.png" width="100%">
 
 ## 4. 요구사항 및 기능 명세
 <img src="./static/assets/images/요구사항분석및기능명세.png" width="100%">
@@ -132,16 +132,36 @@
 |''|POST|숙소 생성 |||✅|
 |'\<int:lodging_pk\>/'|GET|숙소 상세||||
 |''|GET|숙소 목록||||
-|'\<int:lodging_pk\>/'|PUT|숙소 정보 수정|||✅|
+|'\<int:lodging_pk\>/'|PATCH|숙소 정보 수정|||✅|
 |'\<int:lodging_pk\>/'|DELETE|숙소 삭제|||✅|
+|'images/'|POST|숙소 이미지 생성|||✅|
+|'images/\<int:image_pk\>/'|GET|숙소 이미지 상세||||
+|'images/\<int:image_pk\>/'|PATCH|숙소 이미지 수정|||✅|
+|'images/\<int:image_pk\>/'|DELETE|숙소 이미지 삭제|||✅|
+|'amenity/'|POST|숙소 편의시설 생성|||✅|
+|'amenity/\<int:amentiy_pk\>/'|GET|숙소 편의시설 상세||||
+|'amenity/\<int:amentiy_pk\>/'|PATCH|숙소 편의시설 수정|||✅|
+|'amenity/\<int:amentiy_pk\>/'|DELETE|숙소 편의시설 삭제|||✅|
+|'roomtype/'|POST|객실 생성|||✅|
+|'roomtype/\<int:roomtype_pk\>/'|GET|객실 상세||||
+|'roomtype/\<int:roomtype_pk\>/'|PATCH|객실 수정|||✅|
+|'roomtype/\<int:roomtype_pk\>/'|DELETE|객실 삭제|||✅|
+|'roomtype/image/'|POST|객실 이미지 생성|||✅|
+|'roomtype/image/\<int:roomtype_pk\>/'|GET|객실 이미지 상세||||
+|'roomtype/image/\<int:roomtype_pk\>/'|PATCH|객실 이미지 수정|||✅|
+|'roomtype/image/\<int:roomtype_pk\>/'|DELETE|객실 이미지 삭제|||✅|
 |'review/'|POST|리뷰 생성|✅|||
 |'review/'|GET|리뷰 목록||||
-|'review/\<int:review_pk\>/'|PUT|리뷰 수정|✅|✅||
+|'review/\<int:review_pk\>/'|PATCH|리뷰 수정|✅|✅||
 |'review/\<int:review_pk\>/'|DELETE|리뷰 삭제|✅|✅||
-|'reply/'|POST|답글 생성|✅|✅||
-|'reply/'|GET|답글 목록||||
-|'reply/\<int:reply_pk\>/'|PUT|리뷰 답글 수정|✅|✅||
-|'reply/\<int:reply_pk\>/'|DELETE|리뷰 답글 삭제|✅|✅||
+|'review/image/'|POST|리뷰 이미지 생성|✅|||
+|'review/image/'|GET|리뷰 이미지 목록||||
+|'review/image/\<int:review_pk\>/'|PATCH|리뷰 이미지 수정|✅|✅||
+|'review/image/\<int:review_pk\>/'|DELETE|리뷰 이미지 삭제|✅|✅||
+|'review/\<int:review_pk\>/comment/'|POST|리뷰 답글 생성|✅|||
+|'review/\<int:review_pk\>/comment/'|GET|리뷰 답글 목록||||
+|'review/\<int:review_pk\>/comment/\<int:comment_pk\>/'|PATCH|리뷰 답글 수정|✅|✅||
+|'review/\<int:review_pk\>/comment/\<int:comment_pk\>/'|DELETE|리뷰 답글 삭제|✅|✅||
 <br>
 
 |app: traffic|HTTP Method|설명|로그인 권한|작성자 권한|Admin 권한|
@@ -203,3 +223,116 @@
 |'rental_car/'|GET|렌트카 예약 목록|✅|✅||
 |'rental_car/\<int:reservation_pk\>/'|PATCH|렌트카 예약 수정|✅|✅||
 |'rental_car/\<int:reservation_pk\>/'|DELETE|렌트카 예약 삭제|✅|✅||
+
+## 8. 프로젝트 구조
+### 8-1. BE 프로젝트 구조
+```
+📦nolreo_wassup_BE
+ ┣ 📂.git
+ ┣ 📂account
+ ┃ ┣ 📜managers.py
+ ┃ ┣ 📜models.py
+ ┃ ┣ 📜serializers.py
+ ┃ ┣ 📜tests.py
+ ┃ ┣ 📜urls.py
+ ┃ ┣ 📜views.py
+ ┣ 📂lodging
+ ┃ ┣ 📂tests
+ ┃ ┣ 📜models.py
+ ┃ ┣ 📜serializers.py
+ ┃ ┣ 📜urls.py
+ ┃ ┣ 📜views.py
+ ┣ 📂nolreo_wassup
+ ┃ ┣ 📜settings.py
+ ┃ ┣ 📜urls.py
+ ┣ 📂pick
+ ┃ ┣ 📜models.py
+ ┃ ┣ 📜serializers.py
+ ┃ ┣ 📜tests.py
+ ┃ ┣ 📜urls.py
+ ┃ ┣ 📜views.py
+ ┣ 📂reservation
+ ┃ ┣ 📜models.py
+ ┃ ┣ 📜serializers.py
+ ┃ ┣ 📜tests.py
+ ┃ ┣ 📜urls.py
+ ┃ ┣ 📜views.py
+ ┣ 📂static
+ ┃ ┗ 📂assets
+ ┃ ┃ ┗ 📂images
+ ┣ 📂traffic
+ ┃ ┣ 📂tests
+ ┃ ┣ 📜models.py
+ ┃ ┣ 📜serializers.py
+ ┃ ┣ 📜urls.py
+ ┃ ┣ 📜views.py
+ ┣ 📂utils
+ ┃ ┣ 📜permissions.py
+ ┃ ┗ 📜tools.py
+ ┣ 📜.env
+ ┣ 📜.gitignore
+ ┣ 📜CONVENTION.md
+ ┣ 📜db.sqlite3
+ ┣ 📜manage.py
+ ┣ 📜README.md
+ ┗ 📜requirements.txt
+```
+## 9. UI
+## 10. 메인 기능
+## 11. 부가 기능
+## 12. 개발 이슈
+### 12-1. Github Action 설정 중 SECRET KEY 설정 오류
+#### 12-1-1. 문제 원인
+```shell
+django.core.exceptions.ImproperlyConfigured: The SECRET_KEY setting must not be empty.
+github action
+```
+- Github Action을 설정하던 중 위와 같은 오류가 발생하게 되었는데, 오류를 해석해 보니 django를 실행할 때 사용되는 SECRET_KEY가 없어서 생기는 오류였다.
+- 하지만 Github setting에서 시크릿 키로 설정해주었는데도 해당 오류가 발생하는게 의문이었습니다. 추가적으로 Github Action을 설정한 코드를 확인하며 찾은 원인은 테스트 코드에 있었습니다.
+- 테스트 코드를 실행하기 위해서는 Github Action을 통해 설정한 가상환경에도 SECRET_KEY가 따로 세팅이 되어야 테스트 코드를 위한 Django 실행에 오류가 생기지 않을 수 있었기 때문에 오류가 발생하였던 것입니다
+#### 12-1.2. 해결 방법
+```yml
+# 수정 전 코드
+- name: Run Tests
+    run: |
+        python manage.py test
+# 수정 후 코드
+- name: Run Tests
+    run: |
+        python manage.py test
+    env :
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
+        DEBUG: ${{ secrets.DEBUG }}
+```
+- 원인 확인 위와 같이 작성했던 코드에 환경 변수를 적용하는 코드를 추가해주어 테스트 코드 실행 시 SECRET_KEY를 적용하여 해결할 수 있었습니다.
+
+### 12-2. Github Action 설정 중 인증 실패 오류
+#### 12-2-1. 문제 원인
+```
+ssh: handshake failed: ssh: unable to authenticate, attempted methods [none password], no supported methods remain
+```
+- 기존에 Github Action 설정 시 사용했던 username과 password를 기반으로 하는 설정을 하는 경우 위와 같은 오류가 발생하는 상황이었습니다.
+- 해당 오류는 인증 과정 중 서버가 해당 인증 방법을 지원하지 않아 발생하는 오류였습니다.
+#### 12-2-2. 해결 방법
+- 오류 해결을 위해서 key를 사용하는 인증 방법을 적용하였습니다.
+- key를 사용하는 인증을 위해서는 현재 프로젝트에서 사용하는 EC2 서버에서 받은 pem 파일 내의 key 값을 Github setting에서 키 값을 'PEM_SECRET'으로 하는 시크릿 키로 설정해주었습니다.
+```yml
+# 수정 전 코드
+- name: 서버 배포
+    uses: appleboy/ssh-action@master
+    with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USER }}
+        password: ${{ secrets.SERVER_PASSWORD }}
+        script: |
+# 수정 후 코드
+- name: 서버 배포
+    uses: appleboy/ssh-action@master
+    with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USER }}
+        key: ${{ secrets.PEM_SECRET }}
+        script: |
+```
+- 이후 위와 같이 기존의 password로 서버에 접근하는 방식에서 key로 접근하는 방식으로 Github Action 코드를 변경하여 문제를 해결할 수 있었습니다.
+## 13. 개발 회고
