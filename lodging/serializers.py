@@ -42,6 +42,7 @@ class LodgingImageSerializer(serializers.ModelSerializer):
         model = LodgingImage
         fields = ['image', 'is_main', 'lodging']
 
+
     def validate(self, data):
         if data['is_main']:
             lodging = data['lodging']
@@ -51,10 +52,12 @@ class LodgingImageSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('숙소 이미지를 업로드해주세요.')
         return data
 
+
 class RoomTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = RoomType
         fields = ['name', 'price', 'capacity', 'lodging']
+
 
     def validate(self, data):
         if data['name'] == '':
@@ -64,11 +67,13 @@ class RoomTypeSerializer(serializers.ModelSerializer):
         if data['capacity'] <= 0:
             raise serializers.ValidationError('수용 인원을 입력해주세요.')
         return data
-    
+
+
 class RoomImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = RoomImage
         fields = ['image', 'is_main', 'room_type']
+
 
     def validate(self, data):
         if data['is_main']:
@@ -77,21 +82,25 @@ class RoomImageSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError('메인 이미지는 하나만 등록 가능합니다.')
         return data
 
+
 class AmenitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Amenity
         fields = ['name', 'lodging']
+
 
     def validate(self, data):
         if data['name'] == '':
             raise serializers.ValidationError('편의시설을 입력해주세요.')
         return data
 
+
 class LodgingReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = LodgingReview
         fields = ['title', 'content', 'star_score', 'lodging', 'user']
-    
+
+
     star_score = serializers.IntegerField(min_value=1, max_value=5)
 
     def validate(self, data):
@@ -102,21 +111,25 @@ class LodgingReviewSerializer(serializers.ModelSerializer):
         if data['star_score'] <= 0:
             raise serializers.ValidationError('별점을 입력해주세요.')
         return data
-    
+
+
 class LodgingReviewImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = LodgingReviewImage
         fields = ['image', 'lodging_review']
 
+
     def validate(self, data):
         if data['image'] == None:
             raise serializers.ValidationError('숙소 리뷰 이미지를 업로드해주세요.')
         return data
-    
+
+
 class LodgingReviewCommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = LodgingReviewComment
         fields = ['content', 'lodging_review', 'user']
+
 
     def validate(self, data):
         if data['content'] == '':

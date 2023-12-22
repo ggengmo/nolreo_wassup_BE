@@ -4,7 +4,7 @@ from rest_framework.test import APIClient
 from account.models import CustomUser as User
 from traffic.models import RentalCar, RentalCarImage, RentalCarReview, RentalCarReviewComment
 from django.core.files.uploadedfile import SimpleUploadedFile
-from utils.tools import remove_media_folder
+from utils.test_remove_tools import remove_media_folder
 
 
 class TestRentalCarCase(TestCase):

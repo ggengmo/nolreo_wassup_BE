@@ -1,4 +1,10 @@
 # 놀러 Wassup - 숙박 지원 서비스
+## 🙌 안녕하세요.
+|강경모|이창현|황병헌|
+|:---:|:---:|:---:|
+|<img src="./static/assets/images/selfie/kang.jpg" width="430">|<img src="./static/assets/images/selfie/lee.jpg" width="400">|<img src="./static/assets/images/selfie/hwang.jpg" width="400">|
+|<a href="https://github.com/ggengmo">🔗 Kang Gyeong Mo</a>|<a href="https://github.com/abcdqwer1">🔗 Lee Chang Hyeon</a>|<a href="https://github.com/Ruler-H">🔗 Hwang Byeong Heon</a>|
+
 ## 목차
 [1. 목표와 기능](#1-목표와-기능)  
 [2. 개발 기술 및 환경, 개발 일정](#2-개발-기술-및-환경-개발-일정)  
@@ -17,12 +23,12 @@
 ## 1. 목표와 기능
 ### 1-1. 목표
 - 국내 여행을 목적으로 하는 사용자들에게 여행 간 필요한 총괄 서비스를 제공하는 플랫폼
-- 숙소, 차량, 음식점, 교통 예약 플랫폼
+- 숙소, 차량, 교통 예약 플랫폼
 - 여행객들 간의 커뮤니티 제공 플랫폼
 
 ### 1-2. 기능
 - 지역 여행지 별 숙소 목록 제공 기능
-- 원하는 지역의 숙소, 렌트카, 음식점 예약 기능
+- 원하는 지역의 숙소, 렌트카 예약 기능
 - 여행지 리뷰를 통한 여행객 정보 공유 기능
 
 #### [Flow Chart]
@@ -58,6 +64,8 @@
 ### 2-2. 개발 환경
 <div>
     <img src="https://img.shields.io/badge/amazonec2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=white">
+    <img src="https://img.shields.io/badge/nginx-009639?style=for-the-badge&logo=nginx&logoColor=white">
+    <img src="https://img.shields.io/badge/gunicorn-499848?style=for-the-badge&logo=gunicorn&logoColor=white">
     <img src="https://img.shields.io/badge/visualstudio-007ACC?style=for-the-badge&logo=visualstudio&logoColor=white">
     <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
     <img src="https://img.shields.io/badge/discord-5865F2?style=for-the-badge&logo=discord&logoColor=white">
@@ -77,7 +85,7 @@
 #### [Django(API) 서버]  
 https://api.nolreowassup.shop/
 
-#### [클라이언트(FrontEnd) 서버]  
+#### [클라이언트(Frontend) 서버]  
 https://www.nolreowassup.shop/
 ```
 배포 테스트 계정
@@ -277,6 +285,8 @@ PW : test123!@#
  ┣ 📜README.md
  ┗ 📜requirements.txt
 ```
+### 8-2. FE 프로젝트 구조
+추가 필요
 ## 9. UI
 ## 10. 메인 기능
 ## 11. 부가 기능
@@ -308,7 +318,7 @@ github action
 
 ### 12-2. Github Action 설정 중 인증 실패 오류
 #### 12-2-1. 문제 원인
-```
+```shell
 ssh: handshake failed: ssh: unable to authenticate, attempted methods [none password], no supported methods remain
 ```
 - 기존에 Github Action 설정 시 사용했던 username과 password를 기반으로 하는 설정을 하는 경우 위와 같은 오류가 발생하는 상황이었습니다.
@@ -335,4 +345,61 @@ ssh: handshake failed: ssh: unable to authenticate, attempted methods [none pass
         script: |
 ```
 - 이후 위와 같이 기존의 password로 서버에 접근하는 방식에서 key로 접근하는 방식으로 Github Action 코드를 변경하여 문제를 해결할 수 있었습니다.
+
+### 12-3. 숙소 API CRUD 테스트 케이스 작성 중 에러
+#### 12-3-1. 문제 원인
+- lodging 앱 테스트 중 `/lodging/images` 경로로 POST 요청시 400 error가 발생하였습니다.
+- 에러의 원인은 lodging 앱의 urls.py에서 설정한 router의 문제였습니다. 아래와 같이 라우터 하나에 두개의 ViewSet을 등록하는 경우 처음 설정한 ViewSet이 /lodging으로 시작하는 모든 URL 요청을 받아 처리하기 때문에 `/lodging/imges` 요청이 두 번째 ViewSet에서 처리되지 않았던 것이었습니다.
+```python
+router = DefaultRouter()
+router.register('', views.LodgingViewSet)
+router.register('images', views.LodgingImageViewSet)
+```
+
+#### 12-3-2. 해결 방법
+- 해당 에러는 `router.register('', views.LodgingViewSet)`보다 `router.register('images', views.LodgingImageViewSet)`이 URL 요청을 먼저 받게 해주는 방법이 필요했기 때문에 아래 코드와 같이 라우터에 ViewSet을 설정하는 위치를 변경해주어 정상동작을 확인할 수 있었습니다.
+```python
+router = DefaultRouter()
+router.register('images', views.LodgingImageViewSet)
+router.register('', views.LodgingViewSet)
+```
+
+### 12-4. Admin 권한으로만 요청 가능한 수정 관련 API에 patch 메소드가 허용되는 문제
+#### 12-4-1. 문제 원인
+- 숙소 관련 테스트 중 일반사용자와 로그인하지 않은 사용자가 수정이 불가능한지 확인하는 테스트를 진행하는 중 put 메소드를 사용했을때는 HTTP 코드 401 뜨는것을 확인했지만, 똑같인 401 응답이 와야하는 patch 메소드로 바꾸면 HTTP 코드가 200이 나오는 문제가 있었습니다.
+- 이 문제는 숙소 ViewSet의 get_permissions에서 아래와 같이 권한을 준 것이 원인이었습니다.
+```python
+def get_permissions(self):
+    if self.action in ['create', 'update', 'destroy']:
+        permission_classes = [IsAdminUser]
+    else:
+        permission_classes = [AllowAny]
+    return [permission() for permission in permission_classes]
+```
+- Admin 권한으로 제한하는 IsAdminUser가 적용되는 update는 put 요청을 받고, patch 요청은 partial_update에서 처리하기 때문에 patch 요청에 대해서 정상 응답을 한 것이었습니다.
+
+#### 12-4-2. 해결 방법
+- IsAdminUser 권한을 주는 코드 중 아래와 같이 patial_update를 대상에 추가시켜 정상 동작할 수 있도록 하였습니다.
+```python
+def get_permissions(self):
+    if self.action in ['create', 'update', 'patial_update', 'destroy']:
+        permission_classes = [IsAdminUser]
+    else:
+        permission_classes = [AllowAny]
+    return [permission() for permission in permission_classes]
+```
+- ModelViewSet에서 patch는 patial_update에서 처리되기 때문에, patch에 대한 권한 제한을 적용할 때는 위의 코드와 같이 적용해주어야할 것입니다.
+
+
 ## 13. 개발 회고
+```text
+👩🏻‍💻 강경모
+작성 필요
+
+👩🏻‍💻 이창현
+작성 필요
+
+👩🏻‍💻 황병헌
+작성 필요
+ TDD로 시작한 개발은 협업에 도움이 됐다
+```

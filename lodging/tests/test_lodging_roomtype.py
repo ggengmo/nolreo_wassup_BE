@@ -1,7 +1,7 @@
 from .test_setup import LogingTestCase
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-from utils.tools import remove_media_folder
+from utils.test_remove_tools import remove_media_folder
 
 class LodgingRoomtypeTest(LogingTestCase):
     def setUp(self):

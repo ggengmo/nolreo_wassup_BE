@@ -29,6 +29,7 @@ class Pick(models.Model):
             models.UniqueConstraint(fields=['user', 'rental_car'], name='unique_rental_car_per_user'),
         ]
 
+
     def clean(self):
         # 이미 찜한 데이터인지 확인
         if Pick.objects.filter(user=self.user, lodging=self.lodging).exists():
