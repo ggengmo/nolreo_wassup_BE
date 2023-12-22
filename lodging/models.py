@@ -18,7 +18,7 @@ class SubLocation(models.Model):
     main_location = models.ForeignKey('MainLocation', on_delete=models.CASCADE, related_name='sub_locations')
 
     def __str__(self):
-        return self.address
+        return f'{self.main_location} {self.address}'
     
 
 class Lodging(models.Model):
