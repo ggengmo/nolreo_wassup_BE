@@ -35,12 +35,6 @@ class LoginView(TokenObtainPairView):
         })
     
 
-class RefreshView(TokenRefreshView):
-    '''
-    토큰 갱신 API
-    '''
-    
-
 class UserView(ModelViewSet):
     '''
     유저 정보 API
@@ -49,9 +43,6 @@ class UserView(ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = [CustomIsAuthenticated, IsOwner]
     authentication_classes = [CustomJWTAuthentication]
-
-    def get_object(self):
-        return super().get_object()
     
 
 class PasswordView(UpdateAPIView):
@@ -63,13 +54,10 @@ class PasswordView(UpdateAPIView):
     permission_classes = [CustomIsAuthenticated, IsOwner]
     authentication_classes = [CustomJWTAuthentication]
     http_method_names = ['patch']
-
-    def get_object(self):
-        return super().get_object()
+    
 
 signup = SignupView.as_view()
 login = LoginView.as_view()
-refresh = RefreshView.as_view()
 user = UserView.as_view({
     'get': 'retrieve',
     'patch': 'partial_update',
