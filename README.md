@@ -213,6 +213,7 @@ PW : test123!@#
 |'rental_car/'|POST|렌트카 찜 생성|✅|||
 |'rental_car/'|GET|렌트카 찜 목록|✅|✅||
 |'rental_car/\<int:pick_pk\>/'|DELETE|렌트카 찜 삭제|✅|✅||
+|''|GET|전체 찜 목록|✅|✅||
 <br>
 
 |app: reservation|HTTP Method|설명|로그인 권한|작성자 권한|Admin 권한|
