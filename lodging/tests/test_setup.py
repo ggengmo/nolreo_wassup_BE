@@ -253,3 +253,28 @@ class LogingTestCase(TestCase):
             HTTP_AUTHORIZATION=f'Bearer {self.access_token}',
             format='json',
         )
+
+    def setUp_location(self):
+        self.client = APIClient()
+
+        #user 생성
+        signup_data = {
+            'email': 'test@test.com',
+            'username': 'test',
+            'nickname': 'test',
+            'password': 'testtest1@2#',
+            'password2': 'testtest1@2#',
+        }
+        login_data = {
+            'email': 'test@test.com',
+            'password': 'testtest1@2#',
+        }
+        self.client.post('/account/signup/', signup_data, format='json')
+        response = self.client.post('/account/login/', login_data, format='json')
+        self.access_token = response.data['access']
+
+        # main_location 생성
+        data = {
+            'address': '서울시 송파구 방이동',
+        }
+        self.client.post('/lodging/mainlocation/', data, HTTP_AUTHORIZATION=f'Bearer {self.access_token}', format='json')

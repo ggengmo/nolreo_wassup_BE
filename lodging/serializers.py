@@ -8,6 +8,8 @@ from .models import (
     RoomType,
     RoomImage,
     Amenity,
+    MainLocation,
+    SubLocation,
 )
 
 class LodgingSerializer(serializers.ModelSerializer):
@@ -15,6 +17,25 @@ class LodgingSerializer(serializers.ModelSerializer):
         model = Lodging
         fields = ['name', 'intro', 'notice', 'info', 'sub_location']
 
+class MainLocationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MainLocation
+        fields = ['address']
+
+    def validate(self, data):
+        if data['address'] == '':
+            raise serializers.ValidationError('주소를 입력해주세요.')
+        return data
+    
+class SubLocationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SubLocation
+        fields = ['address', 'main_location']
+
+    def validate(self, data):
+        if data['address'] == '':
+            raise serializers.ValidationError('상세주소를 입력해주세요.')
+        return data
 
 class LodgingImageSerializer(serializers.ModelSerializer):
     class Meta:
