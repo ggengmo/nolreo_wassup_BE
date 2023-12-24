@@ -1,5 +1,8 @@
 from django.contrib import admin
-from .models import Lodging, LodgingImage, MainLocation, SubLocation, Amenity, LodgingReview, RoomType, RoomImage, LodgingReviewImage, LodgingReviewComment
+from .models import (Lodging, LodgingImage, MainLocation, 
+                    SubLocation, Amenity, LodgingReview, 
+                    RoomType, RoomImage, LodgingReviewImage, 
+                    LodgingReviewComment)
 
 admin.site.register(Lodging)
 admin.site.register(LodgingImage)

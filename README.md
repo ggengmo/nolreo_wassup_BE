@@ -143,6 +143,7 @@ PW : test123!@#
 |'\<int:lodging_pk\>/'|PATCH|숙소 정보 수정|||✅|
 |'\<int:lodging_pk\>/'|DELETE|숙소 삭제|||✅|
 |'images/'|POST|숙소 이미지 생성|||✅|
+|'images/'|GET|숙소 이미지 목록||||
 |'images/\<int:image_pk\>/'|GET|숙소 이미지 상세||||
 |'images/\<int:image_pk\>/'|PATCH|숙소 이미지 수정|||✅|
 |'images/\<int:image_pk\>/'|DELETE|숙소 이미지 삭제|||✅|

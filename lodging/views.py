@@ -49,6 +49,7 @@ class LodgingViewSet(viewsets.ModelViewSet):
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]
     
+    
 class MainLocationViewSet(viewsets.ModelViewSet):
     '''
     메인 지역 ViewSet
@@ -91,6 +92,17 @@ class LodgingImageViewSet(viewsets.ModelViewSet):
         else:
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]
+    
+    def get_queryset(self):
+        '''
+        숙소 이미지 목록을 조회하는 경우 요청한 숙소에 해당하는 이미지만 반환
+        '''
+        if self.action == 'list':
+            lodging_id = self.request.query_params.get('lodging_id', None)
+            queryset = super().get_queryset()
+            queryset = queryset.filter(lodging=lodging_id)
+            return queryset
+        return super().get_queryset()
 
 
 class RoomTypeViewSet(viewsets.ModelViewSet):

@@ -1,4 +1,6 @@
 from rest_framework import serializers
+from django.db.models import Avg
+
 from .models import (
     Lodging,
     LodgingImage,
@@ -12,11 +14,6 @@ from .models import (
     SubLocation,
 )
 
-class LodgingSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Lodging
-        fields = ['name', 'intro', 'notice', 'info', 'sub_location']
-
 class MainLocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = MainLocation
@@ -27,6 +24,7 @@ class MainLocationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('주소를 입력해주세요.')
         return data
     
+
 class SubLocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = SubLocation
@@ -36,6 +34,7 @@ class SubLocationSerializer(serializers.ModelSerializer):
         if data['address'] == '':
             raise serializers.ValidationError('상세주소를 입력해주세요.')
         return data
+
 
 class LodgingImageSerializer(serializers.ModelSerializer):
     class Meta:
@@ -51,6 +50,34 @@ class LodgingImageSerializer(serializers.ModelSerializer):
         if data['image'] == None:
             raise serializers.ValidationError('숙소 이미지를 업로드해주세요.')
         return data
+    
+
+class LodgingSerializer(serializers.ModelSerializer):
+    lodging_image = serializers.SerializerMethodField()
+    address = serializers.SerializerMethodField()
+    star_avg = serializers.SerializerMethodField()
+    review_cnt = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Lodging
+        fields = ['name', 'intro', 'notice', 'info', 'sub_location', 'lodging_image', 'address', 'star_avg', 'review_cnt']
+
+
+    def get_lodging_image(self, obj):
+        try:
+            lodging_image = obj.lodging_images.get(is_main=True)
+        except:
+            return None
+        return LodgingImageSerializer(lodging_image).data
+    
+    def get_address(self, obj):
+        return str(obj.sub_location)
+    
+    def get_star_avg(self, obj):
+        return obj.lodging_reviews.aggregate(star_avg=Avg('star_score'))['star_avg']
+    
+    def get_review_cnt(self, obj):
+        return obj.lodging_reviews.count()
 
 
 class RoomTypeSerializer(serializers.ModelSerializer):

@@ -45,7 +45,7 @@ class LodgingPickViewSet(ModelViewSet):
         return data
 
     def get_object(self):
-        obj = Pick.objects.all().filter(user=self.request.user, lodging=self.kwargs['pk'])
+        obj = Pick.objects.all().filter(user=self.request.user, pk=self.kwargs['pk'])
         if not obj:
             raise ObjectDoesNotExist()
         return obj
@@ -91,7 +91,7 @@ class BusPickViewSet(ModelViewSet):
         return data
     
     def get_object(self):
-        obj = Pick.objects.all().filter(user=self.request.user, bus=self.kwargs['pk'])
+        obj = Pick.objects.all().filter(user=self.request.user, pk=self.kwargs['pk'])
         if not obj:
             raise ObjectDoesNotExist()
         return obj
@@ -137,7 +137,7 @@ class TrainPickViewSet(ModelViewSet):
         return data
     
     def get_object(self):
-        obj = Pick.objects.all().filter(user=self.request.user, train=self.kwargs['pk'])
+        obj = Pick.objects.all().filter(user=self.request.user, pk=self.kwargs['pk'])
         if not obj:
             raise ObjectDoesNotExist()
         return obj
@@ -189,7 +189,7 @@ class RentalCarPickViewSet(ModelViewSet):
         '''
         요청한 pk에 해당하는 렌트카 찜 객체 반환 메서드
         '''
-        obj = Pick.objects.all().filter(user=self.request.user, rental_car=self.kwargs['pk'])
+        obj = Pick.objects.all().filter(user=self.request.user, pk=self.kwargs['pk'])
         if not obj:
             raise ObjectDoesNotExist()
         return obj
