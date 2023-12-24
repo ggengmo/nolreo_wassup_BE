@@ -1,12 +1,14 @@
 from rest_framework import status
 from rest_framework.response import Response
+from rest_framework.generics import ListAPIView
 from rest_framework.viewsets import ModelViewSet
 from django.db import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
 
 from .models import Pick
 from .serializers import (LodgingPickSerializer, BusPickSerializer, 
-                        TrainPickSerializer, RentalcarSerializer)
+                        TrainPickSerializer, RentalcarSerializer,
+                        PickSerializer)
 from utils.permissions import CustomJWTAuthentication, CustomIsAuthenticated, IsOwner
 
 class LodgingPickViewSet(ModelViewSet):
@@ -43,7 +45,7 @@ class LodgingPickViewSet(ModelViewSet):
         return data
 
     def get_object(self):
-        obj = Pick.objects.all().filter(user=self.request.user, lodging=self.kwargs['pk'])
+        obj = Pick.objects.all().filter(user=self.request.user, pk=self.kwargs['pk'])
         if not obj:
             raise ObjectDoesNotExist()
         return obj
@@ -89,7 +91,7 @@ class BusPickViewSet(ModelViewSet):
         return data
     
     def get_object(self):
-        obj = Pick.objects.all().filter(user=self.request.user, bus=self.kwargs['pk'])
+        obj = Pick.objects.all().filter(user=self.request.user, pk=self.kwargs['pk'])
         if not obj:
             raise ObjectDoesNotExist()
         return obj
@@ -135,7 +137,7 @@ class TrainPickViewSet(ModelViewSet):
         return data
     
     def get_object(self):
-        obj = Pick.objects.all().filter(user=self.request.user, train=self.kwargs['pk'])
+        obj = Pick.objects.all().filter(user=self.request.user, pk=self.kwargs['pk'])
         if not obj:
             raise ObjectDoesNotExist()
         return obj
@@ -187,7 +189,7 @@ class RentalCarPickViewSet(ModelViewSet):
         '''
         요청한 pk에 해당하는 렌트카 찜 객체 반환 메서드
         '''
-        obj = Pick.objects.all().filter(user=self.request.user, rental_car=self.kwargs['pk'])
+        obj = Pick.objects.all().filter(user=self.request.user, pk=self.kwargs['pk'])
         if not obj:
             raise ObjectDoesNotExist()
         return obj
@@ -200,6 +202,24 @@ class RentalCarPickViewSet(ModelViewSet):
             return super().destroy(request, *args, **kwargs)
         except ObjectDoesNotExist:
             return Response({'message': '해당 렌트카를 찜한 기록이 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+
+class PickListView(ListAPIView):
+    '''
+    전체 찜 목록 View
+    '''
+    serializer_class = PickSerializer
+    authentication_classes = [CustomJWTAuthentication]
+    permission_classes = [CustomIsAuthenticated, IsOwner]
+    queryset = Pick.objects.all().filter()
+
+    def get_queryset(self):
+        '''
+        유저가 찜한 찜 목록 조회 메서드
+        '''
+        queryset = super().get_queryset()
+        queryset = queryset.filter(user=self.request.user)
+        return queryset
 
 
 lodging_pick = LodgingPickViewSet.as_view({
@@ -225,3 +245,5 @@ rental_car_pick = RentalCarPickViewSet.as_view({
     'get': 'list',
     'delete': 'destroy',
 })
+
+pick_list = PickListView.as_view()

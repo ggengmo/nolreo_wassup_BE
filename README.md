@@ -143,6 +143,7 @@ PW : test123!@#
 |'\<int:lodging_pk\>/'|PATCH|숙소 정보 수정|||✅|
 |'\<int:lodging_pk\>/'|DELETE|숙소 삭제|||✅|
 |'images/'|POST|숙소 이미지 생성|||✅|
+|'images/'|GET|숙소 이미지 목록||||
 |'images/\<int:image_pk\>/'|GET|숙소 이미지 상세||||
 |'images/\<int:image_pk\>/'|PATCH|숙소 이미지 수정|||✅|
 |'images/\<int:image_pk\>/'|DELETE|숙소 이미지 삭제|||✅|
@@ -213,6 +214,7 @@ PW : test123!@#
 |'rental_car/'|POST|렌트카 찜 생성|✅|||
 |'rental_car/'|GET|렌트카 찜 목록|✅|✅||
 |'rental_car/\<int:pick_pk\>/'|DELETE|렌트카 찜 삭제|✅|✅||
+|''|GET|전체 찜 목록|✅|✅||
 <br>
 
 |app: reservation|HTTP Method|설명|로그인 권한|작성자 권한|Admin 권한|
