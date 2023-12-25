@@ -1,9 +1,9 @@
-from rest_framework import status
-from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.generics import CreateAPIView, UpdateAPIView
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework_simplejwt.views import TokenObtainPairView
+from drf_spectacular.utils import extend_schema
+from drf_spectacular.types import OpenApiTypes
 
 from .models import CustomUser as User
 from utils.permissions import CustomJWTAuthentication, CustomIsAuthenticated, IsOwner
@@ -15,12 +15,24 @@ class SignupView(CreateAPIView):
     '''
     serializer_class = SignupSerializer
 
+    @extend_schema(
+        request=SignupSerializer,
+        responses={200: SignupSerializer(many=False)}
+    )
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
+
 
 class LoginView(TokenObtainPairView):
     '''
     로그인 API
     '''
     serializer_class = LoginSerializer
+
+    @extend_schema(
+        request=LoginSerializer,
+        responses={200: OpenApiTypes.OBJECT}
+    )
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -35,12 +47,6 @@ class LoginView(TokenObtainPairView):
         })
     
 
-class RefreshView(TokenRefreshView):
-    '''
-    토큰 갱신 API
-    '''
-    
-
 class UserView(ModelViewSet):
     '''
     유저 정보 API
@@ -49,9 +55,6 @@ class UserView(ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = [CustomIsAuthenticated, IsOwner]
     authentication_classes = [CustomJWTAuthentication]
-
-    def get_object(self):
-        return super().get_object()
     
 
 class PasswordView(UpdateAPIView):
@@ -63,13 +66,10 @@ class PasswordView(UpdateAPIView):
     permission_classes = [CustomIsAuthenticated, IsOwner]
     authentication_classes = [CustomJWTAuthentication]
     http_method_names = ['patch']
-
-    def get_object(self):
-        return super().get_object()
+    
 
 signup = SignupView.as_view()
 login = LoginView.as_view()
-refresh = RefreshView.as_view()
 user = UserView.as_view({
     'get': 'retrieve',
     'patch': 'partial_update',

@@ -1,7 +1,4 @@
 from django.db import models
-from django.core.exceptions import ValidationError
-
-from lodging.models import RoomType
 
 class Reservation(models.Model):
     '''
