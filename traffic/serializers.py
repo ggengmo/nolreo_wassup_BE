@@ -95,24 +95,7 @@ class RentalCarSerializer(serializers.ModelSerializer):
         if data['num'] == '':
             raise serializers.ValidationError("차량 번호가 없습니다. 차량 번호를 입력해 주세요.")
         return data
-
-
-class RentalCarReviewImageSerializer(serializers.ModelSerializer):
-    '''
-    렌트카 리뷰 이미지 생성 serializer
-    '''
-    class Meta:
-        model = RentalCarReviewImage
-        fields = ['image']
-
-    def validate(self, data):
-        '''
-        렌트카 리뷰 이미지 유효성 검사 메서드
-        '''
-        if data['image'] == '':
-            raise serializers.ValidationError("이미지가 없습니다. 이미지를 입력해 주세요.")
-        return data
-
+    
 
 class RentalCarReviewSerializer(serializers.ModelSerializer):
     '''
@@ -132,6 +115,23 @@ class RentalCarReviewSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("내용이 없습니다. 내용을 입력해 주세요.")
         if data['star_score'] <= 0:
             raise serializers.ValidationError("점수가 0점 이하입니다. 1점 이상의 점수를 입력해 주세요.")
+        return data
+
+
+class RentalCarReviewImageSerializer(serializers.ModelSerializer):
+    '''
+    렌트카 리뷰 이미지 생성 serializer
+    '''
+    class Meta:
+        model = RentalCarReviewImage
+        fields = ['image']
+
+    def validate(self, data):
+        '''
+        렌트카 리뷰 이미지 유효성 검사 메서드
+        '''
+        if data['image'] == '':
+            raise serializers.ValidationError("이미지가 없습니다. 이미지를 입력해 주세요.")
         return data
 
 
@@ -155,5 +155,4 @@ class RentalCarReviewCommentSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("로그인이 필요합니다. 로그인을 해주세요.")
         if data['rental_car_review'].rental_car not in RentalCar.objects.all():
             raise serializers.ValidationError("존재하지 않는 리뷰에는 댓글을 달 수 없습니다.")
-        
         return data

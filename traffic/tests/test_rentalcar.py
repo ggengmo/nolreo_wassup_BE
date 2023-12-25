@@ -33,9 +33,6 @@ class TestRentalCarCase(TestCase):
                 rental_car_review = RentalCarReview.objects.get(pk=1),
                 user = user,
             )
-        '''
-        다른 사용자 생성
-        '''
 
     def admin(self):
         '''
@@ -72,27 +69,6 @@ class TestRentalCarCase(TestCase):
         response = self.client.post(
             '/account/login/',
             {'email': 'test1@gmail.com',
-            'password': 'testtest1@'},
-            format='json')
-        access_token = response.data['access']
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {access_token}')
-        user.save()
-        return user
-    
-    def user2(self):
-        '''
-        사용자 생성
-        '''
-        user = User.objects.create_user(
-            email='test2@gmail.com',
-            username='test2',
-            nickname='test3',
-            password='testtest1@',
-        )
-        # 로그인
-        response = self.client.post(
-            '/account/login/',
-            {'email': 'test2@gmail.com',
             'password': 'testtest1@'},
             format='json')
         access_token = response.data['access']
