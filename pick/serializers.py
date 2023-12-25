@@ -37,3 +37,12 @@ class RentalcarSerializer(ModelSerializer):
     class Meta:
         model = Pick
         fields = ['id', 'user', 'rental_car', 'pick_type']
+
+        
+class PickSerializer(ModelSerializer):
+    '''
+    찜 serializer
+    '''
+    class Meta:
+        model = Pick
+        fields = ['id', 'user', 'lodging', 'bus', 'train', 'rental_car', 'pick_type']

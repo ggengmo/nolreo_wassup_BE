@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from rest_framework.fields import empty
 from rest_framework.serializers import ModelSerializer
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.core.validators import MinLengthValidator, MaxLengthValidator
@@ -23,6 +22,7 @@ class SignupSerializer(ModelSerializer):
         extra_kwargs = {
             'password': {'write_only': True}
         }
+
 
     def create(self, validated_data):
         '''
@@ -86,7 +86,8 @@ class UserSerializer(ModelSerializer):
         model = User
         fields = ['email', 'username', 'nickname', 'image']
         read_only_fields = ['email', 'username']
-    
+
+
     def validate_nickname(self, value):
         '''
         닉네임 유효성 검사 메서드
@@ -119,7 +120,11 @@ class PasswordSerializer(ModelSerializer):
             'password': {'write_only': True}
         }
 
+
     def update(self, instance, validated_data):
+        '''
+        비밀번호 변경 메서드
+        '''
         instance.set_password(validated_data['password'])
         instance.save()
         return instance

@@ -19,7 +19,7 @@ class Pick(models.Model):
     pick_type = models.CharField(max_length=100, choices=PICK_TYPES)
 
     def __str__(self):
-        return f'{self.type}'
+        return f'{self.pick_type}'
     
     class Meta:
         constraints = [
@@ -29,13 +29,14 @@ class Pick(models.Model):
             models.UniqueConstraint(fields=['user', 'rental_car'], name='unique_rental_car_per_user'),
         ]
 
+
     def clean(self):
         # 이미 찜한 데이터인지 확인
-        if Pick.objects.filter(user=self.user, lodging=self.lodging).exists():
+        if Pick.objects.filter(user=self.user, lodging=self.lodging, pick_type='LG').exists():
             raise ValidationError("이미 찜한 숙소입니다.")
-        if Pick.objects.filter(user=self.user, bus=self.bus).exists():
+        if Pick.objects.filter(user=self.user, bus=self.bus, pick_type='BU').exists():
             raise ValidationError("이미 찜한 버스입니다.")
-        if Pick.objects.filter(user=self.user, train=self.train).exists():
+        if Pick.objects.filter(user=self.user, train=self.train, pick_type='TR').exists():
             raise ValidationError("이미 찜한 기차입니다.")
-        if Pick.objects.filter(user=self.user, rental_car=self.rental_car).exists():
+        if Pick.objects.filter(user=self.user, rental_car=self.rental_car, pick_type='RC').exists():
             raise ValidationError("이미 찜한 렌트카입니다.")
