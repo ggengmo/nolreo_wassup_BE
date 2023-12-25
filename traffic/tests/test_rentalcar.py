@@ -2,7 +2,7 @@ from django.test import TestCase
 from rest_framework.test import APIClient
 
 from account.models import CustomUser as User
-from traffic.models import RentalCar, RentalCarImage, RentalCarReview, RentalCarReviewComment
+from traffic.models import RentalCar, RentalCarImage, RentalCarReview, RentalCarReviewComment, RentalCarReviewImage
 from django.core.files.uploadedfile import SimpleUploadedFile
 from utils.test_remove_tools import remove_media_folder
 
@@ -693,3 +693,100 @@ class TestRentalCarCase(TestCase):
         response = self.client.delete('/traffic/review/1/reply/1/')
         self.assertEqual(response.status_code, 401)
         print('-- 렌트카 리뷰 댓글 삭제 테스트(로그인을 하지 않은 사용자) END --')
+
+    def test_RentalCarReviewImage_create_user(self):
+        '''
+        렌트카 리뷰 이미지 생성 테스트(일반 사용자)
+        '''
+        print('-- 렌트카 리뷰 이미지 생성 테스트(일반 사용자) BEGIN --')
+        # 정상 처리 테스트
+        images = []
+        for i in range(3):
+            images.append(SimpleUploadedFile(name=f'test_image{i}.jpg', 
+            content=open('static/assets/images/test_image/ormi.jpg', 'rb').read(), 
+            content_type='image/jpeg'))
+        RentalCarReview_data = {
+            'title': '렌트카 리뷰 제목',
+            'content': '렌트카 리뷰 내용',
+            'star_score': '5',
+            'rental_car': 1,
+            'user': 1,
+            'image': images,
+        }
+        response = self.client.post('/traffic/review/', RentalCarReview_data, format='multipart')
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(RentalCarReviewImage.objects.all().count(), 3)
+        self.assertEqual(RentalCarReviewImage.objects.all()[0].rental_car_review.pk,11)
+        self.assertEqual(RentalCarReview.objects.all()[10].rental_car_review_images.count(), 3)
+        remove_media_folder()
+        print('-- 렌트카 리뷰 이미지 생성 테스트(일반 사용자) END --')
+
+    def test_RentalCarReviewImage_create(self):
+        '''
+        렌트카 리뷰 이미지 생성 테스트(로그인을 하지 않은 사용자)
+        '''
+        print('-- 렌트카 리뷰 이미지 생성 테스트(로그인을 하지 않은 사용자) BEGIN --')
+        # 비정상 처리 테스트 - 로그인을 하지 않은 사용자가 렌트카 리뷰 이미지 생성 시도
+        images = []
+        for i in range(3):
+            images.append(SimpleUploadedFile(name=f'test_image{i}.jpg', 
+            content=open('static/assets/images/test_image/ormi.jpg', 'rb').read(), 
+            content_type='image/jpeg'))
+        RentalCarReview_data = {
+            'title': '렌트카 리뷰 제목',
+            'content': '렌트카 리뷰 내용',
+            'star_score': '5',
+            'rental_car': 1,
+            'image': images,
+        }
+        self.client.credentials()
+        response = self.client.post('/traffic/review/', RentalCarReview_data, format='multipart')
+        self.assertEqual(response.status_code, 401)
+        print('-- 렌트카 리뷰 이미지 생성 테스트(로그인을 하지 않은 사용자) END --')
+
+    def test_RentalCarReviewImage_destroy_user(self):
+        '''
+        렌트카 리뷰 이미지 삭제 테스트(일반 사용자)
+        '''
+        print('-- 렌트카 리뷰 이미지 삭제 테스트(일반 사용자) BEGIN --')
+        # 정상 처리 테스트
+        images = []
+        for i in range(3):
+            images.append(SimpleUploadedFile(name=f'test_image{i}.jpg', 
+            content=open('static/assets/images/test_image/ormi.jpg', 'rb').read(), 
+            content_type='image/jpeg'))
+        RentalCarReview_data = {
+            'title': '렌트카 리뷰 제목',
+            'content': '렌트카 리뷰 내용',
+            'star_score': '5',
+            'rental_car': 1,
+            'user': 1,
+            'image': images,
+        }
+        response = self.client.post('/traffic/review/', RentalCarReview_data, format='multipart')
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(RentalCarReviewImage.objects.all().count(), 3)
+        self.assertEqual(RentalCarReviewImage.objects.all()[0].rental_car_review.pk,11)
+        self.assertEqual(RentalCarReview.objects.all()[10].rental_car_review_images.count(), 3)
+        response = self.client.delete('/traffic/review/image/1/')
+        self.assertEqual(response.status_code, 204)
+        self.assertEqual(RentalCarReviewImage.objects.all().count(), 2)
+        response = self.client.delete('/traffic/review/image/2/')
+        self.assertEqual(response.status_code, 204)
+        self.assertEqual(RentalCarReview.objects.all()[10].rental_car_review_images.count(), 1)
+        # 비정상 처리 테스트 - 존재하지 않는 렌트카 리뷰 이미지 삭제 시도
+        response = self.client.delete('/traffic/review/image/100/')
+        self.assertEqual(response.status_code, 404)
+        remove_media_folder()
+        print('-- 렌트카 리뷰 이미지 삭제 테스트(일반 사용자) END --')
+
+    def test_RentalCarReviewImage_destroy(self):
+        '''
+        렌트카 리뷰 이미지 삭제 테스트(로그인을 하지 않은 사용자)
+        '''
+        print('-- 렌트카 리뷰 이미지 삭제 테스트(로그인을 하지 않은 사용자) BEGIN --')
+        # 비정상 처리 테스트 - 로그인을 하지 않은 사용자가 렌트카 리뷰 이미지 삭제 시도
+        self.client.credentials()
+        response = self.client.delete('/traffic/review/image/1/')
+        self.assertEqual(response.status_code, 401)
+        print('-- 렌트카 리뷰 이미지 삭제 테스트(로그인을 하지 않은 사용자) END --')

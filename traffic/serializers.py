@@ -2,7 +2,7 @@ from datetime import datetime
 from django.db.models import Avg
 from rest_framework import serializers
 
-from .models import Bus, Train, RentalCar, RentalCarImage, RentalCarReview, RentalCarReviewComment
+from .models import Bus, Train, RentalCar, RentalCarImage, RentalCarReview, RentalCarReviewComment, RentalCarReviewImage
 
 class BusSerializer(serializers.ModelSerializer):
     '''
@@ -152,6 +152,23 @@ class RentalCarReviewSerializer(serializers.ModelSerializer):
         return data
 
 
+class RentalCarReviewImageSerializer(serializers.ModelSerializer):
+    '''
+    렌트카 리뷰 이미지 생성 serializer
+    '''
+    class Meta:
+        model = RentalCarReviewImage
+        fields = ['image']
+
+    def validate(self, data):
+        '''
+        렌트카 리뷰 이미지 유효성 검사 메서드
+        '''
+        if data['image'] == '':
+            raise serializers.ValidationError("이미지가 없습니다. 이미지를 입력해 주세요.")
+        return data
+
+
 class RentalCarReviewCommentSerializer(serializers.ModelSerializer):
     '''
     렌트카 리뷰 댓글 생성 serializer
@@ -172,5 +189,4 @@ class RentalCarReviewCommentSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("로그인이 필요합니다. 로그인을 해주세요.")
         if data['rental_car_review'].rental_car not in RentalCar.objects.all():
             raise serializers.ValidationError("존재하지 않는 리뷰에는 댓글을 달 수 없습니다.")
-        
         return data
