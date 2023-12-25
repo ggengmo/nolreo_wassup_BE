@@ -60,7 +60,7 @@ class LodgingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Lodging
-        fields = ['name', 'intro', 'notice', 'info', 'sub_location', 'lodging_image', 'address', 'star_avg', 'review_cnt']
+        fields = ['id', 'name', 'intro', 'notice', 'info', 'sub_location', 'lodging_image', 'address', 'star_avg', 'review_cnt']
 
 
     def get_lodging_image(self, obj):

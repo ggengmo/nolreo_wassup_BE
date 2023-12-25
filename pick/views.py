@@ -45,7 +45,7 @@ class LodgingPickViewSet(ModelViewSet):
         return data
 
     def get_object(self):
-        obj = Pick.objects.all().filter(user=self.request.user, pk=self.kwargs['pk'])
+        obj = Pick.objects.all().filter(user=self.request.user, lodging_id=self.kwargs['pk'])
         if not obj:
             raise ObjectDoesNotExist()
         return obj
@@ -91,7 +91,7 @@ class BusPickViewSet(ModelViewSet):
         return data
     
     def get_object(self):
-        obj = Pick.objects.all().filter(user=self.request.user, pk=self.kwargs['pk'])
+        obj = Pick.objects.all().filter(user=self.request.user, bus_id=self.kwargs['pk'])
         if not obj:
             raise ObjectDoesNotExist()
         return obj
@@ -137,15 +137,12 @@ class TrainPickViewSet(ModelViewSet):
         return data
     
     def get_object(self):
-        obj = Pick.objects.all().filter(user=self.request.user, pk=self.kwargs['pk'])
+        obj = Pick.objects.all().filter(user=self.request.user, train_id=self.kwargs['pk'])
         if not obj:
             raise ObjectDoesNotExist()
         return obj
     
     def destroy(self, request, *args, **kwargs):
-        '''
-        기차 찜 삭제 API
-        '''
         try:
             return super().destroy(request, *args, **kwargs)
         except ObjectDoesNotExist:
@@ -186,23 +183,16 @@ class RentalCarPickViewSet(ModelViewSet):
         return queryset
     
     def get_object(self):
-        '''
-        요청한 pk에 해당하는 렌트카 찜 객체 반환 메서드
-        '''
-        obj = Pick.objects.all().filter(user=self.request.user, pk=self.kwargs['pk'])
+        obj = Pick.objects.all().filter(user=self.request.user, rental_car_id=self.kwargs['pk'])
         if not obj:
             raise ObjectDoesNotExist()
         return obj
     
     def destroy(self, request, *args, **kwargs):
-        '''
-        렌트카 찜 삭제 API
-        '''
         try:
             return super().destroy(request, *args, **kwargs)
         except ObjectDoesNotExist:
             return Response({'message': '해당 렌트카를 찜한 기록이 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
-        
 
 class PickListView(ListAPIView):
     '''
@@ -220,7 +210,6 @@ class PickListView(ListAPIView):
         queryset = super().get_queryset()
         queryset = queryset.filter(user=self.request.user)
         return queryset
-
 
 lodging_pick = LodgingPickViewSet.as_view({
     'post': 'create',
