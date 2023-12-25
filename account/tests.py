@@ -172,7 +172,7 @@ class TestAccount(TestCase):
         self.assertEqual(response.data['nickname'][0], '이미 사용중인 별명입니다.')
         print('-- 회원가입 테스트 END --')
 
-    def test_account_login(self):
+    def test_account_login(self): 
         '''
         로그인 테스트
         1. 정상 로그인 테스트

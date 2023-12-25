@@ -1,14 +1,12 @@
 # Rest Framework
-from rest_framework import viewsets, generics, mixins
+from rest_framework import viewsets, status
+from rest_framework.response import Response
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
 from utils.permissions import CustomJWTAuthentication
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.exceptions import PermissionDenied
 from django.core.exceptions import ObjectDoesNotExist
-from django.utils import timezone
 
-# Models
+# Custom
 from .models import (
     Lodging,
     LodgingImage,
@@ -51,6 +49,7 @@ class LodgingViewSet(viewsets.ModelViewSet):
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]
     
+    
 class MainLocationViewSet(viewsets.ModelViewSet):
     '''
     메인 지역 ViewSet
@@ -79,6 +78,7 @@ class SubLocationViewSet(viewsets.ModelViewSet):
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]
 
+
 class LodgingImageViewSet(viewsets.ModelViewSet):
     '''
     숙소 이미지 ViewSet
@@ -92,6 +92,18 @@ class LodgingImageViewSet(viewsets.ModelViewSet):
         else:
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]
+    
+    def get_queryset(self):
+        '''
+        숙소 이미지 목록을 조회하는 경우 요청한 숙소에 해당하는 이미지만 반환
+        '''
+        if self.action == 'list':
+            lodging_id = self.request.query_params.get('lodging_id', None)
+            queryset = super().get_queryset()
+            queryset = queryset.filter(lodging=lodging_id)
+            return queryset
+        return super().get_queryset()
+
 
 class RoomTypeViewSet(viewsets.ModelViewSet):
     '''
@@ -106,13 +118,15 @@ class RoomTypeViewSet(viewsets.ModelViewSet):
         else:
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]
-    
+
+
 class RoomImageViewSet(viewsets.ModelViewSet):
     '''
     숙소 방 이미지 ViewSet
     '''
     queryset = RoomImage.objects.all()
     serializer_class = RoomImageSerializer
+
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
             permission_classes = [IsAdminUser]
@@ -120,6 +134,7 @@ class RoomImageViewSet(viewsets.ModelViewSet):
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]
     
+
 class AmenityViewSet(viewsets.ModelViewSet):
     '''
     숙소 편의시설 ViewSet
@@ -133,6 +148,7 @@ class AmenityViewSet(viewsets.ModelViewSet):
         else:
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]
+
 
 class LodgingReviewViewSet(viewsets.ModelViewSet):
     '''
@@ -149,17 +165,6 @@ class LodgingReviewViewSet(viewsets.ModelViewSet):
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]
     
-    # # 해당 숙소를 예약한 사용자인지 확인 - 예약 기능 생성 후 추가예정
-    # def create(self, request, *args, **kwargs):
-    #     lodging_id = request.data['lodging']
-    #     user = request.user
-        
-    #     if not Reservation.objects.filter(
-    #         user=user, 
-    #         lodging_id=lodging_id,
-    #         end_at=timezone.now()).exists():
-    #         raise PermissionDenied('해당 숙소에 대한 예약 이력이 없습니다.')
-    #     return super().create(request, *args, **kwargs)
     
     def destroy(self, request, *args, **kwargs):
         try:
@@ -169,6 +174,7 @@ class LodgingReviewViewSet(viewsets.ModelViewSet):
             return super().destroy(request, *args, **kwargs)
         except ObjectDoesNotExist:
             return Response({'message': '해당 리뷰를 찾을 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class LodgingReviewImageViewSet(viewsets.ModelViewSet):
     '''
@@ -196,6 +202,7 @@ class LodgingReviewImageViewSet(viewsets.ModelViewSet):
         if review_image.lodging_review.user != request.user:
             raise PermissionDenied('해당 리뷰 이미지의 작성자가 아닙니다.')
         return super().partial_update(request, *args, **kwargs)
+
     
 class LodgingReviewCommentViewSet(viewsets.ModelViewSet):
     '''
