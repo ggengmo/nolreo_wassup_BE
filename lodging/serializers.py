@@ -60,7 +60,7 @@ class LodgingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Lodging
-        fields = ['name', 'intro', 'notice', 'info', 'sub_location', 'lodging_image', 'address', 'star_avg', 'review_cnt']
+        fields = ['id', 'name', 'intro', 'notice', 'info', 'sub_location', 'lodging_image', 'address', 'star_avg', 'review_cnt']
 
 
     def get_lodging_image(self, obj):
@@ -81,9 +81,12 @@ class LodgingSerializer(serializers.ModelSerializer):
 
 
 class RoomTypeSerializer(serializers.ModelSerializer):
+    room_image = serializers.SerializerMethodField()
+    address = serializers.SerializerMethodField()
+    lodging_name = serializers.SerializerMethodField()
     class Meta:
         model = RoomType
-        fields = ['name', 'price', 'capacity', 'lodging']
+        fields = ['name', 'price', 'capacity', 'lodging', 'room_image', 'address', 'lodging_name']
 
 
     def validate(self, data):
@@ -94,7 +97,28 @@ class RoomTypeSerializer(serializers.ModelSerializer):
         if data['capacity'] <= 0:
             raise serializers.ValidationError('수용 인원을 입력해주세요.')
         return data
-
+    
+    def get_room_image(self, obj):
+        '''
+        방 이미지를 같이 반환하기 위한 메소드
+        '''
+        try:
+            room_image = obj.room_images.get(is_main=True)
+        except:
+            return None
+        return RoomImageSerializer(room_image).data
+    
+    def get_address(self, obj):
+        '''
+        객실의 숙소 주소를 같이 반환하기 위한 메소드
+        '''
+        return str(obj.lodging.sub_location)
+    
+    def get_lodging_name(self, obj):
+        '''
+        객실의 숙소 이름을 같이 반환하기 위한 메소드
+        '''
+        return str(obj.lodging.name)
 
 class RoomImageSerializer(serializers.ModelSerializer):
     class Meta:

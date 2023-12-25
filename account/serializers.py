@@ -4,6 +4,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.core.validators import MinLengthValidator, MaxLengthValidator
 
 from .models import CustomUser as User
+from pick.serializers import PickSerializer
 
 class SignupSerializer(ModelSerializer):
     '''
@@ -82,9 +83,13 @@ class UserSerializer(ModelSerializer):
     '''
     사용자 정보 serializer
     '''
+    lodging_pick = serializers.SerializerMethodField()
+    rental_car_pick = serializers.SerializerMethodField()
+    bus_pick = serializers.SerializerMethodField()
+    train_pick = serializers.SerializerMethodField()
     class Meta:
         model = User
-        fields = ['email', 'username', 'nickname', 'image']
+        fields = ['email', 'username', 'nickname', 'image', 'lodging_pick', 'rental_car_pick', 'bus_pick', 'train_pick']
         read_only_fields = ['email', 'username']
 
 
@@ -97,6 +102,44 @@ class UserSerializer(ModelSerializer):
         if not value:
             raise serializers.ValidationError('별명을 입력해주세요.')
         return value
+
+    def get_lodging_pick(self, obj):
+        '''
+        숙소 찜 목록 반환 메서드
+        '''
+        pick_list = obj.picks.all().filter(pick_type='LG')
+        pick_serializer = PickSerializer(pick_list, many=True)
+        id_data = [item['lodging'] for item in pick_serializer.data]
+        
+        return id_data
+
+    def get_rental_car_pick(self, obj):
+        '''
+        렌터카 찜 목록 반환 메서드
+        '''
+        pick_list = obj.picks.all().filter(pick_type='RC')
+        pick_serializer = PickSerializer(pick_list, many=True)
+        id_data = [item['rental_car'] for item in pick_serializer.data]
+        return id_data
+    
+    def get_bus_pick(self, obj):
+        '''
+        버스 찜 목록 반환 메서드
+        '''
+        pick_list = obj.picks.all().filter(pick_type='BU')
+        pick_serializer = PickSerializer(pick_list, many=True)
+        id_data = [item['bus'] for item in pick_serializer.data]
+        return id_data
+
+    def get_train_pick(self, obj):
+        '''
+        기차 찜 목록 반환 메서드
+        '''
+        pick_list = obj.picks.all().filter(pick_type='TR')
+        pick_serializer = PickSerializer(pick_list, many=True)
+        id_data = [item['train'] for item in pick_serializer.data]
+        return id_data
+
     
 
 class PasswordSerializer(ModelSerializer):
