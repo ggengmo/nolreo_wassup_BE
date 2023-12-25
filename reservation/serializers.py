@@ -7,6 +7,9 @@ from .models import Reservation
 from lodging.models import RoomType
 
 class LodgingReservationSerializer(ModelSerializer):
+    '''
+    숙소 예약 Serializer
+    '''
     class Meta:
         model = Reservation
         fields = ['id', 'user', 'room', 'reservation_type', 'start_at', 'end_at']
@@ -50,6 +53,9 @@ class LodgingReservationSerializer(ModelSerializer):
     
 
 class BusReservationSerializer(ModelSerializer):
+    '''
+    버스 예약 Serializer
+    '''
     seat = serializers.IntegerField(min_value=1, max_value=40, write_only=True)
     class Meta:
         model = Reservation
@@ -91,10 +97,14 @@ class BusReservationSerializer(ModelSerializer):
         return super().run_validation(data)
 
 class TrainReservationSerializer(ModelSerializer):
+    '''
+    기차 예약 Serializer
+    '''
     seat = serializers.IntegerField(min_value=1, max_value=400, write_only=True)
     class Meta:
         model = Reservation
         fields = ['id', 'user', 'train', 'reservation_type', 'start_at', 'end_at', 'seat']
+
 
     def validate(self, data):
         '''
@@ -131,9 +141,13 @@ class TrainReservationSerializer(ModelSerializer):
     
 
 class RentalCarReservationSerializer(ModelSerializer):
+    '''
+    렌터카 예약 Serializer
+    '''
     class Meta:
         model = Reservation
         fields = ['id', 'user', 'rental_car', 'reservation_type', 'start_at', 'end_at']
+    
     
     def validate(self, data):
         '''
