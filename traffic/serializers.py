@@ -11,7 +11,7 @@ class BusSerializer(serializers.ModelSerializer):
     rest_seat = serializers.SerializerMethodField()
     class Meta:
         model = Bus
-        fields = ['depart_point', 'dest_point', 'depart_time', 
+        fields = ['id', 'depart_point', 'dest_point', 'depart_time', 
                 'arrival_time', 'num', 'price', 'rest_seat']
     
     def validate(self, data):
@@ -45,7 +45,7 @@ class TrainSerializer(serializers.ModelSerializer):
     rest_seat = serializers.SerializerMethodField()
     class Meta:
         model = Train
-        fields = ['depart_point', 'dest_point', 'depart_time', 
+        fields = ['id', 'depart_point', 'dest_point', 'depart_time', 
                 'arrival_time', 'num', 'price', 'rest_seat']
         
     def validate(self, data):

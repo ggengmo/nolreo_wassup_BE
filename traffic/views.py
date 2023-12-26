@@ -2,6 +2,7 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser, AllowAny, IsAuthenticated
 from django.shortcuts import get_object_or_404
+from django.db.models import Q
 
 from .models import Bus, Train, RentalCar, RentalCarImage, RentalCarReview, RentalCarReviewComment
 from .serializers import (BusSerializer, TrainSerializer, 
@@ -23,6 +24,29 @@ class BusViewSet(viewsets.ModelViewSet):
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]
     
+    def get_queryset(self):
+        '''
+        쿼리 파라미터에 따라 버스 목록을 필터링하는 메서드
+            예약 목록 중에서 출발일과 도착일이 맞는 경우만 필터링
+        '''
+        if self.action == 'list':
+            queryset = super().get_queryset()
+            depart_point = self.request.query_params.get('depart_point', None)
+            dest_point = self.request.query_params.get('dest_point', None)
+            depart_time = self.request.query_params.get('depart_time', None)
+            arrival_time = self.request.query_params.get('arrival_time', None)
+            if depart_point:
+                queryset = queryset.filter(depart_point=depart_point)
+            if dest_point:
+                queryset = queryset.filter(dest_point=dest_point)
+            if depart_time:
+                depart_time += ':00:00:00'
+                queryset = queryset.filter(depart_time__range=[depart_time, arrival_time])
+            if arrival_time:
+                arrival_time += ':23:59:59'
+                queryset = queryset.filter(arrival_time__range=[depart_time, arrival_time])
+        return queryset
+    
 
 class TrainViewSet(viewsets.ModelViewSet):
     '''
@@ -38,6 +62,28 @@ class TrainViewSet(viewsets.ModelViewSet):
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]
     
+    def get_queryset(self):
+        '''
+        쿼리 파라미터에 따라 버스 목록을 필터링하는 메서드
+            예약 목록 중에서 출발일과 도착일이 맞는 경우만 필터링
+        '''
+        if self.action == 'list':
+            queryset = super().get_queryset()
+            depart_point = self.request.query_params.get('depart_point', None)
+            dest_point = self.request.query_params.get('dest_point', None)
+            depart_time = self.request.query_params.get('depart_time', None)
+            arrival_time = self.request.query_params.get('arrival_time', None)
+            if depart_point:
+                queryset = queryset.filter(depart_point=depart_point)
+            if dest_point:
+                queryset = queryset.filter(dest_point=dest_point)
+            if depart_time:
+                depart_time += ':00:00:00'
+                queryset = queryset.filter(depart_time__range=[depart_time, arrival_time])
+            if arrival_time:
+                arrival_time += ':23:59:59'
+                queryset = queryset.filter(arrival_time__range=[depart_time, arrival_time])
+        return queryset
 
 class RentalCarViewSet(viewsets.ModelViewSet):
     '''

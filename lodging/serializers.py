@@ -81,12 +81,15 @@ class LodgingSerializer(serializers.ModelSerializer):
         return obj.lodging_reviews.count()
     
     def get_price(self, obj):
-        price = obj.room_types.order_by('price').first().price
-        price = str(price)
-        price = price[::-1]
-        price = ','.join([price[i:i+3] for i in range(0, len(price), 3)])
-        price = price[::-1]
-        return price
+        try:
+            price = obj.room_types.order_by('price').first().price
+            price = str(price)
+            price = price[::-1]
+            price = ','.join([price[i:i+3] for i in range(0, len(price), 3)])
+            price = price[::-1]
+            return price
+        except:
+            return None
 
 
 class RoomTypeSerializer(serializers.ModelSerializer):
@@ -95,7 +98,7 @@ class RoomTypeSerializer(serializers.ModelSerializer):
     lodging_name = serializers.SerializerMethodField()
     class Meta:
         model = RoomType
-        fields = ['name', 'price', 'capacity', 'lodging', 'room_image', 'address', 'lodging_name']
+        fields = ['id', 'name', 'price', 'capacity', 'lodging', 'room_image', 'address', 'lodging_name']
 
 
     def validate(self, data):
