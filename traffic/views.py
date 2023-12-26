@@ -118,6 +118,27 @@ class RentalCarViewSet(viewsets.ModelViewSet):
             image_serializer.save(rental_car=rental_car)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
+    def get_queryset(self):
+        '''
+        쿼리 파라미터에 따라 렌트카 목록을 필터링하는 메서드
+            -차량의 예약 목록 중에서 시작일이 예약 시작일과 종료일 사이에 있는 경우는 제외
+            -차량의 예약 목록 중에서 종료일이 예약 시작일과 종료일 사이에 있는 경우는 제외
+            -차량의 예약 목록 중에서 예약 시작일과 종료일이 모두 예약 시작일과 종료일 사이에 있는 경우는 제외
+        '''
+        if self.action == 'list':
+            queryset = super().get_queryset()
+            start_date = self.request.query_params.get('start_at', None)
+            end_date = self.request.query_params.get('end_at', None)
+            if start_date and end_date:          
+                queryset = super().get_queryset()  
+                queryset = queryset.filter(
+                ~Q(reservations__start_at__range=[start_date, end_date]) &
+                ~Q(reservations__end_at__range=[start_date, end_date]) &
+                ~Q(reservations__start_at__lte=start_date, reservations__end_at__gte=end_date)
+                )
+            return queryset
+        return super().get_queryset()
+    
 class RentalCarImageViewSet(viewsets.ModelViewSet):
     '''
     렌트카 이미지 삭제 API
