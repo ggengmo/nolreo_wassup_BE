@@ -13,7 +13,8 @@ DEBUG = os.getenv('DEBUG')
 
 ALLOWED_HOSTS = [
     '.ec2-3-39-9-108.ap-northeast-2.compute.amazonaws.com',
-    '.nolreowassup.shop'
+    '.nolreowassup.shop',
+    '127.0.0.1',
 ]
 
 INSTALLED_APPS = [
