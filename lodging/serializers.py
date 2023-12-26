@@ -108,7 +108,7 @@ class RoomTypeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = RoomType
-        fields = ['name', 'price', 'capacity', 'lodging', 'room_image', 'address', 'lodging_name']
+        fields = ['id', 'name', 'price', 'capacity', 'lodging', 'room_image', 'address', 'lodging_name']
 
     def validate(self, data):
         if data['name'] == '':

@@ -9,10 +9,11 @@ class BusSerializer(serializers.ModelSerializer):
     버스 생성 serializer
     '''
     rest_seat = serializers.SerializerMethodField()
+    price_form = serializers.SerializerMethodField()
     class Meta:
         model = Bus
-        fields = ['depart_point', 'dest_point', 'depart_time', 
-                'arrival_time', 'num', 'price', 'rest_seat']
+        fields = ['id', 'depart_point', 'dest_point', 'depart_time', 
+                'arrival_time', 'num', 'price', 'rest_seat', 'price_form']
     
     def validate(self, data):
         '''
@@ -37,16 +38,23 @@ class BusSerializer(serializers.ModelSerializer):
         '''
         return 40 - obj.reservations.count()
     
+    def get_price_form(self, obj):
+        try:
+            price_form = format(obj.price, ',')
+            return price_form
+        except:
+            return None
 
 class TrainSerializer(serializers.ModelSerializer):
     '''
     기차 생성 serializer
     '''
     rest_seat = serializers.SerializerMethodField()
+    price_form = serializers.SerializerMethodField()
     class Meta:
         model = Train
-        fields = ['depart_point', 'dest_point', 'depart_time', 
-                'arrival_time', 'num', 'price', 'rest_seat']
+        fields = ['id', 'depart_point', 'dest_point', 'depart_time', 
+                'arrival_time', 'num', 'price', 'rest_seat', 'price_form']
         
     def validate(self, data):
         '''
@@ -70,6 +78,13 @@ class TrainSerializer(serializers.ModelSerializer):
         기차 남은 좌석을 serializer에 포함시키는 메서드
         '''
         return 400 - obj.reservations.count()
+    
+    def get_price_form(self, obj):
+        try:
+            price_form = format(obj.price, ',')
+            return price_form
+        except:
+            return None
     
 
 class RentalCarImageSerializer(serializers.ModelSerializer):
