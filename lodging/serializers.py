@@ -54,15 +54,16 @@ class LodgingImageSerializer(serializers.ModelSerializer):
 
 class LodgingSerializer(serializers.ModelSerializer):
     lodging_image = serializers.SerializerMethodField()
+    lodging_images = serializers.SerializerMethodField()
     address = serializers.SerializerMethodField()
     star_avg = serializers.SerializerMethodField()
     review_cnt = serializers.SerializerMethodField()
     price = serializers.SerializerMethodField()
+    amenities = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = Lodging
-        fields = ['id', 'name', 'intro', 'notice', 'info', 'sub_location', 'lodging_image', 'address', 'star_avg', 'review_cnt', 'price']
-
+        fields = ['id', 'name', 'intro', 'notice', 'info', 'sub_location', 'lodging_image', 'address', 'star_avg', 'review_cnt', 'price', 'lodging_images', 'amenities']
 
     def get_lodging_image(self, obj):
         try:
@@ -79,7 +80,7 @@ class LodgingSerializer(serializers.ModelSerializer):
     
     def get_review_cnt(self, obj):
         return obj.lodging_reviews.count()
-    
+
     def get_price(self, obj):
         try:
             price = obj.room_types.order_by('price').first().price
@@ -91,15 +92,23 @@ class LodgingSerializer(serializers.ModelSerializer):
         except:
             return None
 
+    def get_lodging_images(self, obj):
+        lodging_images = obj.lodging_images.all()
+        return LodgingImageSerializer(lodging_images, many=True).data
+    
+    def get_amenities(self, obj):
+        amenities = obj.amenities.all()
+        return AmenitySerializer(amenities, many=True).data
+
 
 class RoomTypeSerializer(serializers.ModelSerializer):
     room_image = serializers.SerializerMethodField()
     address = serializers.SerializerMethodField()
     lodging_name = serializers.SerializerMethodField()
+
     class Meta:
         model = RoomType
         fields = ['name', 'price', 'capacity', 'lodging', 'room_image', 'address', 'lodging_name']
-
 
     def validate(self, data):
         if data['name'] == '':
@@ -131,6 +140,7 @@ class RoomTypeSerializer(serializers.ModelSerializer):
         객실의 숙소 이름을 같이 반환하기 위한 메소드
         '''
         return str(obj.lodging.name)
+    
 
 class RoomImageSerializer(serializers.ModelSerializer):
     class Meta:
@@ -158,11 +168,37 @@ class AmenitySerializer(serializers.ModelSerializer):
         return data
 
 
+class LodgingReviewCommentSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = LodgingReviewComment
+        fields = ['content', 'lodging_review', 'user', 'name']
+
+
+    def validate(self, data):
+        if data['content'] == '':
+            raise serializers.ValidationError('내용을 입력해주세요.')
+        return data
+    
+    def get_name(self, obj):
+        '''
+        리뷰를 작성한 사용자 이름을 같이 반환하기 위한 메소드
+        '''
+        return str(obj.user.nickname)
+
+
 class LodgingReviewSerializer(serializers.ModelSerializer):
+    '''
+    숙소 리뷰를 생성하기 위한 Serializer
+    '''
+    name = serializers.SerializerMethodField()
+    image = serializers.SerializerMethodField()
+    review_images = serializers.SerializerMethodField()
+    comments = LodgingReviewCommentSerializer(source='lodging_review_comments', many=True, read_only=True)
     class Meta:
         model = LodgingReview
-        fields = ['title', 'content', 'star_score', 'lodging', 'user']
-
+        fields = ['title', 'content', 'star_score', 'lodging', 'user', 'name', 'created_at', 'image', 'review_images', 'comments']
 
     star_score = serializers.IntegerField(min_value=1, max_value=5)
 
@@ -175,6 +211,27 @@ class LodgingReviewSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('별점을 입력해주세요.')
         return data
 
+    def get_name(self, obj):
+        '''
+        리뷰를 작성한 사용자 이름을 같이 반환하기 위한 메소드
+        '''
+        return str(obj.user.nickname)
+
+    def get_image(self, obj):
+        '''
+        리뷰를 작성한 사용자 프로필 이미지를 같이 반환하기 위한 메소드
+        '''
+        if obj.user.image:
+            return obj.user.image.url
+        
+        return None
+    
+    def get_review_images(self, obj):
+        '''
+        리뷰 이미지를 같이 반환하기 위한 메소드
+        '''
+        return [img.image.url for img in obj.lodging_review_images.all()]
+
 
 class LodgingReviewImageSerializer(serializers.ModelSerializer):
     class Meta:
@@ -186,16 +243,3 @@ class LodgingReviewImageSerializer(serializers.ModelSerializer):
         if data['image'] == None:
             raise serializers.ValidationError('숙소 리뷰 이미지를 업로드해주세요.')
         return data
-
-
-class LodgingReviewCommentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = LodgingReviewComment
-        fields = ['content', 'lodging_review', 'user']
-
-
-    def validate(self, data):
-        if data['content'] == '':
-            raise serializers.ValidationError('내용을 입력해주세요.')
-        return data
-    
