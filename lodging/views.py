@@ -124,7 +124,7 @@ class LodgingImageViewSet(viewsets.ModelViewSet):
         if self.action == 'list':
             lodging_id = self.request.query_params.get('lodging_id', None)
             queryset = super().get_queryset()
-            queryset = queryset.filter(lodging=lodging_id)
+            queryset = queryset.filter(lodging_id=lodging_id)
             return queryset
         return super().get_queryset()
 
@@ -142,6 +142,15 @@ class RoomTypeViewSet(viewsets.ModelViewSet):
         else:
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]
+    
+    def get_queryset(self):
+        # 쿼리 파라미터에 lodging_id가 있으면 해당 숙소의 방 종류만 반환
+        if self.action == 'list':
+            lodging_id = self.request.query_params.get('lodging_id', None)
+            queryset = super().get_queryset()
+            queryset = queryset.filter(lodging_id=lodging_id)
+            return queryset
+        return super().get_queryset()
 
 
 class RoomImageViewSet(viewsets.ModelViewSet):

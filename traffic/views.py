@@ -4,10 +4,11 @@ from rest_framework.permissions import IsAdminUser, AllowAny, IsAuthenticated
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
 
-from .models import Bus, Train, RentalCar, RentalCarImage, RentalCarReview, RentalCarReviewComment
+from .models import Bus, Train, RentalCar, RentalCarImage, RentalCarReview, RentalCarReviewComment, RentalCarReviewImage
 from .serializers import (BusSerializer, TrainSerializer, 
                         RentalCarSerializer, RentalCarImageSerializer,
-                        RentalCarReviewSerializer, RentalCarReviewCommentSerializer)
+                        RentalCarReviewSerializer, RentalCarReviewCommentSerializer,
+                        RentalCarReviewImageSerializer)
 
 
 class BusViewSet(viewsets.ModelViewSet):
@@ -146,6 +147,19 @@ class RentalCarReviewViewSet(viewsets.ModelViewSet):
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]
     
+    def create(self, request):
+        serializer = RentalCarReviewSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        rental_car_review = serializer.save()
+        images = request.FILES.getlist('image')
+        for image in images:
+            rental_car_review_image = {'image': image}
+            image_serializer = RentalCarReviewImageSerializer(data=rental_car_review_image)
+            image_serializer.is_valid(raise_exception=True)
+            image_serializer.save(rental_car_review=rental_car_review)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
 
 class RentalCarReviewCommentViewSet(viewsets.ModelViewSet):
     '''
@@ -160,3 +174,18 @@ class RentalCarReviewCommentViewSet(viewsets.ModelViewSet):
         else:
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]
+    
+
+class RentalCarReviewImageViewSet(viewsets.ModelViewSet):
+    '''
+    렌트카 리뷰 이미지 삭제 API
+    '''
+    queryset = RentalCarReviewImage.objects.all()
+    serializer_class = RentalCarReviewImageSerializer
+    http_method_names = ['delete']
+    permission_classes = [IsAuthenticated]
+    
+    def destroy(self, request, image_pk):
+        rental_car_review_image = get_object_or_404(RentalCarReviewImage, pk=image_pk)
+        rental_car_review_image.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
