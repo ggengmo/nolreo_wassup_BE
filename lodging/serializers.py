@@ -13,6 +13,7 @@ from .models import (
     MainLocation,
     SubLocation,
 )
+from account.models import CustomUser as User
 
 class MainLocationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -59,7 +60,7 @@ class LodgingSerializer(serializers.ModelSerializer):
     star_avg = serializers.SerializerMethodField()
     review_cnt = serializers.SerializerMethodField()
     price = serializers.SerializerMethodField()
-    amenities = serializers.StringRelatedField(many=True)
+    amenities = serializers.SerializerMethodField()
 
     class Meta:
         model = Lodging
@@ -80,6 +81,7 @@ class LodgingSerializer(serializers.ModelSerializer):
     
     def get_review_cnt(self, obj):
         return obj.lodging_reviews.count()
+    
 
     def get_price(self, obj):
         try:
