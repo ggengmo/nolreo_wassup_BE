@@ -57,10 +57,11 @@ class LodgingSerializer(serializers.ModelSerializer):
     address = serializers.SerializerMethodField()
     star_avg = serializers.SerializerMethodField()
     review_cnt = serializers.SerializerMethodField()
+    price = serializers.SerializerMethodField()
 
     class Meta:
         model = Lodging
-        fields = ['id', 'name', 'intro', 'notice', 'info', 'sub_location', 'lodging_image', 'address', 'star_avg', 'review_cnt']
+        fields = ['id', 'name', 'intro', 'notice', 'info', 'sub_location', 'lodging_image', 'address', 'star_avg', 'review_cnt', 'price']
 
 
     def get_lodging_image(self, obj):
@@ -78,6 +79,17 @@ class LodgingSerializer(serializers.ModelSerializer):
     
     def get_review_cnt(self, obj):
         return obj.lodging_reviews.count()
+    
+    def get_price(self, obj):
+        try:
+            price = obj.room_types.order_by('price').first().price
+            price = str(price)
+            price = price[::-1]
+            price = ','.join([price[i:i+3] for i in range(0, len(price), 3)])
+            price = price[::-1]
+            return price
+        except:
+            return None
 
 
 class RoomTypeSerializer(serializers.ModelSerializer):
