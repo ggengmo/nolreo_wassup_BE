@@ -98,7 +98,7 @@ class RentalCarSerializer(serializers.ModelSerializer):
     review_cnt = serializers.SerializerMethodField()
     class Meta:
         model = RentalCar
-        fields = ['model', 'area', 'num', 'price', 'car_image', 'star_avg', 'review_cnt']
+        fields = ['id', 'model', 'area', 'num', 'price', 'car_image', 'star_avg', 'review_cnt']
 
     def validate(self, data):
         '''
