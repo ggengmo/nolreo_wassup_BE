@@ -11,7 +11,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 
 DEBUG = os.getenv('DEBUG') == 'True'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['.nolreowassup.shop']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -122,5 +122,5 @@ SIMPLE_JWT = {
 # CORS 설정
 CORS_ORIGIN_ALLOW_ALL = False
 CORS_ORIGIN_WHITELIST = (
-    'http://127.0.0.1:5500',
+    'https://www.nolreowassup.shop',
 )
