@@ -45,7 +45,10 @@ class BusViewSet(viewsets.ModelViewSet):
             if arrival_time:
                 arrival_time += ':23:59:59'
                 queryset = queryset.filter(arrival_time__range=[depart_time, arrival_time])
-        return queryset
+        try:
+            return queryset
+        except:
+            return super().get_queryset()
     
 
 class TrainViewSet(viewsets.ModelViewSet):
@@ -83,7 +86,10 @@ class TrainViewSet(viewsets.ModelViewSet):
             if arrival_time:
                 arrival_time += ':23:59:59'
                 queryset = queryset.filter(arrival_time__range=[depart_time, arrival_time])
-        return queryset
+        try:
+            return queryset
+        except:
+            return super().get_queryset()
 
 class RentalCarViewSet(viewsets.ModelViewSet):
     '''
