@@ -263,3 +263,13 @@ class LodgingReviewCommentViewSet(viewsets.ModelViewSet):
         if comment.user != request.user:
             raise PermissionDenied('해당 댓글의 작성자가 아닙니다.')
         return super().partial_update(request, *args, **kwargs)
+
+    def get_queryset(self):
+        '''
+        숙소 리뷰 아이디가 있으면 해당 숙소 리뷰의 댓글만 반환
+        '''
+        queryset = super().get_queryset()
+        if (self.action == 'list'):
+            lodging_review_id = self.request.query_params.get('lodging_review_id', None)
+            queryset = queryset.filter(lodging_review_id=lodging_review_id)
+        return queryset
