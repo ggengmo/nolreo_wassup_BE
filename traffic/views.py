@@ -41,10 +41,10 @@ class BusViewSet(viewsets.ModelViewSet):
             if dest_point:
                 queryset = queryset.filter(dest_point=dest_point)
             if depart_time:
-                depart_time += ':00:00:00'
+                depart_time
                 queryset = queryset.filter(depart_time__range=[depart_time, arrival_time])
             if arrival_time:
-                arrival_time += ':23:59:59'
+                arrival_time
                 queryset = queryset.filter(arrival_time__range=[depart_time, arrival_time])
         try:
             return queryset
@@ -82,10 +82,10 @@ class TrainViewSet(viewsets.ModelViewSet):
             if dest_point:
                 queryset = queryset.filter(dest_point=dest_point)
             if depart_time:
-                depart_time += ':00:00:00'
+                depart_time
                 queryset = queryset.filter(depart_time__range=[depart_time, arrival_time])
             if arrival_time:
-                arrival_time += ':23:59:59'
+                arrival_time
                 queryset = queryset.filter(arrival_time__range=[depart_time, arrival_time])
         try:
             return queryset
