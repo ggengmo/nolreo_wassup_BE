@@ -211,7 +211,7 @@ class LodgingReviewSerializer(serializers.ModelSerializer):
     comments = LodgingReviewCommentSerializer(source='lodging_review_comments', many=True, read_only=True)
     class Meta:
         model = LodgingReview
-        fields = ['title', 'content', 'star_score', 'lodging', 'user', 'name', 'created_at', 'image', 'review_images', 'comments']
+        fields = ['id', 'title', 'content', 'star_score', 'lodging', 'user', 'name', 'created_at', 'image', 'review_images', 'comments']
 
     star_score = serializers.IntegerField(min_value=1, max_value=5)
 
