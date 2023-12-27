@@ -63,11 +63,8 @@ class LodgingViewSet(viewsets.ModelViewSet):
             if start_date and end_date:
                 queryset = super().get_queryset()
                 queryset = queryset.filter(
-                    # 객실의 숙소들의 예약 목록 중에서 시작일이 예약 시작일보다 작고 종료일이 예약 시작일보다 큰 경우는 제외
                     ~Q(room_types__reservations__start_at__lt=start_date, room_types__reservations__end_at__gt=start_date) &
-                    # 객실의 숙소들의 예약 목록 중에서 시작일이 예약 시작일이랑 같은 경우 제외
                     ~Q(room_types__reservations__start_at=start_date) &
-                    # 객실의 숙소들의 예약 목록 중에서 시작일이 예약 시작일보다 크고 시작일이 예약 종료일보다 작은 경우 제외
                     ~Q(room_types__reservations__start_at__gt=start_date, room_types__reservations__start_at__lt=end_date)
                 )
                 return queryset
@@ -266,3 +263,13 @@ class LodgingReviewCommentViewSet(viewsets.ModelViewSet):
         if comment.user != request.user:
             raise PermissionDenied('해당 댓글의 작성자가 아닙니다.')
         return super().partial_update(request, *args, **kwargs)
+
+    def get_queryset(self):
+        '''
+        숙소 리뷰 아이디가 있으면 해당 숙소 리뷰의 댓글만 반환
+        '''
+        queryset = super().get_queryset()
+        if (self.action == 'list'):
+            lodging_review_id = self.request.query_params.get('lodging_review_id', None)
+            queryset = queryset.filter(lodging_review_id=lodging_review_id)
+        return queryset

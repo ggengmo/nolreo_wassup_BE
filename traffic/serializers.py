@@ -111,9 +111,10 @@ class RentalCarSerializer(serializers.ModelSerializer):
     car_image = serializers.SerializerMethodField()
     star_avg = serializers.SerializerMethodField()
     review_cnt = serializers.SerializerMethodField()
+    price_form = serializers.SerializerMethodField()
     class Meta:
         model = RentalCar
-        fields = ['id', 'model', 'area', 'num', 'price', 'car_image', 'star_avg', 'review_cnt']
+        fields = ['id', 'model', 'area', 'num', 'price', 'car_image', 'star_avg', 'review_cnt', 'price_form']
 
     def validate(self, data):
         '''
@@ -144,6 +145,13 @@ class RentalCarSerializer(serializers.ModelSerializer):
     
     def get_review_cnt(self, obj):
         return obj.rental_car_reviews.count()
+    
+    def get_price_form(self, obj):
+        try:
+            price_form = format(obj.price, ',')
+            return price_form
+        except:
+            return None
     
 
 class RentalCarReviewSerializer(serializers.ModelSerializer):
