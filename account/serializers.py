@@ -76,6 +76,7 @@ class LoginSerializer(TokenObtainPairSerializer):
         data['refresh'] = str(refresh)
         data['access'] = str(refresh.access_token)
         data['user'] = self.user
+        data['nickname'] = self.user.nickname
         return data
 
 
