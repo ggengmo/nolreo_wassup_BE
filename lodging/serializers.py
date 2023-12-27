@@ -107,10 +107,11 @@ class RoomTypeSerializer(serializers.ModelSerializer):
     room_image = serializers.SerializerMethodField()
     address = serializers.SerializerMethodField()
     lodging_name = serializers.SerializerMethodField()
+    price_form = serializers.SerializerMethodField()
 
     class Meta:
         model = RoomType
-        fields = ['id', 'name', 'price', 'capacity', 'lodging', 'room_image', 'address', 'lodging_name']
+        fields = ['id', 'name', 'price', 'capacity', 'lodging', 'room_image', 'address', 'lodging_name', 'price_form']
 
     def validate(self, data):
         if data['name'] == '':
@@ -142,6 +143,16 @@ class RoomTypeSerializer(serializers.ModelSerializer):
         객실의 숙소 이름을 같이 반환하기 위한 메소드
         '''
         return str(obj.lodging.name)
+    
+    def get_price_form(self, obj):
+        '''
+        가격을 콤마가 포함된 문자열로 반환하기 위한 메소드
+        '''
+        try:
+            price_form = format(obj.price, ',')
+            return price_form
+        except:
+            return None
     
 
 class RoomImageSerializer(serializers.ModelSerializer):
