@@ -9,13 +9,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-DEBUG = os.getenv('DEBUG')
+DEBUG = os.getenv('DEBUG') == 'True'
 
-ALLOWED_HOSTS = [
-    '.ec2-3-39-9-108.ap-northeast-2.compute.amazonaws.com',
-    '.nolreowassup.shop',
-    '127.0.0.1',
-]
+ALLOWED_HOSTS = ['.nolreowassup.shop']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -98,10 +94,10 @@ USE_I18N = True
 USE_TZ = False
 
 
-STATIC_URL = 'static/'
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-]
+STATIC_URL = '/static/'
+#STATICFILES_DIRS = []
+STATIC_ROOT = BASE_DIR / 'static'
+#STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -126,5 +122,16 @@ SIMPLE_JWT = {
 # CORS 설정
 CORS_ORIGIN_ALLOW_ALL = False
 CORS_ORIGIN_WHITELIST = (
-    'http://127.0.0.1:5500',
+    'https://www.nolreowassup.shop',
+    'https://api.nolreowassup.shop',
 )
+
+CSRF_TRUSTED_ORIGINS = [
+        "http://nolreowassup.shop",
+        "https://nolreowassup.shop",
+        "http://api.nolreowassup.shop",
+        "https://api.nolreowassup.shop",
+        "http://www.nolreowassup.shop",
+        "https://www.nolreowassup.shop",]
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True

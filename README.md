@@ -72,7 +72,8 @@
 </div>
 
 ### 2-3. 개발 일정
-작성 필요
+<a href="https://drive.google.com/file/d/1BSEULNm9BXktvxWg6LWCwDZ-TqQZMtWJ/view?usp=sharing">자세히 보기<img src="./static/assets/images/wbs.png" width="100%"></a>
+수정 필요
 
 <div align="right">
 
