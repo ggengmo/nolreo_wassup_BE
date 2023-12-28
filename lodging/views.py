@@ -5,6 +5,7 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
 from utils.permissions import CustomJWTAuthentication
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 
 # Custom
 from .models import (
@@ -48,6 +49,26 @@ class LodgingViewSet(viewsets.ModelViewSet):
         else:
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]
+
+    def get_queryset(self):
+        '''
+        쿼리 파라미터에 따라 숙소 목록을 필터링하는 메서드
+            객실의 숙소들의 예약 목록 중에서 시작일이 예약 시작일보다 작고 종료일이 예약 시작일보다 큰 경우는 제외
+            객실의 숙소들의 예약 목록 중에서 시작일이 예약 시작일이랑 같은 경우 제외
+            객실의 숙소들의 예약 목록 중에서 시작일이 예약 시작일보다 크고 시작일이 예약 종료일보다 작은 경우 제외
+        '''
+        if self.action == 'list':
+            start_date = self.request.query_params.get('start_at', None)
+            end_date = self.request.query_params.get('end_at', None)
+            if start_date and end_date:
+                queryset = super().get_queryset()
+                queryset = queryset.filter(
+                    ~Q(room_types__reservations__start_at__lt=start_date, room_types__reservations__end_at__gt=start_date) &
+                    ~Q(room_types__reservations__start_at=start_date) &
+                    ~Q(room_types__reservations__start_at__gt=start_date, room_types__reservations__start_at__lt=end_date)
+                )
+                return queryset
+        return super().get_queryset()
     
     
 class MainLocationViewSet(viewsets.ModelViewSet):
@@ -100,7 +121,7 @@ class LodgingImageViewSet(viewsets.ModelViewSet):
         if self.action == 'list':
             lodging_id = self.request.query_params.get('lodging_id', None)
             queryset = super().get_queryset()
-            queryset = queryset.filter(lodging=lodging_id)
+            queryset = queryset.filter(lodging_id=lodging_id)
             return queryset
         return super().get_queryset()
 
@@ -118,6 +139,15 @@ class RoomTypeViewSet(viewsets.ModelViewSet):
         else:
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]
+    
+    def get_queryset(self):
+        # 쿼리 파라미터에 lodging_id가 있으면 해당 숙소의 방 종류만 반환
+        if self.action == 'list':
+            lodging_id = self.request.query_params.get('lodging_id', None)
+            queryset = super().get_queryset()
+            queryset = queryset.filter(lodging_id=lodging_id)
+            return queryset
+        return super().get_queryset()
 
 
 class RoomImageViewSet(viewsets.ModelViewSet):
@@ -233,3 +263,13 @@ class LodgingReviewCommentViewSet(viewsets.ModelViewSet):
         if comment.user != request.user:
             raise PermissionDenied('해당 댓글의 작성자가 아닙니다.')
         return super().partial_update(request, *args, **kwargs)
+
+    def get_queryset(self):
+        '''
+        숙소 리뷰 아이디가 있으면 해당 숙소 리뷰의 댓글만 반환
+        '''
+        queryset = super().get_queryset()
+        if (self.action == 'list'):
+            lodging_review_id = self.request.query_params.get('lodging_review_id', None)
+            queryset = queryset.filter(lodging_review_id=lodging_review_id)
+        return queryset

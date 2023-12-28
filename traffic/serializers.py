@@ -9,10 +9,11 @@ class BusSerializer(serializers.ModelSerializer):
     버스 생성 serializer
     '''
     rest_seat = serializers.SerializerMethodField()
+    price_form = serializers.SerializerMethodField()
     class Meta:
         model = Bus
-        fields = ['depart_point', 'dest_point', 'depart_time', 
-                'arrival_time', 'num', 'price', 'rest_seat']
+        fields = ['id', 'depart_point', 'dest_point', 'depart_time', 
+                'arrival_time', 'num', 'price', 'rest_seat', 'price_form']
     
     def validate(self, data):
         '''
@@ -37,16 +38,23 @@ class BusSerializer(serializers.ModelSerializer):
         '''
         return 40 - obj.reservations.count()
     
+    def get_price_form(self, obj):
+        try:
+            price_form = format(obj.price, ',')
+            return price_form
+        except:
+            return None
 
 class TrainSerializer(serializers.ModelSerializer):
     '''
     기차 생성 serializer
     '''
     rest_seat = serializers.SerializerMethodField()
+    price_form = serializers.SerializerMethodField()
     class Meta:
         model = Train
-        fields = ['depart_point', 'dest_point', 'depart_time', 
-                'arrival_time', 'num', 'price', 'rest_seat']
+        fields = ['id', 'depart_point', 'dest_point', 'depart_time', 
+                'arrival_time', 'num', 'price', 'rest_seat', 'price_form']
         
     def validate(self, data):
         '''
@@ -70,6 +78,13 @@ class TrainSerializer(serializers.ModelSerializer):
         기차 남은 좌석을 serializer에 포함시키는 메서드
         '''
         return 400 - obj.reservations.count()
+    
+    def get_price_form(self, obj):
+        try:
+            price_form = format(obj.price, ',')
+            return price_form
+        except:
+            return None
     
 
 class RentalCarImageSerializer(serializers.ModelSerializer):
@@ -96,9 +111,10 @@ class RentalCarSerializer(serializers.ModelSerializer):
     car_image = serializers.SerializerMethodField()
     star_avg = serializers.SerializerMethodField()
     review_cnt = serializers.SerializerMethodField()
+    price_form = serializers.SerializerMethodField()
     class Meta:
         model = RentalCar
-        fields = ['model', 'area', 'num', 'price', 'car_image', 'star_avg', 'review_cnt']
+        fields = ['id', 'model', 'area', 'num', 'price', 'car_image', 'star_avg', 'review_cnt', 'price_form']
 
     def validate(self, data):
         '''
@@ -130,14 +146,55 @@ class RentalCarSerializer(serializers.ModelSerializer):
     def get_review_cnt(self, obj):
         return obj.rental_car_reviews.count()
     
+    def get_price_form(self, obj):
+        try:
+            price_form = format(obj.price, ',')
+            return price_form
+        except:
+            return None
+    
+
+class RentalCarReviewCommentSerializer(serializers.ModelSerializer):
+    '''
+    렌트카 리뷰 댓글 생성 serializer
+    '''
+    name = serializers.SerializerMethodField()
+    class Meta:
+        model = RentalCarReviewComment
+        fields = ['content', 'rental_car_review', 'user', 'name']
+
+    def validate(self, data):
+        '''
+        렌트카 리뷰 댓글 유효성 검사 메서드
+        '''
+        if data['content'] == '':
+            raise serializers.ValidationError("내용이 없습니다. 내용을 입력해 주세요.")
+        if data['rental_car_review'] == '':
+            raise serializers.ValidationError("리뷰가 없습니다. 리뷰를 입력해 주세요.")
+        if data['user'] == '':
+            raise serializers.ValidationError("로그인이 필요합니다. 로그인을 해주세요.")
+        if data['rental_car_review'].rental_car not in RentalCar.objects.all():
+            raise serializers.ValidationError("존재하지 않는 리뷰에는 댓글을 달 수 없습니다.")
+        return data
+    
+    def get_name(self, obj):
+        '''
+        댓글을 작성한 사용자 이름을 같이 반환하기 위한 메소드
+        '''
+        return str(obj.user.nickname)
+
 
 class RentalCarReviewSerializer(serializers.ModelSerializer):
     '''
     렌트카 리뷰 생성 serializer
     '''
+    name = serializers.SerializerMethodField()
+    review_images = serializers.SerializerMethodField()
+    comments = RentalCarReviewCommentSerializer(source='rental_car_review_comments', many=True, read_only=True)
+    image = serializers.SerializerMethodField()
     class Meta:
         model = RentalCarReview
-        fields = ['title', 'content', 'star_score', 'rental_car', 'user']
+        fields = ['id', 'title', 'content', 'star_score', 'rental_car', 'user', 'review_images', 'created_at', 'name', 'comments', 'image']
 
     def validate(self, data):
         '''
@@ -150,6 +207,28 @@ class RentalCarReviewSerializer(serializers.ModelSerializer):
         if data['star_score'] <= 0:
             raise serializers.ValidationError("점수가 0점 이하입니다. 1점 이상의 점수를 입력해 주세요.")
         return data
+    
+    def get_review_images(self, obj):
+        '''
+        렌트카 리뷰 이미지를 serializer에 포함시키는 메서드
+        '''
+        images = obj.rental_car_review_images.all()
+        return RentalCarReviewImageSerializer(images, many=True).data
+    
+    def get_name(self, obj):
+        '''
+        리뷰를 작성한 사용자 이름을 같이 반환하기 위한 메소드
+        '''
+        return str(obj.user.nickname)
+    
+    def get_image(self, obj):
+        '''
+        리뷰를 작성한 사용자 프로필 이미지를 같이 반환하기 위한 메소드
+        '''
+        if obj.user.image:
+            return obj.user.image.url
+        
+        return None
 
 
 class RentalCarReviewImageSerializer(serializers.ModelSerializer):
@@ -166,27 +245,4 @@ class RentalCarReviewImageSerializer(serializers.ModelSerializer):
         '''
         if data['image'] == '':
             raise serializers.ValidationError("이미지가 없습니다. 이미지를 입력해 주세요.")
-        return data
-
-
-class RentalCarReviewCommentSerializer(serializers.ModelSerializer):
-    '''
-    렌트카 리뷰 댓글 생성 serializer
-    '''
-    class Meta:
-        model = RentalCarReviewComment
-        fields = ['content', 'rental_car_review', 'user']
-
-    def validate(self, data):
-        '''
-        렌트카 리뷰 댓글 유효성 검사 메서드
-        '''
-        if data['content'] == '':
-            raise serializers.ValidationError("내용이 없습니다. 내용을 입력해 주세요.")
-        if data['rental_car_review'] == '':
-            raise serializers.ValidationError("리뷰가 없습니다. 리뷰를 입력해 주세요.")
-        if data['user'] == '':
-            raise serializers.ValidationError("로그인이 필요합니다. 로그인을 해주세요.")
-        if data['rental_car_review'].rental_car not in RentalCar.objects.all():
-            raise serializers.ValidationError("존재하지 않는 리뷰에는 댓글을 달 수 없습니다.")
         return data
