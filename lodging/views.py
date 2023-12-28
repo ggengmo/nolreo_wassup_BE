@@ -204,6 +204,17 @@ class LodgingReviewViewSet(viewsets.ModelViewSet):
             return super().destroy(request, *args, **kwargs)
         except ObjectDoesNotExist:
             return Response({'message': '해당 리뷰를 찾을 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+    def get_queryset(self):
+        '''
+        쿼리 파라미터의 lodging_id가 있으면 해당 숙소의 리뷰만 반환
+        '''
+        if self.action == 'list':
+            lodging_id = self.request.query_params.get('lodging_id', None)
+            queryset = super().get_queryset()
+            queryset = queryset.filter(lodging_id=lodging_id)
+            return queryset
+        return super().get_queryset()
 
 
 class LodgingReviewImageViewSet(viewsets.ModelViewSet):
