@@ -87,7 +87,7 @@ class LodgingReview(models.Model):
     '''
     숙소 리뷰 모델
     '''
-    title = models.CharField(max_length=100)
+    title = models.CharField(max_length=100, null=True, blank=True)
     content = models.TextField()
     star_score = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -102,7 +102,7 @@ class LodgingReviewImage(models.Model):
     '''
     숙소 리뷰 이미지 모델
     '''
-    image = models.ImageField(upload_to='lodging_review_images/%Y/%m/%d/', null=True, blank=True)
+    image = models.ImageField(upload_to='lodging_review_images/%Y/%m/%d/')
     lodging_review = models.ForeignKey('LodgingReview', on_delete=models.CASCADE, related_name='lodging_review_images')
 
     def __str__(self):

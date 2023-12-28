@@ -2,6 +2,7 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser, AllowAny, IsAuthenticated
 from django.shortcuts import get_object_or_404
+from django.db.models import Q
 
 from .models import Bus, Train, RentalCar, RentalCarImage, RentalCarReview, RentalCarReviewComment, RentalCarReviewImage
 from .serializers import (BusSerializer, TrainSerializer, 
@@ -24,6 +25,32 @@ class BusViewSet(viewsets.ModelViewSet):
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]
     
+    def get_queryset(self):
+        '''
+        쿼리 파라미터에 따라 버스 목록을 필터링하는 메서드
+            예약 목록 중에서 출발일과 도착일이 맞는 경우만 필터링
+        '''
+        if self.action == 'list':
+            queryset = super().get_queryset()
+            depart_point = self.request.query_params.get('depart_point', None)
+            dest_point = self.request.query_params.get('dest_point', None)
+            depart_time = self.request.query_params.get('depart_time', None)
+            arrival_time = self.request.query_params.get('arrival_time', None)
+            if depart_point:
+                queryset = queryset.filter(depart_point=depart_point)
+            if dest_point:
+                queryset = queryset.filter(dest_point=dest_point)
+            if depart_time:
+                depart_time
+                queryset = queryset.filter(depart_time__range=[depart_time, arrival_time])
+            if arrival_time:
+                arrival_time
+                queryset = queryset.filter(arrival_time__range=[depart_time, arrival_time])
+        try:
+            return queryset
+        except:
+            return super().get_queryset()
+    
 
 class TrainViewSet(viewsets.ModelViewSet):
     '''
@@ -39,6 +66,31 @@ class TrainViewSet(viewsets.ModelViewSet):
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]
     
+    def get_queryset(self):
+        '''
+        쿼리 파라미터에 따라 버스 목록을 필터링하는 메서드
+            예약 목록 중에서 출발일과 도착일이 맞는 경우만 필터링
+        '''
+        if self.action == 'list':
+            queryset = super().get_queryset()
+            depart_point = self.request.query_params.get('depart_point', None)
+            dest_point = self.request.query_params.get('dest_point', None)
+            depart_time = self.request.query_params.get('depart_time', None)
+            arrival_time = self.request.query_params.get('arrival_time', None)
+            if depart_point:
+                queryset = queryset.filter(depart_point=depart_point)
+            if dest_point:
+                queryset = queryset.filter(dest_point=dest_point)
+            if depart_time:
+                depart_time
+                queryset = queryset.filter(depart_time__range=[depart_time, arrival_time])
+            if arrival_time:
+                arrival_time
+                queryset = queryset.filter(arrival_time__range=[depart_time, arrival_time])
+        try:
+            return queryset
+        except:
+            return super().get_queryset()
 
 class RentalCarViewSet(viewsets.ModelViewSet):
     '''
@@ -65,6 +117,27 @@ class RentalCarViewSet(viewsets.ModelViewSet):
             image_serializer.is_valid(raise_exception=True)
             image_serializer.save(rental_car=rental_car)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    def get_queryset(self):
+        '''
+        쿼리 파라미터에 따라 렌트카 목록을 필터링하는 메서드
+            -차량의 예약 목록 중에서 시작일이 예약 시작일과 종료일 사이에 있는 경우는 제외
+            -차량의 예약 목록 중에서 종료일이 예약 시작일과 종료일 사이에 있는 경우는 제외
+            -차량의 예약 목록 중에서 예약 시작일과 종료일이 모두 예약 시작일과 종료일 사이에 있는 경우는 제외
+        '''
+        if self.action == 'list':
+            queryset = super().get_queryset()
+            start_date = self.request.query_params.get('start_at', None)
+            end_date = self.request.query_params.get('end_at', None)
+            if start_date and end_date:          
+                queryset = super().get_queryset()  
+                queryset = queryset.filter(
+                ~Q(reservations__start_at__range=[start_date, end_date]) &
+                ~Q(reservations__end_at__range=[start_date, end_date]) &
+                ~Q(reservations__start_at__lte=start_date, reservations__end_at__gte=end_date)
+                )
+            return queryset
+        return super().get_queryset()
     
 class RentalCarImageViewSet(viewsets.ModelViewSet):
     '''
@@ -106,7 +179,17 @@ class RentalCarReviewViewSet(viewsets.ModelViewSet):
             image_serializer.is_valid(raise_exception=True)
             image_serializer.save(rental_car_review=rental_car_review)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-
+    
+    def get_queryset(self):
+        '''
+        렌트카 아이디가 있으면 해당 렌트카 리뷰만 반환
+        '''
+        queryset = super().get_queryset()
+        if self.action == 'list':
+            rental_car_id = self.request.query_params.get('rental_car_id')
+            if rental_car_id is not None:
+                queryset = queryset.filter(rental_car__id=rental_car_id)
+        return queryset
 
 
 class RentalCarReviewCommentViewSet(viewsets.ModelViewSet):
