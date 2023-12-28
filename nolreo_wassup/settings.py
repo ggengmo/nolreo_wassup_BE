@@ -9,7 +9,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-DEBUG = os.getenv('DEBUG') == 'True'
+#DEBUG = os.getenv('DEBUG') == 'True'
+DEBUG = True
 
 ALLOWED_HOSTS = ['.nolreowassup.shop']
 
@@ -123,4 +124,15 @@ SIMPLE_JWT = {
 CORS_ORIGIN_ALLOW_ALL = False
 CORS_ORIGIN_WHITELIST = (
     'https://www.nolreowassup.shop',
+    'https://api.nolreowassup.shop',
 )
+
+CSRF_TRUSTED_ORIGINS = [
+        "http://nolreowassup.shop",
+        "https://nolreowassup.shop",
+        "http://api.nolreowassup.shop",
+        "https://api.nolreowassup.shop",
+        "http://www.nolreowassup.shop",
+        "https://www.nolreowassup.shop",]
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
