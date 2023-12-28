@@ -179,7 +179,17 @@ class RentalCarReviewViewSet(viewsets.ModelViewSet):
             image_serializer.is_valid(raise_exception=True)
             image_serializer.save(rental_car_review=rental_car_review)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-
+    
+    def get_queryset(self):
+        '''
+        렌트카 아이디가 있으면 해당 렌트카 리뷰만 반환
+        '''
+        queryset = super().get_queryset()
+        if self.action == 'list':
+            rental_car_id = self.request.query_params.get('rental_car_id')
+            if rental_car_id is not None:
+                queryset = queryset.filter(rental_car__id=rental_car_id)
+        return queryset
 
 
 class RentalCarReviewCommentViewSet(viewsets.ModelViewSet):
