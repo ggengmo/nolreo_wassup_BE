@@ -9,6 +9,7 @@ from .serializers import (BusSerializer, TrainSerializer,
                         RentalCarSerializer, RentalCarImageSerializer,
                         RentalCarReviewSerializer, RentalCarReviewCommentSerializer,
                         RentalCarReviewImageSerializer)
+from utils.permissions import CustomJWTAuthentication, CustomIsAuthenticated, IsOwner
 
 
 class BusViewSet(viewsets.ModelViewSet):
@@ -160,10 +161,11 @@ class RentalCarReviewViewSet(viewsets.ModelViewSet):
     '''
     queryset = RentalCarReview.objects.all()
     serializer_class = RentalCarReviewSerializer
+    authentication_classes = [CustomJWTAuthentication]
     
     def get_permissions(self):
-        if self.action in ['create', 'update', 'destroy']:
-            permission_classes = [IsAuthenticated]
+        if self.action in ['create', 'update', 'destroy', 'partial_update']:
+            permission_classes = [CustomIsAuthenticated, IsOwner]
         else:
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]
@@ -198,10 +200,11 @@ class RentalCarReviewCommentViewSet(viewsets.ModelViewSet):
     '''
     queryset = RentalCarReviewComment.objects.all()
     serializer_class = RentalCarReviewCommentSerializer
+    authentication_classes = [CustomJWTAuthentication]
     
     def get_permissions(self):
-        if self.action in ['create', 'update', 'destroy']:
-            permission_classes = [IsAuthenticated]
+        if self.action in ['create', 'update', 'destroy', 'partial_update']:
+            permission_classes = [CustomIsAuthenticated, IsOwner]
         else:
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]
